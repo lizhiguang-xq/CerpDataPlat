@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IIntegralInfoDao">
+	<resultMap id="BaseResultMap"
+		type="org.ssm.dufy.entity.cerpbusi.IntegralInfo">
+		<result column="infoid" property="infoid"
+			jdbcType="DECIMAL" />
+		<result column="insiderid" property="insiderid"
+			jdbcType="DECIMAL" />
+		<result column="comefrom" property="comefrom"
+			jdbcType="DECIMAL" />
+		<result column="docid" property="docid"
+			jdbcType="DECIMAL" />
+		<result column="debitintegal" property="debitintegal"
+			jdbcType="DECIMAL" />
+		<result column="credate" property="credate" jdbcType="DATE" />
+		<result column="placepointid" property="placepointid"
+			jdbcType="DECIMAL" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		infoid, insiderid, comefrom,
+		docid,debitintegal,credate,placepointid
+	</sql>
+
+	<insert id="insertIntegralInfo" parameterType="org.ssm.dufy.entity.cerpbusi.IntegralInfo">
+	    insert into GPCS_INSIDER_INTEGRALINFO (infoid, insiderid, comefrom, docid, debitintegal, credate)
+	    values (gpcs_insider_integralinfo_seq.nextval, #{insiderid,jdbcType=DECIMAL}, 
+	      #{comefrom,jdbcType=DECIMAL}, #{docid,jdbcType=DECIMAL},#{debitintegal,jdbcType=DECIMAL}, 
+	      sysdate)
+	</insert>
+</mapper>

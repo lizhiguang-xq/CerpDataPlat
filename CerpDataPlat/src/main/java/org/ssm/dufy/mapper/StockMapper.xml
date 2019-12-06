@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IStockDao" >
+  <resultMap id="BaseResultMap" type="org.ssm.dufy.entity.cerppojo.Stock" >  
+    <result column="goodsid" property="goodsid" jdbcType="VARCHAR" />
+    <result column="storageid" property="storageid" jdbcType="VARCHAR" />
+    <result column="goodsdtlid" property="goodsdtlid" jdbcType="VARCHAR" />
+    <result column="batchid" property="batchid" jdbcType="VARCHAR" />
+    <result column="lotid" property="lotid" jdbcType="VARCHAR" />
+    <result column="posid" property="posid" jdbcType="VARCHAR" />
+    <result column="goodsstatusid" property="goodsstatusid" jdbcType="VARCHAR" />
+    <result column="placepointid" property="placepointid" jdbcType="VARCHAR" />
+    <result column="qty" property="qty" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    goodsid, qty
+  </sql>
+  
+  <select id="getStockByParam" resultType="org.ssm.dufy.entity.cerppojo.Stock" >
+    SELECT 
+    <include refid="Base_Column_List" />
+	  FROM (
+	  select rownum rowno, t.goodsid, t.qty 
+	    from(select a.goodsid, sum(a.goodsqty-nvl(c.dtlgoodsqty,0)) qty
+		  	   from bms_st_qty_lst a, gpcs_placepoint b, bms_st_io_dtl_tmp c
+			  where a.storageid = b.storageid
+			    <if test="placepointid != null and placepointid != '' " >
+				and b.placepointid = ${placepointid}
+				</if>
+				<if test="storageid != null and storageid != '' " >
+				and a.storageid = ${storageid}
+				</if>
+				<if test="goodsid != null and goodsid != '' " >
+				and a.goodsid = ${goodsid}
+				</if>
+				and a.goodsstatusid = 1
+				and a.batchid = c.batchid(+)
+			  group by a.goodsid) t
+	   where ROWNUM &lt;= 100*${ym}) table_alias
+	 WHERE table_alias.rowno > 100*(${ym}-1)
+  </select>
+  <select id="getStock_Lnjfsc" resultType="org.ssm.dufy.entity.cerppojo.Stock" >
+    SELECT 
+    	goodsid, qty
+    FROM (
+    select rownum rowno, t.goodsid, t.qty 
+      from(select a.goodsid, sum(a.goodsqty) qty
+           from bms_st_qty_lst a, bms_st_def b
+        where a.storageid = b.storageid
+          and b.storagetype = 2
+          <if test="entrycompanyid != null and entrycompanyid != '' " >
+          and b.phystoreid = #{entrycompanyid}
+          </if>
+          <if test="goodsid != null and goodsid != '' " >
+          and a.goodsid = #{goodsid}
+          </if>
+        group by a.goodsid) t
+     where ROWNUM &lt;= 100*#{ym}) table_alias
+   WHERE table_alias.rowno > 100*(#{ym}-1)
+  </select>
+  
+  <select id="getStQtySumStock_Lnjfsc" resultType="org.ssm.dufy.entity.cerppojo.Stock" >
+    SELECT goodsid,storageid,goodsdtlid,batchid,lotid,posid,goodsstatusid,qty
+	  FROM zx_lnjfsc_stqty_sum_v where goodsid = #{goodsid} and storageid = #{storageid}
+  </select>
+  <delete id="deleteBmsStQtyLstByParam" parameterType="java.lang.Long">
+    delete from bms_st_qty_lst
+    where goodsid = #{goodsid,jdbcType=VARCHAR}
+      and storageid = #{storageid,jdbcType=VARCHAR}
+      and goodsdetailid = #{goodsdtlid,jdbcType=VARCHAR}
+      and batchid = #{batchid,jdbcType=VARCHAR}
+      and lotid = #{lotid,jdbcType=VARCHAR}
+      and posid = #{posid,jdbcType=VARCHAR}
+      and goodsstatusid = #{goodsstatusid,jdbcType=VARCHAR}
+  </delete>
+  <update id="updateBmsStQtyLstByParam" parameterType="java.lang.Long">
+  	update bms_st_qty_lst
+    <set>
+      goodsqty = #{qty,jdbcType=VARCHAR}
+    </set>
+    where goodsid = #{goodsid,jdbcType=VARCHAR}
+      and storageid = #{storageid,jdbcType=VARCHAR}
+      and goodsdetailid = #{goodsdtlid,jdbcType=VARCHAR}
+      and batchid = #{batchid,jdbcType=VARCHAR}
+      and lotid = #{lotid,jdbcType=VARCHAR}
+      and posid = #{posid,jdbcType=VARCHAR}
+      and goodsstatusid = #{goodsstatusid,jdbcType=VARCHAR}
+  </update>
+</mapper>

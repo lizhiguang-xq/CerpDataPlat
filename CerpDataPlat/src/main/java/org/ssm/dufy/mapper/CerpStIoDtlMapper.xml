@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IStIoDtlDao">
+	<resultMap id="BaseResultMap" type="org.ssm.dufy.entity.cerpbusi.CerpStIoDtl">
+		<result column="iodtlid" property="iodtlid" jdbcType="DECIMAL" />
+		<result column="inoutid" property="inoutid" jdbcType="DECIMAL" />
+		<result column="batchid" property="batchid" jdbcType="DECIMAL" />
+		<result column="lotid" property="lotid" jdbcType="DECIMAL" />
+		<result column="posid" property="posid" jdbcType="DECIMAL" />
+		<result column="goodsdtlid" property="goodsdtlid" jdbcType="DECIMAL" />
+		<result column="goodsstatusid" property="goodsstatusid" jdbcType="DECIMAL" />
+		<result column="dtlgoodsqty" property="dtlgoodsqty" jdbcType="DECIMAL" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		iodtlid,inoutid,batchid,lotid,posid,goodsdtlid,goodsstatusid,dtlgoodsqty
+	</sql>
+
+	<insert id="insertStIoDtl" parameterType="java.lang.Long">
+	    insert into bms_st_io_dtl (iodtlid,inoutid,batchid,lotid,posid,goodsdtlid,goodsstatusid,dtlgoodsqty)
+	    values (bms_st_io_dtl_seq.nextval, #{inoutid,jdbcType=DECIMAL}, 
+	      #{batchid,jdbcType=DECIMAL}, #{lotid,jdbcType=DECIMAL},
+	      #{posid,jdbcType=DECIMAL},#{goodsdtlid,jdbcType=DECIMAL},
+	      #{goodsstatusid,jdbcType=DECIMAL},#{dtlgoodsqty,jdbcType=DECIMAL}
+	      )
+	</insert>
+</mapper>

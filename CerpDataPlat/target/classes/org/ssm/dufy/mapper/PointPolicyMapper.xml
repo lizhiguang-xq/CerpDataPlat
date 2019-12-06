@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IPointPolicyDao" >
+  <resultMap id="BaseResultMap" type="org.ssm.dufy.entity.cerppojo.PointPolicy" >
+    <result column="repintegraldefid" property="repintegraldefid" jdbcType="VARCHAR" />
+    <result column="goodsid" property="goodsid" jdbcType="VARCHAR" />
+    <result column="integral" property="integral" jdbcType="VARCHAR" />
+    <result column="entrycompanyid" property="entrycompanyid" jdbcType="VARCHAR" />
+    <result column="begindate" property="begindate" jdbcType="VARCHAR" />
+    <result column="enddate" property="enddate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    repintegraldefid, goodsid, integral, entrycompanyid, begindate, enddate
+  </sql>
+
+  <select id="getPointPolicy_Lnjfsc" resultType="org.ssm.dufy.entity.cerppojo.PointPolicy" >
+    SELECT
+    	repintegraldefid, goodsid, integral, entrycompanyid, begindate, enddate
+	  FROM (select ROWNUM rowno,
+	  			   t.repintegraldefid,
+			       t.presentid goodsid,
+			       round(t.repintegral,2) integral,
+			       t.retailcenterid entrycompanyid,
+			       to_char(t.invalidate, 'YYYY-MM-DD HH24:MI:SS') begindate,
+			       to_char(t.invalidenddate, 'YYYY-MM-DD HH24:MI:SS') enddate
+			  from resa_present_repintegral_def t, pub_entry a
+			 where t.retailcenterid = a.entrycompanyid
+			   and a.entryid in (224, 283, 285, 287, 289, 291, 293, 295, 363, 384)
+			   <if test="entrycompanyid != null and entrycompanyid != '' " >
+			   and t.retailcenterid = #{entrycompanyid}
+			   </if>
+			   <if test="goodsid != null and goodsid != '' " >
+			   and t.presentid = #{goodsid}
+			   </if>
+			   <if test="sys_modifydate != null and sys_modifydate != '' " >
+			   and t.sys_modifydate > to_date(#{sys_modifydate},'YYYY-MM-DD HH24:MI:SS')
+			   </if>
+	           and ROWNUM &lt;= 100*#{ym}) table_alias
+	 WHERE table_alias.rowno > 100*(#{ym}-1)
+  </select>
+
+</mapper>

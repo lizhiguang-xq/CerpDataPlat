@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IInsiderDao" >
+  <resultMap id="BaseResultMap" type="org.ssm.dufy.entity.cerppojo.Insider" >
+    <result column="insiderid" property="insiderid" jdbcType="VARCHAR" />
+    <result column="insidername" property="insidername" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="VARCHAR" />
+    <result column="birthdate" property="birthdate" jdbcType="VARCHAR" />
+    <result column="integral" property="integral" jdbcType="VARCHAR" />
+    <result column="entrycompanyid" property="entrycompanyid" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    insiderid, insidername, sex, birthdate, integral, entrycompanyid
+  </sql>
+
+  <select id="getInsider_Lnjfsc" resultType="org.ssm.dufy.entity.cerppojo.Insider" >
+    SELECT
+    	insiderid,insidername,sex,birthdate,integral,entrycompanyid,mobile
+	  FROM (select ROWNUM rowno,
+	  			   a.insiderid,
+			       a.insidername,
+			       a.sex,
+			       to_char(a.birthdate, 'YYYY-MM-DD') birthdate,
+			       a.integral,
+			       a.placepointid,
+			       c.entrycompanyid,
+			       a.mobile
+			  from gpcs_insider a, gpcs_inscardtype_retailcenter b, pub_entry c
+			 where a.inscardtypeid = b.inscardtypeid
+			   and b.retailcenterid = c.entrycompanyid
+			   and c.entryid in (224, 283, 285, 287, 289, 291, 293, 295, 363, 384)
+			   <if test="mobile != null and mobile != '' " >
+			   and a.mobile = #{mobile}
+			   </if>
+			   <if test="insiderid != null and insiderid != '' " >
+			   and a.insiderid = #{insiderid}
+			   </if>
+	           and ROWNUM &lt;= 100*#{ym}) table_alias
+	 WHERE table_alias.rowno > 100*(#{ym}-1)
+  </select>
+  
+  <update id="updateIntegralById" parameterType="java.lang.Long">
+    update gpcs_insider
+    <set>
+      integral = #{integral}
+    </set>
+    where insiderid = #{insiderid}
+  </update>
+
+</mapper>

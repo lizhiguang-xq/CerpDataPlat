@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="GBK" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="
+	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://www.springframework.org/schema/cache
+	http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<import resource="classpath:spring-mybatis.xml" />
+	<!-- 配置 WebService CXF -->
+	<import resource="classpath*:META-INF/cxf/cxf.xml" />
+	<import
+		resource="classpath*:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath*:META-INF/cxf/cxf-servlet.xml" />
+
+	<context:component-scan
+		base-package="org.ssm.cxf" />
+	<jaxws:endpoint
+		implementor="org.ssm.cxf.CerpDataInteractiveServiceImpl"
+		address="/CerpDataInteractiveService">
+		<jaxws:inInterceptors>
+			<!-- 配置接收报文日志拦截�? -->
+			<bean name="logInInter"
+				class="org.apache.cxf.interceptor.LoggingInInterceptor" />
+			<!-- 配置权限验证拦截�? -->
+			<bean name="authInterceptor"
+				class="org.ssm.cxf.interceptor.AuthInterceptor" />
+		</jaxws:inInterceptors>
+		<jaxws:outInterceptors>
+			<!-- 配置返回报文日志拦截�? -->
+			<bean name="logOutInter"
+				class="org.apache.cxf.interceptor.LoggingOutInterceptor" />
+		</jaxws:outInterceptors>
+	</jaxws:endpoint>
+
+	<!-- 配置 切换数据源切�? -->
+	<aop:config>
+		<aop:aspect id="cerpdb" ref="cerpDBHandler">
+			<aop:pointcut id="allGetMethod"
+				expression="execution(* org.ssm.cxf.CerpDataInteractiveServiceImpl.tslCerpDataInteractive(..))" />
+			<aop:around pointcut-ref="allGetMethod" method="setCerpDB" />
+		</aop:aspect>
+		<aop:aspect id="cerpzsdb" ref="cerpZsDBHandler">
+			<aop:pointcut id="allUpdateMethod"
+				expression="execution(* org.ssm.cxf.CerpDataInteractiveServiceImpl.tslCerpDataUpdate(..))" />
+			<aop:around pointcut-ref="allUpdateMethod" method="setCerpZsDB" />
+		</aop:aspect>
+	</aop:config>
+	
+	<!-- 配置 ehcache 缓存 -->
+	<cache:annotation-driven cache-manager="cacheManager"/>
+	<bean id="cacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
+        <property name="configLocation" value="classpath:ehcache.xml"/>  
+    </bean>  
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">  
+        <property name="cacheManager" ref="cacheManagerFactory"/>  
+    </bean>
+
+	<bean id="cerpDBHandler"
+		class="org.ssm.dufy.aspectj.CerpDBInterceptor" />
+		
+	<bean id="cerpZsDBHandler"
+		class="org.ssm.dufy.aspectj.CerpZsDBInterceptor" />
+
+	<!-- 配置jdbc文件 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:jdbc.properties" />
+	</bean>
+
+	<!-- 扫描的包路径，这里不扫描被@Controller注解的类 --><!--使用<context:component-scan/> 可以不在配置<context:annotation-config/> -->
+	<context:component-scan
+		base-package="org.ssm.dufy">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<context:annotation-config></context:annotation-config>
+
+	<!-- 配置 quartz定时任务 -->
+	<bean name="quartzScheduler"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="applicationContextSchedulerContextKey"
+			value="applicationContextKey" />
+		<property name="configLocation"
+			value="classpath:quartz.properties" />
+	</bean>
+
+</beans>

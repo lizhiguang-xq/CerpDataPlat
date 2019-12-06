@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IPrimiumDocDao">
+	<resultMap id="BaseResultMap"
+		type="org.ssm.dufy.entity.cerpbusi.PrimiumDoc">
+		<result column="primiumdocid" property="primiumdocid"
+			jdbcType="DECIMAL" />
+		<result column="insiderid" property="insiderid"
+			jdbcType="DECIMAL" />
+		<result column="entrycompanyid" property="entrycompanyid"
+			jdbcType="DECIMAL" />
+		<result column="jfscid" property="jfscid" jdbcType="VARCHAR" />
+		<result column="totalintegral" property="totalintegral"
+			jdbcType="DECIMAL" />
+		<result column="olddispatchprice" property="olddispatchprice"
+			jdbcType="DECIMAL" />
+		<result column="credate" property="credate" jdbcType="DATE" />
+		<result column="inputmanid" property="inputmanid"
+			jdbcType="DECIMAL" />
+		<result column="entryid" property="entryid" jdbcType="DECIMAL" />
+
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		primiumdocid, insiderid, entrycompanyid,
+		jfscid,totalintegral,olddispatchprice,credate,inputmanid,entryid
+	</sql>
+
+	<insert id="insertPrimiumDoc" parameterType="java.lang.Long">
+	    insert into ZX_JFSC_INSIDER_PRIMIUM_DOC (primiumdocid, insiderid, entrycompanyid, jfscid, totalintegral, olddispatchprice, credate, inputmanid,entryid)
+	    values (#{primiumdocid,jdbcType=DECIMAL}, #{insiderid,jdbcType=DECIMAL}, 
+	      #{entrycompanyid,jdbcType=DECIMAL}, #{jfscid,jdbcType=VARCHAR}, 
+	      #{totalintegral,jdbcType=DECIMAL},#{olddispatchprice,jdbcType=DECIMAL}, 
+	      sysdate,#{inputmanid,jdbcType=DECIMAL},#{entryid,jdbcType=DECIMAL}
+	      )
+	</insert>
+</mapper>

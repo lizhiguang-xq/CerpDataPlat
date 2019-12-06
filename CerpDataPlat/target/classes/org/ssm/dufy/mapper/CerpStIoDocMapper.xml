@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IStIoDocDao">
+	<resultMap id="BaseResultMap"
+		type="org.ssm.dufy.entity.cerpbusi.CerpStIoDoc">
+		<result column="inoutid" property="inoutid" jdbcType="DECIMAL" />
+		<result column="credate" property="credate" jdbcType="DATE" />
+		<result column="comefrom" property="comefrom" jdbcType="DECIMAL" />
+		<result column="sourcetable" property="sourcetable" jdbcType="DECIMAL" />
+		<result column="sourceid" property="sourceid" jdbcType="DECIMAL" />
+		<result column="companyid" property="companyid" jdbcType="DECIMAL" />
+		<result column="keepdate" property="keepdate" jdbcType="DATE" />
+		<result column="keepmanid" property="keepmanid" jdbcType="DECIMAL" />
+		<result column="goodsid" property="goodsid" jdbcType="DECIMAL" />
+		<result column="storageid" property="storageid" jdbcType="DECIMAL" />
+		<result column="inoutflag" property="inoutflag" jdbcType="DECIMAL" />
+		<result column="outqty" property="outqty" jdbcType="DECIMAL" />
+		<result column="oldoutqty" property="oldoutqty" jdbcType="DECIMAL" />
+		<result column="goodsunit" property="goodsunit" jdbcType="VARCHAR" />
+		<result column="usestatus" property="usestatus" jdbcType="DECIMAL" />
+		<result column="entryid" property="entryid" jdbcType="DECIMAL" />
+		<result column="preparestatus" property="preparestatus" jdbcType="DECIMAL" />
+		<result column="sys_modifydate" property="sys_modifydate" jdbcType="DATE" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		inoutid,credate,comefrom,sourcetable,sourceid,companyid,keepdate,
+		keepmanid,goodsid,storageid,inoutflag,outqty,oldoutqty,
+		goodsunit,usestatus,entryid,preparestatus,sys_modifydate
+	</sql>
+
+	<insert id="insertStIoDoc" parameterType="java.lang.Long">
+	    insert into bms_st_io_doc (
+		    inoutid,credate,comefrom,
+		    sourcetable,sourceid,companyid,
+		    keepdate,keepmanid,goodsid,
+		    storageid,inoutflag,outqty,
+		    oldqty,goodsunit,usestatus,
+		    entryid,preparestatus,sys_modifydate)
+	    values (
+	    	#{inoutid,jdbcType=DECIMAL}, sysdate, #{comefrom,jdbcType=DECIMAL}, 
+	      	#{sourcetable,jdbcType=DECIMAL}, #{sourceid,jdbcType=DECIMAL},#{companyid,jdbcType=DECIMAL}, 
+	      	sysdate,#{keepmanid,jdbcType=DECIMAL},#{goodsid,jdbcType=DECIMAL},
+	      	#{storageid,jdbcType=DECIMAL}, #{inoutflag,jdbcType=DECIMAL},#{outqty,jdbcType=DECIMAL},
+	      	#{oldoutqty,jdbcType=DECIMAL}, #{goodsunit,jdbcType=VARCHAR},#{usestatus,jdbcType=DECIMAL}, 
+	      	#{entryid,jdbcType=DECIMAL},#{preparestatus,jdbcType=DECIMAL},sysdate
+	      )
+	</insert>
+</mapper>

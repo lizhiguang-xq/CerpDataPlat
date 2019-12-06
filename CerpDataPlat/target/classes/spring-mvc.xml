@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="GBK"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+	default-lazy-init="true">
+     
+    <!-- AOP鍔ㄦ?佷唬鐞?  true 琛ㄧず浣跨敤Cglib鍔ㄦ?佷唬鐞嗭紝鏄惁闇?瑕佸紩鍏glib鐨刯ar鍖?-->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <context:annotation-config></context:annotation-config>
+    <!-- 鎵弿controller锛坈ontroller灞傛敞鍏ワ級 -->
+    <context:component-scan base-package="org.ssm.dufy.web" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+   
+    <mvc:annotation-driven />
+
+      <!-- 鍐呭鍗忓晢绠＄悊鍣?  -->
+    <!--1銆侀鍏堟鏌ヨ矾寰勬墿灞曞悕锛堝my.pdf锛夛紱2銆佸叾娆℃鏌arameter锛堝my?format=pdf锛夛紱3銆佹鏌ccept Header-->
+    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <!-- 鎵╁睍鍚嶈嚦mimeType鐨勬槧灏?,鍗? /user.json => application/json -->
+        <property name="favorPathExtension" value="true"/>
+        <!-- 鐢ㄤ簬寮?鍚? /userinfo/123?format=json 鐨勬敮鎸? -->
+        <property name="favorParameter" value="true"/>
+        <property name="parameterName" value="format"/>
+        <!-- 鏄惁蹇界暐Accept Header -->
+        <property name="ignoreAcceptHeader" value="false"/>
+
+        <property name="mediaTypes"> <!--鎵╁睍鍚嶅埌MIME鐨勬槧灏勶紱favorPathExtension, favorParameter鏄痶rue鏃惰捣浣滅敤  -->
+            <value>
+                json=application/json
+                xml=application/xml
+                html=text/html
+            </value>
+        </property>
+        <!-- 榛樿鐨刢ontent type -->
+        <property name="defaultContentType" value="text/html"/>
+    </bean>
+
+
+    <!-- 褰撳湪web.xml 涓?   DispatcherServlet浣跨敤 <url-pattern>/</url-pattern> 鏄犲皠鏃讹紝鑳芥槧灏勯潤鎬佽祫婧? -->
+    <mvc:default-servlet-handler />  
+	<!-- 闈欐?佽祫婧愭槧灏? -->
+    <mvc:resources mapping="/static/**" location="/WEB-INF/static/"/>
+   
+
+   <!-- 瀵规ā鍨嬭鍥炬坊鍔犲墠鍚庣紑 
+     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+      p:prefix="/WEB-INF/jsp/" p:suffix=".jsp"/>
+      -->
+      <!-- 榛樿鐨勮鍥捐В鏋愬櫒 鍦ㄤ笂杈圭殑瑙ｆ瀽閿欒鏃朵娇鐢? (榛樿浣跨敤html)- -->
+	<bean id="defaultViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:order="2">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="contentType" value="text/html" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+</beans>

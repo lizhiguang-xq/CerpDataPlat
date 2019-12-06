@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IPlacePointDao" >
+  <resultMap id="BaseResultMap" type="org.ssm.dufy.entity.cerppojo.PlacePoint" >
+    <result column="placepointid" property="placepointid" jdbcType="VARCHAR" />
+    <result column="placepointname" property="placepointname" jdbcType="VARCHAR" />
+    <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    placepointid, placepointname, tel, address
+  </sql>
+  
+  <select id="getPlacePointByParam" resultType="org.ssm.dufy.entity.cerppojo.PlacePoint" >
+    SELECT 
+    <include refid="Base_Column_List" />
+	  FROM (
+	  	select rownum rowno, a.placepointid, a.placepointname, a.tel, a.address
+		  from gpcs_placepoint a
+		 where 1=1
+		   <if test="placepointid != null and placepointid != '' " >
+		   and a.placepointid = ${placepointid}
+		   </if>
+		   <if test="entryid != null and entryid != '' " >
+		   and a.entryid = ${entryid}
+		   </if>
+		   and ROWNUM &lt;= 100*${ym}) table_alias
+	 WHERE table_alias.rowno > 100*(${ym}-1)
+  </select>
+</mapper>

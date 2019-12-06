@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IPrimiumDtlDao">
+	<resultMap id="BaseResultMap"
+		type="org.ssm.dufy.entity.cerpbusi.PrimiumDtl">
+		<result column="primiumdtlid" property="primiumdtlid"
+			jdbcType="DECIMAL" />
+		<result column="primiumdocid" property="primiumdocid"
+			jdbcType="DECIMAL" />
+		<result column="goodsid" property="goodsid"
+			jdbcType="DECIMAL" />
+		<result column="qty" property="qty"
+			jdbcType="DECIMAL" />
+		<result column="integral" property="integral"
+			jdbcType="DECIMAL" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		primiumdtlid, goodsid, qty, integral
+	</sql>
+
+	<insert id="insertPrimiumDtl" parameterType="java.lang.Long">
+	    insert into ZX_JFSC_INSIDER_PRIMIUM_DTL (primiumdtlid, primiumdocid, goodsid, qty, integral)
+	    values (#{primiumdtlid,jdbcType=DECIMAL}, #{primiumdocid,jdbcType=DECIMAL}, #{goodsid,jdbcType=DECIMAL}, 
+	      #{qty,jdbcType=DECIMAL}, #{integral,jdbcType=DECIMAL}
+	      )
+	</insert>
+</mapper>

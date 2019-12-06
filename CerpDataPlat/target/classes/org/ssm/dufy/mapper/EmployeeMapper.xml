@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IEmployeeDao" >
+  <resultMap id="BaseResultMap" type="org.ssm.dufy.entity.Employee" >
+    <id column="employeeid" property="employeeId" jdbcType="INTEGER" />
+    <result column="employeename" property="employeeName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    employeeid, employeename
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from pub_employee
+    where employeeid = #{employeeid,jdbcType=INTEGER}
+  </select>
+  
+  
+  <select id="findUser" resultType="org.ssm.dufy.entity.User" parameterType="org.ssm.dufy.entity.User" >
+    select 
+    <include refid="Base_Column_List" />
+    from pub_employee
+    where employeename = #{employeename,jdbcType=VARCHAR}
+  </select>
+</mapper>
