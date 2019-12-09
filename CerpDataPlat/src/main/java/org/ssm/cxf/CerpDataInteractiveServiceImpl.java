@@ -12,6 +12,7 @@ import org.ssm.dufy.service.IGoodsService;
 import org.ssm.dufy.service.IInsiderService;
 import org.ssm.dufy.service.IPointPolicyService;
 import org.ssm.dufy.service.IPrimiumOrderService;
+import org.ssm.dufy.service.ISaInvnoService;
 
 /**
  * endpointInterface  接口地址的全路径
@@ -38,6 +39,9 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 	
 //	@Autowired
 //	private IPlacePointService placePointService;
+
+	@Autowired
+	private ISaInvnoService saInvnoService;
 	
 	@Autowired
     private EhCacheCacheManager cacheManager;
@@ -72,6 +76,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = insiderService.getInsider_Lnjfsc(entryid, xmlData); //获取 【辽宁积分商城】 【会员信息】
 		} else if(CommonConstant.OPER_GETPOINTPOLICY_LNJFSC.equals(oper.toLowerCase())) {
 			retxml = pointPolicyService.getPointPolicy_Lnjfsc(entryid, xmlData); //获取 【辽宁积分商城】 【积分政策】
+		} else if(CommonConstant.OPER_GETSAINVO_INFO_DGYS.equals(oper.toLowerCase())){
+			retxml = saInvnoService.getSaInvno_Dgys(entryid, xmlData); //获取 【东莞药事平台】 【销售发票】
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

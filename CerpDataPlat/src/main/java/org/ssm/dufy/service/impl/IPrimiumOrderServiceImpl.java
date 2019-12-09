@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +56,7 @@ public class IPrimiumOrderServiceImpl implements IPrimiumOrderService {
 	@Autowired
 	public IStIoDtlDao stIodtldao;
 	
+	private static Logger log = LoggerFactory.getLogger("loger");
 	@Override
 	@Transactional
 	public String createPrimiumOrder(String entryid, String xmldata) {

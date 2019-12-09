@@ -25,4 +25,6 @@ public class CommonConstant {
 	
 	public final static String OPER_CREATE_PRIMIUM_ORDER_LNJFSC = "createprimiumorder_lnjfsc";
 	
+	public final static String OPER_GETSAINVO_INFO_DGYS = "getsainvoinfo_dgys";
+	
 }
