@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.ISaInvnoDao" >
+  <resultMap id="BaseResultMap" type="org.ssm.dufy.entity.cerppojo.SaInvno" >
+    <result column="iodtlid" property="iodtlid" jdbcType="VARCHAR" />
+    <result column="invcode" property="invcode" jdbcType="VARCHAR" />
+    <result column="invno" property="invno" jdbcType="VARCHAR" />
+    <result column="zx_jsdate" property="zx_jsdate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    iodtlid, invcode, invno, zx_jsdate
+  </sql>
+
+  <select id="getSaInvnoDetailBySalesid" resultType="org.ssm.dufy.entity.cerppojo.SaInvno" >
+    select a.salesid,
+	       b.salesdtlid,
+	       f.iodtlid,
+	       c.invcode,
+	       c.invno,
+	       to_char(nvl(c.zx_jsdate, c.credate),'YYYY-MM-DD HH24:MI:SS') zx_jsdate
+	  from bms_sa_doc a,
+	       bms_sa_dtl b,
+	       
+	       bms_sa_settle_doc c,
+	       bms_sa_settle_dtl d,
+	       
+	       bms_st_io_doc e,
+	       bms_st_io_dtl f,
+	       
+	       bms_sa_doctoset h
+	
+	 where a.salesid = b.salesid
+	   and b.salesdtlid = h.salesdtlid(+)
+	   and h.sasettledtlid = d.sasettledtlid(+)
+	   and d.sasettleid = c.sasettleid(+)
+	   and b.salesdtlid = e.sourceid
+	   and e.inoutid = f.inoutid
+	   and e.comefrom = 3
+	   <if test="entryid != null and entryid != '' " >
+	   and a.entryid = #{entryid}
+	   </if>
+	   and a.salesid = #{salesid}
+  </select>
+
+</mapper>
