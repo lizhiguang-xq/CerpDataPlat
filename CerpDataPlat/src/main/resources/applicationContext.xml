@@ -29,9 +29,7 @@
 
 	<context:component-scan
 		base-package="org.ssm.cxf" />
-	<jaxws:endpoint
-		implementor="org.ssm.cxf.CerpDataInteractiveServiceImpl"
-		address="/CerpDataInteractiveService">
+	<jaxws:endpoint implementor="org.ssm.cxf.CerpDataInteractiveServiceImpl" address="/CerpDataInteractiveService">
 		<jaxws:inInterceptors>
 			<!-- 配置接收报文日志拦截器 -->
 			<bean name="logInInter"
