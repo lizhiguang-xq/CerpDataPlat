@@ -5,11 +5,9 @@ import java.util.Date;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.ssm.dufy.entity.Employee;
 import org.ssm.dufy.service.IEmployeeService;
-import org.ssm.dufy.service.IUserService;
 
 
 public class HelloWorldJob implements Job{
