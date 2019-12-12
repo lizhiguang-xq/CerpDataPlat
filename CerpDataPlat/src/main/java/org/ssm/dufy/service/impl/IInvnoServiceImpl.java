@@ -12,15 +12,24 @@ import org.ssm.cxf.struct.sainvno.INVNODETIL;
 import org.ssm.cxf.struct.sainvno.SAINVNOINFO;
 import org.ssm.cxf.struct.sainvno.SAINVNOINFOREQ;
 import org.ssm.cxf.struct.sainvno.SAINVNOINFORESP;
+import org.ssm.cxf.struct.suinvno.SUINVNODETIL;
+import org.ssm.cxf.struct.suinvno.SUINVNOINFO;
+import org.ssm.cxf.struct.suinvno.SUINVNOINFOREQ;
+import org.ssm.cxf.struct.suinvno.SUINVNOINFORESP;
 import org.ssm.dufy.dao.ISaInvnoDao;
+import org.ssm.dufy.dao.ISuInvnoDao;
 import org.ssm.dufy.entity.cerppojo.SaInvno;
-import org.ssm.dufy.service.ISaInvnoService;
+import org.ssm.dufy.entity.cerppojo.SuInvno;
+import org.ssm.dufy.service.IInvnoService;
 
 @Service("invnoService")
-public class ISaInvnoServiceImpl implements ISaInvnoService {
+public class IInvnoServiceImpl implements IInvnoService {
 
 	@Autowired
 	public ISaInvnoDao sainvnodao;
+	
+	@Autowired
+	public ISuInvnoDao suinvnodao;
 
 	@Override
 	public String getSaInvno_Dgys(String entryid, String xmldata) {
@@ -67,6 +76,61 @@ public class ISaInvnoServiceImpl implements ISaInvnoService {
 		
 		try {
 			retxml = JAXBUtil.marshToXmlBinding(SAINVNOINFORESP.class, sainvnoinforesp, "UTF-8");
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return retxml;
+	}
+	
+	@Override
+	public String getSuInvno_Dgys(String entryid, String xmldata) {
+
+		SUINVNOINFOREQ suinvnoinfo_req = JAXBUtil.unmarshToObjBinding(SUINVNOINFOREQ.class, xmldata, "UTF-8");
+		String salesid = suinvnoinfo_req.getSalesid();
+		entryid = suinvnoinfo_req.getEntryid();
+		
+		String retxml = "";		
+		List<SuInvno> suinvnodetail = (List<SuInvno>) suinvnodao.getSuInvnoDetailBySalesid(entryid, salesid);
+		
+		SUINVNOINFORESP suinvnoinforesp = new SUINVNOINFORESP();
+		
+		if(suinvnodetail.size() == 0) {
+			suinvnoinforesp.setReturncode("-1");
+			suinvnoinforesp.setReturnmsg("没有数据");
+		} else {
+			suinvnoinforesp.setReturncode("0");
+			suinvnoinforesp.setReturnmsg("");
+		}
+		
+		SUINVNOINFO suinvnoinfo = new SUINVNOINFO();
+		suinvnoinforesp.setJhinvnoinfo(suinvnoinfo);
+		List<SUINVNODETIL> suinvnoinfolist = suinvnoinforesp.getJhinvnoinfo().getJhinvnodetil();
+		
+		for(SuInvno i : suinvnodetail) {
+			
+			if(StringUtil.isEmpty(i.getInvcode()) || StringUtil.isEmpty(i.getInvno())) {
+				suinvnoinforesp.setReturncode("-1");
+				suinvnoinforesp.setReturnmsg("未开票:"+i.getIodtlid());
+				suinvnoinfolist.clear();
+				break;
+			}
+			
+			SUINVNODETIL invnodetil = new SUINVNODETIL();
+			invnodetil.setInvcode(i.getInvcode());
+			invnodetil.setInvno(i.getInvno());
+			invnodetil.setIodtlid(i.getIodtlid());
+			invnodetil.setFphszje(i.getTotal_in());
+			invnodetil.setFpmxbm(i.getSusetdtlid());
+			invnodetil.setGfmc(i.getEntryname());
+			invnodetil.setHsje(i.getTotal_line());
+			invnodetil.setKprq(i.getInvdate());
+			invnodetil.setXfmc(i.getSupplyname());
+			
+			suinvnoinfolist.add(invnodetil);
+		}
+		
+		try {
+			retxml = JAXBUtil.marshToXmlBinding(SUINVNOINFORESP.class, suinvnoinforesp, "UTF-8");
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
