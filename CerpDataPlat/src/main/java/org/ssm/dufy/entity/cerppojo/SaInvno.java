@@ -13,6 +13,16 @@ public class SaInvno implements Serializable {
     private String invno;
     
     private String zx_jsdate;
+    
+    private String total;
+    
+	public String getTotal() {
+		return total;
+	}
+
+	public void setTotal(String total) {
+		this.total = total;
+	}
 
 	public String getIodtlid() {
 		return iodtlid;

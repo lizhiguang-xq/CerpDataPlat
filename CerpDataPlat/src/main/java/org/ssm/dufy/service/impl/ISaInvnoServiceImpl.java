@@ -60,6 +60,7 @@ public class ISaInvnoServiceImpl implements ISaInvnoService {
 			invnodetil.setInvno(i.getInvno());
 			invnodetil.setIodtlid(i.getIodtlid());
 			invnodetil.setZxJsdate(i.getZx_jsdate());
+			invnodetil.setTotal(i.getTotal());
 			
 			sainvnoinfolist.add(invnodetil);
 		}

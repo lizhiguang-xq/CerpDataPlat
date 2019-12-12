@@ -42,7 +42,8 @@ import javax.xml.bind.annotation.XmlType;
     "iodtlid",
     "invcode",
     "invno",
-    "zxJsdate"
+    "zxJsdate",
+    "total"
 })
 @XmlRootElement(name = "invnodetil")
 public class INVNODETIL {
@@ -55,8 +56,20 @@ public class INVNODETIL {
     protected String invno;
     @XmlElement(name = "zx_jsdate", required = true)
     protected String zxJsdate;
+    @XmlElement(required = true)
+    protected String total;
+    
+    
 
-    /**
+    public String getTotal() {
+		return total;
+	}
+
+	public void setTotal(String total) {
+		this.total = total;
+	}
+
+	/**
      * 获取iodtlid属性的值。
      * 
      * @return

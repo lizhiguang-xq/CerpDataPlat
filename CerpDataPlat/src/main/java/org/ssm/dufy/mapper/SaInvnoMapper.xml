@@ -6,6 +6,7 @@
     <result column="invcode" property="invcode" jdbcType="VARCHAR" />
     <result column="invno" property="invno" jdbcType="VARCHAR" />
     <result column="zx_jsdate" property="zx_jsdate" jdbcType="VARCHAR" />
+    <result column="total" property="total" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     iodtlid, invcode, invno, zx_jsdate
@@ -17,7 +18,8 @@
 	       f.iodtlid,
 	       c.invcode,
 	       c.invno,
-	       to_char(nvl(c.zx_jsdate, c.credate),'YYYY-MM-DD HH24:MI:SS') zx_jsdate
+	       to_char(nvl(c.zx_jsdate, c.credate),'YYYY-MM-DD HH24:MI:SS') zx_jsdate,
+	       c.total
 	  from bms_sa_doc a,
 	       bms_sa_dtl b,
 	       
