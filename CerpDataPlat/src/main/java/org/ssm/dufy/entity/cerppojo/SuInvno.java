@@ -25,6 +25,8 @@ public class SuInvno implements Serializable {
 
 	private String shtxdh;
 
+	private String lplx;
+
 	public String getIodtlid() {
 		return iodtlid;
 	}
@@ -103,5 +105,13 @@ public class SuInvno implements Serializable {
 
 	public void setShtxdh(String shtxdh) {
 		this.shtxdh = shtxdh;
+	}
+
+	public String getLplx() {
+		return lplx;
+	}
+
+	public void setLplx(String lplx) {
+		this.lplx = lplx;
 	}
 }

@@ -126,7 +126,9 @@ public class IInvnoServiceImpl implements IInvnoService {
 			invnodetil.setKprq(i.getInvdate());
 			invnodetil.setXfmc(i.getSupplyname());
 			invnodetil.setShtxdh(i.getShtxdh());
-			
+			invnodetil.setLplx(i.getLplx());
+
+
 			suinvnoinfolist.add(invnodetil);
 		}
 		
