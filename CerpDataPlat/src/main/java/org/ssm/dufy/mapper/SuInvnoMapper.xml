@@ -20,7 +20,7 @@
     select d.iodtlid,
 	       f.invno,
 	       f.invcode,
-	       f.invdate,
+	       to_char(f.invdate,'YYYY-MM-DD') invdate,
 	       e.supplyname,
 	       g.entryname,
 	       e.total_in,
