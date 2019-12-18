@@ -11,6 +11,8 @@
     <result column="total_in" property="total_in" jdbcType="VARCHAR" />
     <result column="susetdtlid" property="susetdtlid" jdbcType="VARCHAR" />
     <result column="total_line" property="total_line" jdbcType="VARCHAR" />
+	<result column="shtxdh" property="shtxdh" jdbcType="VARCHAR" />
+	<result column="lplx" property="lplx" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     iodtlid, invcode, invno, invdate, supplyname, entryname, total_in, susetdtlid, total_line
@@ -25,25 +27,32 @@
 	       g.entryname,
 	       e.total_in,
 	       f.susetdtlid,
-	       f.total_line
+	       f.total_line,
+	  	   h.zx_contractid shtxdh,
+	  	   nvl(i.factflag,2) lplx
 	  from bms_sa_doc     a,
 	       bms_sa_dtl     b,
 	       bms_st_io_doc  c,
 	       bms_st_io_dtl  d,
 	       bms_su_set_doc e,
 	       bms_su_set_dtl f,
-	       pub_entry      g
+	       pub_entry      g,
+	  	   bms_su_dtl     h,
+	  	   pub_company    i
 	 where a.salesid = b.salesid
 	   and b.salesdtlid = c.sourceid
 	   and c.comefrom = 3
 	   and c.inoutid = d.inoutid
 	   and d.batchid = f.zx_batchid(+)
 	   and f.susetdocid = e.susetdocid(+)
+	   and f.sudocdtlid = h.sudocdtlid(+)
+	   and e.supplyid=i.companyid(+)
 	   and a.entryid = g.entryid
 	   <if test="entryid != null and entryid != '' " >
 	   and a.entryid = #{entryid}
 	   </if>
 	   and a.salesid = #{salesid}
+
   </select>
 
 </mapper>

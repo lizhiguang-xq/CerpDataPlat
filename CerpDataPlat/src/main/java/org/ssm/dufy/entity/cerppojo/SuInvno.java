@@ -21,7 +21,11 @@ public class SuInvno implements Serializable {
     
     private String susetdtlid;
     
-    private String total_line;
+    private String total_line;;
+
+	private String shtxdh;
+
+	private String lplx;
 
 	public String getIodtlid() {
 		return iodtlid;
@@ -93,5 +97,21 @@ public class SuInvno implements Serializable {
 
 	public void setTotal_line(String total_line) {
 		this.total_line = total_line;
+	}
+
+	public String getShtxdh() {
+		return shtxdh;
+	}
+
+	public void setShtxdh(String shtxdh) {
+		this.shtxdh = shtxdh;
+	}
+
+	public String getLplx() {
+		return lplx;
+	}
+
+	public void setLplx(String lplx) {
+		this.lplx = lplx;
 	}
 }

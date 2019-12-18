@@ -114,6 +114,14 @@ public class IInvnoServiceImpl implements IInvnoService {
 				suinvnoinfolist.clear();
 				break;
 			}
+			if(i.getLplx().equals("1")) {
+				if(StringUtil.isEmpty(i.getShtxdh())){
+					suinvnoinforesp.setReturncode("-1");
+					suinvnoinforesp.setReturnmsg("发票随货同行单号信息不全");
+					suinvnoinfolist.clear();
+					break;
+				}
+			}
 			
 			SUINVNODETIL invnodetil = new SUINVNODETIL();
 			invnodetil.setInvcode(i.getInvcode());
@@ -125,7 +133,10 @@ public class IInvnoServiceImpl implements IInvnoService {
 			invnodetil.setHsje(i.getTotal_line());
 			invnodetil.setKprq(i.getInvdate());
 			invnodetil.setXfmc(i.getSupplyname());
-			
+			invnodetil.setShtxdh(i.getShtxdh());
+			invnodetil.setLplx(i.getLplx());
+
+
 			suinvnoinfolist.add(invnodetil);
 		}
 		
