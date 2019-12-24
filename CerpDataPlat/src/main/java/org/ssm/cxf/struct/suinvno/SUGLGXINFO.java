@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}jhinvnodetil" maxOccurs="unbounded"/>
+ *         &lt;element ref="{}jhglgxdetil" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,41 +38,41 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "jhinvnodetil"
+    "jhglgxdetil"
 })
-@XmlRootElement(name = "jhinvnoinfo")
-public class SUINVNOINFO {
+@XmlRootElement(name = "jhglgxinfo")
+public class SUGLGXINFO {
 
     @XmlElement(required = true)
-    protected List<SUINVNODETIL> jhinvnodetil;
+    protected List<SUGLGXDETIL> jhglgxdetil;
 
     /**
-     * Gets the value of the jhinvnodetil property.
+     * Gets the value of the jhglgxdetil property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the jhinvnodetil property.
+     * This is why there is not a <CODE>set</CODE> method for the jhglgxdetil property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getJhinvnodetil().add(newItem);
+     *    getJhglgxdetil().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link SUINVNODETIL }
+     * {@link SUGLGXDETIL }
      * 
      * 
      */
-    public List<SUINVNODETIL> getJhinvnodetil() {
-        if (jhinvnodetil == null) {
-            jhinvnodetil = new ArrayList<SUINVNODETIL>();
+    public List<SUGLGXDETIL> getJhglgxdetil() {
+        if (jhglgxdetil == null) {
+            jhglgxdetil = new ArrayList<SUGLGXDETIL>();
         }
-        return this.jhinvnodetil;
+        return this.jhglgxdetil;
     }
 
 }

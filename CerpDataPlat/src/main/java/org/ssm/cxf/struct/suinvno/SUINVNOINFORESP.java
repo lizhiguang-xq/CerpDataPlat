@@ -1,8 +1,8 @@
 //
-// 此文件是由 JavaTM Architecture for XML Binding (JAXB) 引用实现 v2.2.8-b130911.1802 生成的
-// 请访问 <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// 在重新编译源模式时, 对此文件的所有修改都将丢失。
-// 生成时间: 2019.12.12 时间 04:31:52 PM CST 
+// ���ļ����� JavaTM Architecture for XML Binding (JAXB) ����ʵ�� v2.2.8-b130911.1802 ���ɵ�
+// ����� <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// �����±���Դģʽʱ, �Դ��ļ��������޸Ķ�����ʧ��
+// ����ʱ��: 2019.12.23 ʱ�� 12:08:18 PM CST 
 //
 
 
@@ -19,9 +19,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
- * <p>anonymous complex type的 Java 类。
+ * <p>anonymous complex type�� Java �ࡣ
  * 
- * <p>以下模式片段指定包含在此类中的预期内容。
+ * <p>����ģʽƬ��ָ�������ڴ����е�Ԥ�����ݡ�
  * 
  * <pre>
  * &lt;complexType>
@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}returncode"/>
  *         &lt;element ref="{}returnmsg"/>
  *         &lt;element ref="{}jhinvnoinfo"/>
+ *         &lt;element ref="{}jhglgxinfo"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -43,7 +44,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(name = "", propOrder = {
     "returncode",
     "returnmsg",
-    "jhinvnoinfo"
+    "jhinvnoinfo",
+    "jhglgxinfo"
 })
 @XmlRootElement(name = "SUINVNOINFO_RESP")
 public class SUINVNOINFORESP {
@@ -56,9 +58,11 @@ public class SUINVNOINFORESP {
     protected String returnmsg;
     @XmlElement(required = true)
     protected SUINVNOINFO jhinvnoinfo;
+    @XmlElement(required = true)
+    protected SUGLGXINFO jhglgxinfo;
 
     /**
-     * 获取returncode属性的值。
+     * ��ȡreturncode���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -70,7 +74,7 @@ public class SUINVNOINFORESP {
     }
 
     /**
-     * 设置returncode属性的值。
+     * ����returncode���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -82,7 +86,7 @@ public class SUINVNOINFORESP {
     }
 
     /**
-     * 获取returnmsg属性的值。
+     * ��ȡreturnmsg���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -94,7 +98,7 @@ public class SUINVNOINFORESP {
     }
 
     /**
-     * 设置returnmsg属性的值。
+     * ����returnmsg���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -106,7 +110,7 @@ public class SUINVNOINFORESP {
     }
 
     /**
-     * 获取jhinvnoinfo属性的值。
+     * ��ȡjhinvnoinfo���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -118,7 +122,7 @@ public class SUINVNOINFORESP {
     }
 
     /**
-     * 设置jhinvnoinfo属性的值。
+     * ����jhinvnoinfo���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -127,6 +131,30 @@ public class SUINVNOINFORESP {
      */
     public void setJhinvnoinfo(SUINVNOINFO value) {
         this.jhinvnoinfo = value;
+    }
+
+    /**
+     * ��ȡjhglgxinfo���Ե�ֵ��
+     * 
+     * @return
+     *     possible object is
+     *     {@link SUGLGXINFO }
+     *     
+     */
+    public SUGLGXINFO getJhglgxinfo() {
+        return jhglgxinfo;
+    }
+
+    /**
+     * ����jhglgxinfo���Ե�ֵ��
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link SUGLGXINFO }
+     *     
+     */
+    public void setJhglgxinfo(SUGLGXINFO value) {
+        this.jhglgxinfo = value;
     }
 
 }
