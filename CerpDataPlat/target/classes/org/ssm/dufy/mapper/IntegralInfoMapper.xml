@@ -13,6 +13,8 @@
 			jdbcType="DECIMAL" />
 		<result column="debitintegal" property="debitintegal"
 			jdbcType="DECIMAL" />
+		<result column="lenderintegal" property="lenderintegal"
+			jdbcType="DECIMAL" />
 		<result column="credate" property="credate" jdbcType="DATE" />
 		<result column="placepointid" property="placepointid"
 			jdbcType="DECIMAL" />
@@ -20,13 +22,13 @@
 
 	<sql id="Base_Column_List">
 		infoid, insiderid, comefrom,
-		docid,debitintegal,credate,placepointid
+		docid,debitintegal,lenderintegal,credate,placepointid
 	</sql>
 
 	<insert id="insertIntegralInfo" parameterType="org.ssm.dufy.entity.cerpbusi.IntegralInfo">
-	    insert into GPCS_INSIDER_INTEGRALINFO (infoid, insiderid, comefrom, docid, debitintegal, credate)
+	    insert into GPCS_INSIDER_INTEGRALINFO (infoid, insiderid, comefrom, docid, lenderintegal, credate)
 	    values (gpcs_insider_integralinfo_seq.nextval, #{insiderid,jdbcType=DECIMAL}, 
-	      #{comefrom,jdbcType=DECIMAL}, #{docid,jdbcType=DECIMAL},#{debitintegal,jdbcType=DECIMAL}, 
+	      #{comefrom,jdbcType=DECIMAL}, #{docid,jdbcType=DECIMAL},#{lenderintegal,jdbcType=DECIMAL}, 
 	      sysdate)
 	</insert>
 </mapper>
