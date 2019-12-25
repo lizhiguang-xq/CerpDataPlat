@@ -22,37 +22,62 @@
     select d.iodtlid,
 	       f.invno,
 	       f.invcode,
-	       to_char(f.invdate,'YYYY-MM-DD') invdate,
-	       e.supplyname,
-	       g.entryname,
-	       e.total_in,
-	       f.susetdtlid,
-	       f.total_line,
-	  	   h.zx_contractid shtxdh,
-	  	   nvl(i.factflag,2) lplx
+	       f.susetdtlid
 	  from bms_sa_doc     a,
 	       bms_sa_dtl     b,
 	       bms_st_io_doc  c,
 	       bms_st_io_dtl  d,
-	       bms_su_set_doc e,
-	       bms_su_set_dtl f,
-	       pub_entry      g,
-	  	   bms_su_dtl     h,
-	  	   pub_company    i
+	       bms_su_set_dtl f
 	 where a.salesid = b.salesid
 	   and b.salesdtlid = c.sourceid
 	   and c.comefrom = 3
 	   and c.inoutid = d.inoutid
 	   and d.batchid = f.zx_batchid(+)
-	   and f.susetdocid = e.susetdocid(+)
-	   and f.sudocdtlid = h.sudocdtlid(+)
-	   and e.supplyid=i.companyid(+)
-	   and a.entryid = g.entryid
 	   <if test="entryid != null and entryid != '' " >
 	   and a.entryid = #{entryid}
 	   </if>
 	   and a.salesid = #{salesid}
 
   </select>
+
+	<select id="getSuInvoiceInfo" resultType="org.ssm.dufy.entity.cerppojo.SuInvno" >
+	  select   f.goodsid,
+         f.invno,
+         f.invcode,
+         to_char(f.invdate,'YYYY-MM-DD') invdate,
+         e.supplyname,
+         g.entryname,
+         e.total_in,
+         f.susetdtlid,
+         f.total_line,
+         f.unitprice,
+         f.goodsqty,
+         h.zx_contractid shtxdh,
+         nvl(i.factflag,2) lplx,
+         j.outersysgoodsid,
+         to_char(l.proddate,'YYYY-MM-DD') proddate,
+         to_char(l.invaliddate,'YYYY-MM-DD') invaliddate,
+         l.lotno
+	  from bms_su_set_doc e,
+         bms_su_set_dtl f,
+         pub_entry      g,
+         bms_su_dtl     h,
+         pub_company    i,
+         zx_outersys_goods_mapping j,
+         bms_su_dtl k,
+         bms_lot_def l
+	  where
+		 f.susetdocid = e.susetdocid(+)
+		 and e.supplyid=i.companyid(+)
+		 and e.entryid = g.entryid
+		 and f.sudocdtlid = h.sudocdtlid(+)
+		 and e.entryid=j.entryid
+		 and f.goodsid=j.goodsid(+)
+         and f.sudocdtlid=k.sudocdtlid(+)
+		 and k.lotid=l.lotid
+		 and f.invno=#{invno}
+		 and f.invcode=#{invcode}
+
+	</select>
 
 </mapper>

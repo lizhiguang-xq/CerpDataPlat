@@ -1,6 +1,8 @@
 package org.ssm.dufy.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -12,10 +14,7 @@ import org.ssm.cxf.struct.sainvno.INVNODETIL;
 import org.ssm.cxf.struct.sainvno.SAINVNOINFO;
 import org.ssm.cxf.struct.sainvno.SAINVNOINFOREQ;
 import org.ssm.cxf.struct.sainvno.SAINVNOINFORESP;
-import org.ssm.cxf.struct.suinvno.SUINVNODETIL;
-import org.ssm.cxf.struct.suinvno.SUINVNOINFO;
-import org.ssm.cxf.struct.suinvno.SUINVNOINFOREQ;
-import org.ssm.cxf.struct.suinvno.SUINVNOINFORESP;
+import org.ssm.cxf.struct.suinvno.*;
 import org.ssm.dufy.dao.ISaInvnoDao;
 import org.ssm.dufy.dao.ISuInvnoDao;
 import org.ssm.dufy.entity.cerppojo.SaInvno;
@@ -90,54 +89,82 @@ public class IInvnoServiceImpl implements IInvnoService {
 		entryid = suinvnoinfo_req.getEntryid();
 		
 		String retxml = "";		
-		List<SuInvno> suinvnodetail = (List<SuInvno>) suinvnodao.getSuInvnoDetailBySalesid(entryid, salesid);
+		List<SuInvno> suglgxdetail = (List<SuInvno>) suinvnodao.getSuInvnoDetailBySalesid(entryid, salesid);
 		
 		SUINVNOINFORESP suinvnoinforesp = new SUINVNOINFORESP();
 		
-		if(suinvnodetail.size() == 0) {
+		if(suglgxdetail.size() == 0) {
 			suinvnoinforesp.setReturncode("-1");
 			suinvnoinforesp.setReturnmsg("没有数据");
 		} else {
 			suinvnoinforesp.setReturncode("0");
 			suinvnoinforesp.setReturnmsg("");
 		}
-		
-		SUINVNOINFO suinvnoinfo = new SUINVNOINFO();
-		suinvnoinforesp.setJhinvnoinfo(suinvnoinfo);
-		List<SUINVNODETIL> suinvnoinfolist = suinvnoinforesp.getJhinvnoinfo().getJhinvnodetil();
-		
-		for(SuInvno i : suinvnodetail) {
-			
+
+		SUGLGXINFO suglgxinfo = new SUGLGXINFO();
+		suinvnoinforesp.setJhglgxinfo(suglgxinfo);
+		List<SUGLGXDETIL> suglgxinfolist = suinvnoinforesp.getJhglgxinfo().getJhglgxdetil();
+		Map<String,String> fpmap = new HashMap<String,String>();
+
+		for(SuInvno i : suglgxdetail) {
 			if(StringUtil.isEmpty(i.getInvcode()) || StringUtil.isEmpty(i.getInvno())) {
 				suinvnoinforesp.setReturncode("-1");
 				suinvnoinforesp.setReturnmsg("未开票:"+i.getIodtlid());
-				suinvnoinfolist.clear();
+				suglgxinfolist.clear();
 				break;
 			}
-			if(i.getLplx().equals("1")) {
-				if(StringUtil.isEmpty(i.getShtxdh())){
-					suinvnoinforesp.setReturncode("-1");
-					suinvnoinforesp.setReturnmsg("发票随货同行单号信息不全");
-					suinvnoinfolist.clear();
-					break;
+
+			SUGLGXDETIL glgxdetil = new SUGLGXDETIL();
+			glgxdetil.setIodtlid(i.getIodtlid());
+			glgxdetil.setInvcode(i.getInvcode());
+			glgxdetil.setInvno(i.getInvno());
+			glgxdetil.setFpmxbm(i.getSusetdtlid());
+
+			suglgxinfolist.add(glgxdetil);
+
+			fpmap.put(i.getInvcode()+i.getInvno(),i.getInvcode()+"_"+i.getInvno());
+		}
+
+		SUINVNOINFO suinvnoinfo = new SUINVNOINFO();
+		suinvnoinforesp.setJhinvnoinfo(suinvnoinfo);
+		List<SUINVNODETIL> suinvnoinfolist = suinvnoinforesp.getJhinvnoinfo().getJhinvnodetil();
+
+		for(String key : fpmap.keySet()){
+			String str = fpmap.get(key);
+			String[] inv = str.split("_");
+
+			List<SuInvno> suinvnodetail = (List<SuInvno>) suinvnodao.getSuInvoiceInfo(inv[0],inv[1]);
+
+			for(SuInvno i : suinvnodetail) {
+				if(i.getLplx().equals("1")) {
+					if(StringUtil.isEmpty(i.getShtxdh())){
+						suinvnoinforesp.setReturncode("-1");
+						suinvnoinforesp.setReturnmsg("发票随货同行单号信息不全");
+						suglgxinfolist.clear();
+						break;
+					}
 				}
+
+				SUINVNODETIL invnodetil = new SUINVNODETIL();
+				invnodetil.setInvcode(i.getInvcode());
+				invnodetil.setInvno(i.getInvno());
+				invnodetil.setFphszje(i.getTotal_in());
+				invnodetil.setFpmxbm(i.getSusetdtlid());
+				invnodetil.setGfmc(i.getEntryname());
+				invnodetil.setHsje(i.getTotal_line());
+				invnodetil.setKprq(i.getInvdate());
+				invnodetil.setXfmc(i.getSupplyname());
+				invnodetil.setShtxdh(i.getShtxdh());
+				invnodetil.setLplx(i.getLplx());
+				invnodetil.setLotno(i.getLotno());
+				invnodetil.setUnitprice(i.getUnitprice());
+				invnodetil.setGoodsid(i.getGoodsid());
+				invnodetil.setGoodsqty(i.getGoodsqty());
+				invnodetil.setOutersysgoodsid(i.getOutersysgoodsid());
+				invnodetil.setInvaliddate(i.getInvaliddate());
+				invnodetil.setProddate(i.getProddate());
+				suinvnoinfolist.add(invnodetil);
 			}
-			
-			SUINVNODETIL invnodetil = new SUINVNODETIL();
-			invnodetil.setInvcode(i.getInvcode());
-			invnodetil.setInvno(i.getInvno());
-			invnodetil.setIodtlid(i.getIodtlid());
-			invnodetil.setFphszje(i.getTotal_in());
-			invnodetil.setFpmxbm(i.getSusetdtlid());
-			invnodetil.setGfmc(i.getEntryname());
-			invnodetil.setHsje(i.getTotal_line());
-			invnodetil.setKprq(i.getInvdate());
-			invnodetil.setXfmc(i.getSupplyname());
-			invnodetil.setShtxdh(i.getShtxdh());
-			invnodetil.setLplx(i.getLplx());
-
-
-			suinvnoinfolist.add(invnodetil);
 		}
 		
 		try {

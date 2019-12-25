@@ -1,8 +1,8 @@
 //
-// 此文件是由 JavaTM Architecture for XML Binding (JAXB) 引用实现 v2.2.8-b130911.1802 生成的
-// 请访问 <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// 在重新编译源模式时, 对此文件的所有修改都将丢失。
-// 生成时间: 2019.12.12 时间 04:31:52 PM CST 
+// ���ļ����� JavaTM Architecture for XML Binding (JAXB) ����ʵ�� v2.2.8-b130911.1802 ���ɵ�
+// ����� <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// �����±���Դģʽʱ, �Դ��ļ��������޸Ķ�����ʧ��
+// ����ʱ��: 2019.12.23 ʱ�� 12:08:18 PM CST 
 //
 
 
@@ -19,16 +19,15 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
- * <p>anonymous complex type的 Java 类。
+ * <p>anonymous complex type�� Java �ࡣ
  * 
- * <p>以下模式片段指定包含在此类中的预期内容。
+ * <p>����ģʽƬ��ָ�������ڴ����е�Ԥ�����ݡ�
  * 
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}iodtlid"/>
  *         &lt;element ref="{}invcode"/>
  *         &lt;element ref="{}invno"/>
  *         &lt;element ref="{}kprq"/>
@@ -41,6 +40,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}shtxdh"/>
  *         &lt;element ref="{}fpmxbm"/>
  *         &lt;element ref="{}hsje"/>
+ *         &lt;element ref="{}goodsid"/>
+ *         &lt;element ref="{}outersysgoodsid"/>
+ *         &lt;element ref="{}lotno"/>
+ *         &lt;element ref="{}proddate"/>
+ *         &lt;element ref="{}invaliddate"/>
+ *         &lt;element ref="{}goodsqty"/>
+ *         &lt;element ref="{}unitprice"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -51,7 +57,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "iodtlid",
     "invcode",
     "invno",
     "kprq",
@@ -63,16 +68,25 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "lplx",
     "shtxdh",
     "fpmxbm",
-    "hsje"
+    "hsje",
+    "goodsid",
+    "outersysgoodsid",
+    "lotno",
+    "proddate",
+    "invaliddate",
+    "goodsqty",
+    "unitprice"
 })
 @XmlRootElement(name = "jhinvnodetil")
 public class SUINVNODETIL {
 
     @XmlElement(required = true)
-    protected String iodtlid;
-    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
     protected String invcode;
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
     protected String invno;
     @XmlElement(required = true)
     protected String kprq;
@@ -81,52 +95,68 @@ public class SUINVNODETIL {
     @XmlSchemaType(name = "NCName")
     protected String xfmc;
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
     protected String xfsh;
     @XmlElement(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String gfmc;
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
     protected String gfsh;
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
     protected String fphszje;
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
     protected String lplx;
     @XmlElement(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String shtxdh;
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
     protected String fpmxbm;
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
     protected String hsje;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String goodsid;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String outersysgoodsid;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String lotno;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String proddate;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String invaliddate;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String goodsqty;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String unitprice;
 
     /**
-     * 获取iodtlid属性的值。
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getIodtlid() {
-        return iodtlid;
-    }
-
-    /**
-     * 设置iodtlid属性的值。
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setIodtlid(String value) {
-        this.iodtlid = value;
-    }
-
-    /**
-     * 获取invcode属性的值。
+     * ��ȡinvcode���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -138,7 +168,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置invcode属性的值。
+     * ����invcode���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -150,7 +180,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取invno属性的值。
+     * ��ȡinvno���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -162,7 +192,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置invno属性的值。
+     * ����invno���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -174,7 +204,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取kprq属性的值。
+     * ��ȡkprq���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -186,7 +216,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置kprq属性的值。
+     * ����kprq���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -198,7 +228,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取xfmc属性的值。
+     * ��ȡxfmc���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -210,7 +240,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置xfmc属性的值。
+     * ����xfmc���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -222,7 +252,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取xfsh属性的值。
+     * ��ȡxfsh���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -234,7 +264,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置xfsh属性的值。
+     * ����xfsh���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -246,7 +276,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取gfmc属性的值。
+     * ��ȡgfmc���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -258,7 +288,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置gfmc属性的值。
+     * ����gfmc���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -270,7 +300,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取gfsh属性的值。
+     * ��ȡgfsh���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -282,7 +312,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置gfsh属性的值。
+     * ����gfsh���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -294,7 +324,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取fphszje属性的值。
+     * ��ȡfphszje���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -306,7 +336,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置fphszje属性的值。
+     * ����fphszje���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -318,7 +348,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取lplx属性的值。
+     * ��ȡlplx���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -330,7 +360,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置lplx属性的值。
+     * ����lplx���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -342,7 +372,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取shtxdh属性的值。
+     * ��ȡshtxdh���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -354,7 +384,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置shtxdh属性的值。
+     * ����shtxdh���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -366,7 +396,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取fpmxbm属性的值。
+     * ��ȡfpmxbm���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -378,7 +408,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置fpmxbm属性的值。
+     * ����fpmxbm���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -390,7 +420,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 获取hsje属性的值。
+     * ��ȡhsje���Ե�ֵ��
      * 
      * @return
      *     possible object is
@@ -402,7 +432,7 @@ public class SUINVNODETIL {
     }
 
     /**
-     * 设置hsje属性的值。
+     * ����hsje���Ե�ֵ��
      * 
      * @param value
      *     allowed object is
@@ -411,6 +441,174 @@ public class SUINVNODETIL {
      */
     public void setHsje(String value) {
         this.hsje = value;
+    }
+
+    /**
+     * ��ȡgoodsid���Ե�ֵ��
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getGoodsid() {
+        return goodsid;
+    }
+
+    /**
+     * ����goodsid���Ե�ֵ��
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setGoodsid(String value) {
+        this.goodsid = value;
+    }
+
+    /**
+     * ��ȡoutersysgoodsid���Ե�ֵ��
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOutersysgoodsid() {
+        return outersysgoodsid;
+    }
+
+    /**
+     * ����outersysgoodsid���Ե�ֵ��
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOutersysgoodsid(String value) {
+        this.outersysgoodsid = value;
+    }
+
+    /**
+     * ��ȡlotno���Ե�ֵ��
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLotno() {
+        return lotno;
+    }
+
+    /**
+     * ����lotno���Ե�ֵ��
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLotno(String value) {
+        this.lotno = value;
+    }
+
+    /**
+     * ��ȡproddate���Ե�ֵ��
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getProddate() {
+        return proddate;
+    }
+
+    /**
+     * ����proddate���Ե�ֵ��
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setProddate(String value) {
+        this.proddate = value;
+    }
+
+    /**
+     * ��ȡinvaliddate���Ե�ֵ��
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getInvaliddate() {
+        return invaliddate;
+    }
+
+    /**
+     * ����invaliddate���Ե�ֵ��
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setInvaliddate(String value) {
+        this.invaliddate = value;
+    }
+
+    /**
+     * ��ȡgoodsqty���Ե�ֵ��
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getGoodsqty() {
+        return goodsqty;
+    }
+
+    /**
+     * ����goodsqty���Ե�ֵ��
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setGoodsqty(String value) {
+        this.goodsqty = value;
+    }
+
+    /**
+     * ��ȡunitprice���Ե�ֵ��
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUnitprice() {
+        return unitprice;
+    }
+
+    /**
+     * ����unitprice���Ե�ֵ��
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUnitprice(String value) {
+        this.unitprice = value;
     }
 
 }

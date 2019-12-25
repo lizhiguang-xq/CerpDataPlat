@@ -27,6 +27,20 @@ public class SuInvno implements Serializable {
 
 	private String lplx;
 
+	private String unitprice;
+
+	private String goodsqty;
+
+	private String outersysgoodsid;
+
+	private String goodsid;
+
+	private String proddate;
+
+	private String invaliddate;
+
+	private String lotno;
+
 	public String getIodtlid() {
 		return iodtlid;
 	}
@@ -113,5 +127,61 @@ public class SuInvno implements Serializable {
 
 	public void setLplx(String lplx) {
 		this.lplx = lplx;
+	}
+
+	public String getUnitprice() {
+		return unitprice;
+	}
+
+	public void setUnitprice(String unitprice) {
+		this.unitprice = unitprice;
+	}
+
+	public String getGoodsqty() {
+		return goodsqty;
+	}
+
+	public void setGoodsqty(String goodsqty) {
+		this.goodsqty = goodsqty;
+	}
+
+	public String getOutersysgoodsid() {
+		return outersysgoodsid;
+	}
+
+	public void setOutersysgoodsid(String outersysgoodsid) {
+		this.outersysgoodsid = outersysgoodsid;
+	}
+
+	public String getGoodsid() {
+		return goodsid;
+	}
+
+	public void setGoodsid(String goodsid) {
+		this.goodsid = goodsid;
+	}
+
+	public String getProddate() {
+		return proddate;
+	}
+
+	public void setProddate(String proddate) {
+		this.proddate = proddate;
+	}
+
+	public String getInvaliddate() {
+		return invaliddate;
+	}
+
+	public void setInvaliddate(String invaliddate) {
+		this.invaliddate = invaliddate;
+	}
+
+	public String getLotno() {
+		return lotno;
+	}
+
+	public void setLotno(String lotno) {
+		this.lotno = lotno;
 	}
 }
