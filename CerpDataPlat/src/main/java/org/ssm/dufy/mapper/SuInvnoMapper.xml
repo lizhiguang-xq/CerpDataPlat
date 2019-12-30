@@ -80,4 +80,13 @@
 
 	</select>
 
+    <select id="getSuInvoiceTotal" resultType="java.lang.String" >
+	  select  sum(f.total_line) as total_line
+	  from bms_su_set_dtl f
+	  where
+		 f.invno=#{invno}
+		 and f.invcode=#{invcode}
+	</select>
+
+
 </mapper>
