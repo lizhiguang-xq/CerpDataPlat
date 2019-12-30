@@ -104,7 +104,7 @@ public class IInvnoServiceImpl implements IInvnoService {
 		SUGLGXINFO suglgxinfo = new SUGLGXINFO();
 		suinvnoinforesp.setJhglgxinfo(suglgxinfo);
 		List<SUGLGXDETIL> suglgxinfolist = suinvnoinforesp.getJhglgxinfo().getJhglgxdetil();
-		Map<String,String> fpmap = new HashMap<String,String>();
+		Map<String,String> fpmap = new HashMap<>();
 
 		for(SuInvno i : suglgxdetail) {
 			if(StringUtil.isEmpty(i.getInvcode()) || StringUtil.isEmpty(i.getInvno())) {
@@ -133,11 +133,9 @@ public class IInvnoServiceImpl implements IInvnoService {
 			String str = fpmap.get(key);
 			String[] inv = str.split("_");
 
-			List<SuInvno> suinvnodetail = (List<SuInvno>) suinvnodao.getSuInvoiceInfo(inv[0],inv[1]);
-			String jshj = "";
-			if(suinvnodetail.size()>0){
-				suinvnodao.getSuInvoiceTotal(inv[0],inv[1]);
-			}
+			List<SuInvno> suinvnodetail = suinvnodao.getSuInvoiceInfo(inv[0],inv[1]);
+			String jshj = suinvnodao.getSuInvoiceTotal(inv[0],inv[1]);
+
 			for(SuInvno i : suinvnodetail) {
 				if(i.getLplx().equals("1")) {
 					if(StringUtil.isEmpty(i.getShtxdh())){
