@@ -13,5 +13,4 @@ public interface ISuInvnoDao {
 	List<SuInvno> getSuInvoiceInfo(@Param("invcode")String invcode, @Param("invno")String invno);
 
 	String getSuInvoiceTotal(@Param("invcode")String invcode, @Param("invno")String invno);
-
 }
