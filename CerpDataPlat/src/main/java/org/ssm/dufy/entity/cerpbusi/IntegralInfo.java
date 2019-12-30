@@ -12,7 +12,16 @@ public class IntegralInfo implements Serializable {
 	private Integer docid;
 	private Date credate ;
 	private Double  debitintegal;
+	private Double  lenderintegal;
 	private Integer placepointid;
+	
+	
+	public Double getLenderintegal() {
+		return lenderintegal;
+	}
+	public void setLenderintegal(Double lenderintegal) {
+		this.lenderintegal = lenderintegal;
+	}
 	public Integer getInfoid() {
 		return infoid;
 	}

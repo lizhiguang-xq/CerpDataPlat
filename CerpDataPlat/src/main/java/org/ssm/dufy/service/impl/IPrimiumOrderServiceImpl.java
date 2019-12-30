@@ -216,7 +216,7 @@ public class IPrimiumOrderServiceImpl implements IPrimiumOrderService {
 		integralinfo.setComefrom(20);
 		integralinfo.setDocid(primiumdocid);
 		integralinfo.setInsiderid(Integer.valueOf(insiderid));
-		integralinfo.setDebitintegal(Double.valueOf(totalintegral));
+		integralinfo.setLenderintegal(Double.valueOf(totalintegral));
 		integralInfodao.insertIntegralInfo(integralinfo);
 		
 		pointorderresp.setErporderid(String.valueOf(primiumdocid));

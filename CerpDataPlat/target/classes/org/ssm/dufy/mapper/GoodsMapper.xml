@@ -67,7 +67,7 @@
 			   and t.entryid = a.entryid
 			   and a.goodsid = b.goodsid
 			   <!--and b.accflag = 5 -->
-			   <!--and a.online_flag = 1 -->
+			   and a.online_flag = 1
 			   and b.factoryid = c.factoryid
       			 <if test="goodsid != null and goodsid != '' " >
 	             and a.goodsid = #{goodsid}
