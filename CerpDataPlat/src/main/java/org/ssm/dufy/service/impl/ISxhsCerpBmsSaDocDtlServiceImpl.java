@@ -190,44 +190,44 @@ public class ISxhsCerpBmsSaDocDtlServiceImpl implements ISxhsCerpBmsSaDocDtlServ
         }else{
             resp.setReturncode("0");
             resp.setReturnmsg("成功");
-        }
-        Salesinfo sales = new Salesinfo();
-        Details details = new Details();
-        resp.setSalesinfo(sales);
-        sales.setDetails(details);
-        List<Detail> detaillist = details.getDetail();
+            Salesinfo sales = new Salesinfo();
+            Details details = new Details();
+            resp.setSalesinfo(sales);
+            sales.setDetails(details);
+            List<Detail> detaillist = details.getDetail();
 
-        sales.setSalesid(StringUtil.doNullStr(lists.get(0).get("SALESID")));
-        sales.setConfirmdate(StringUtil.doNullStr(lists.get(0).get("CONFIRMDATE")));
-        sales.setCustomid(StringUtil.doNullStr(lists.get(0).get("CUSTOMID")));
-        sales.setCustomname(StringUtil.doNullStr(lists.get(0).get("CUSTOMNAME")));
-        sales.setAgentid(StringUtil.doNullStr(lists.get(0).get("AGENTID")));
-        sales.setTotal(StringUtil.doNullStr(lists.get(0).get("TOTAL")));
-        sales.setDtllines(StringUtil.doNullStr(lists.get(0).get("DTLLINES")));
-        sales.setInputmanname(StringUtil.doNullStr(lists.get(0).get("INPUTMANNAME")));
-        sales.setConfirmanname(StringUtil.doNullStr(lists.get(0).get("CONFIRMANNAME")));
-        for(Map<String, Object> map: lists){
-            Detail detail = new Detail();
-            detail.setSalesid(StringUtil.doNullStr(map.get("SALESID")));
-            detail.setSalesdtlid(StringUtil.doNullStr(map.get("SALESDTLID")));
-            detail.setStiodate(StringUtil.doNullStr(map.get("STIODATE")));
-            detail.setGoodsname(StringUtil.doNullStr(map.get("GOODSNAME")));
-            detail.setCurrencyname(StringUtil.doNullStr(map.get("CURRENCYNAME")));
-            detail.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
-            detail.setGoodsunit(StringUtil.doNullStr(map.get("GOODSUNIT")));
-            detail.setFactoryname(StringUtil.doNullStr(map.get("FACTORYNAME")));
-            detail.setLotno(StringUtil.doNullStr(map.get("LOTNO")));
-            detail.setGoodstype(StringUtil.doNullStr(map.get("GOODSTYPE")));
-            detail.setUnitprice(StringUtil.doNullStr(map.get("UNITPRICE")));
-            detail.setAmount(StringUtil.doNullStr(map.get("AMOUNT")));
-            detail.setProddate(StringUtil.doNullStr(map.get("PRODDATE")));
-            detail.setInvaliddate(StringUtil.doNullStr(map.get("INVALIDDATE")));
-            detail.setZxOutersysOrderid(StringUtil.doNullStr(map.get("ZX_OUTERSYS_ORDERID")));
-            detail.setZxOutersysOrderindex(StringUtil.doNullStr(map.get("ZX_OUTERSYS_ORDERINDEX")));
-            detail.setStorageid(StringUtil.doNullStr(map.get("STORAGEID")));
-            detail.setInvcode(StringUtil.doNullStr(map.get("INVCODE")));
-            detail.setInvno(StringUtil.doNullStr(map.get("INVNO")));
-            detaillist.add(detail);
+            sales.setSalesid(StringUtil.doNullStr(lists.get(0).get("SALESID")));
+            sales.setConfirmdate(StringUtil.doNullStr(lists.get(0).get("CONFIRMDATE")));
+            sales.setCustomid(StringUtil.doNullStr(lists.get(0).get("CUSTOMID")));
+            sales.setCustomname(StringUtil.doNullStr(lists.get(0).get("CUSTOMNAME")));
+            sales.setAgentid(StringUtil.doNullStr(lists.get(0).get("AGENTID")));
+            sales.setTotal(StringUtil.doNullStr(lists.get(0).get("TOTAL")));
+            sales.setDtllines(StringUtil.doNullStr(lists.get(0).get("DTLLINES")));
+            sales.setInputmanname(StringUtil.doNullStr(lists.get(0).get("INPUTMANNAME")));
+            sales.setConfirmanname(StringUtil.doNullStr(lists.get(0).get("CONFIRMANNAME")));
+            for(Map<String, Object> map: lists){
+                Detail detail = new Detail();
+                detail.setSalesid(StringUtil.doNullStr(map.get("SALESID")));
+                detail.setSalesdtlid(StringUtil.doNullStr(map.get("SALESDTLID")));
+                detail.setStiodate(StringUtil.doNullStr(map.get("STIODATE")));
+                detail.setGoodsname(StringUtil.doNullStr(map.get("GOODSNAME")));
+                detail.setCurrencyname(StringUtil.doNullStr(map.get("CURRENCYNAME")));
+                detail.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
+                detail.setGoodsunit(StringUtil.doNullStr(map.get("GOODSUNIT")));
+                detail.setFactoryname(StringUtil.doNullStr(map.get("FACTORYNAME")));
+                detail.setLotno(StringUtil.doNullStr(map.get("LOTNO")));
+                detail.setGoodstype(StringUtil.doNullStr(map.get("GOODSTYPE")));
+                detail.setUnitprice(StringUtil.doNullStr(map.get("UNITPRICE")));
+                detail.setAmount(StringUtil.doNullStr(map.get("AMOUNT")));
+                detail.setProddate(StringUtil.doNullStr(map.get("PRODDATE")));
+                detail.setInvaliddate(StringUtil.doNullStr(map.get("INVALIDDATE")));
+                detail.setZxOutersysOrderid(StringUtil.doNullStr(map.get("ZX_OUTERSYS_ORDERID")));
+                detail.setZxOutersysOrderindex(StringUtil.doNullStr(map.get("ZX_OUTERSYS_ORDERINDEX")));
+                detail.setStorageid(StringUtil.doNullStr(map.get("STORAGEID")));
+                detail.setInvcode(StringUtil.doNullStr(map.get("INVCODE")));
+                detail.setInvno(StringUtil.doNullStr(map.get("INVNO")));
+                detaillist.add(detail);
+            }
         }
 
         String retxml= "";
