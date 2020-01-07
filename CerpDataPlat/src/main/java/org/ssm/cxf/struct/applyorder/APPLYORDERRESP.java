@@ -104,10 +104,10 @@ public class APPLYORDERRESP {
     }
 
     public String toXml(){
-        String xml = "<APPLYORDER__RESP>" +
+        String xml = "<APPLYORDER_RESP>" +
                 "<returncode>"+this.returncode+"</returncode>" +
                 "<returnmsg>"+this.returnmsg+"</returnmsg>" +
-                "</APPLYORDER__RESP>";
+                "</APPLYORDER_RESP>";
         return xml;
     }
 
