@@ -8,11 +8,7 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Component;
 import org.ssm.dufy.constant.CommonConstant;
 import org.ssm.dufy.entity.User;
-import org.ssm.dufy.service.IGoodsService;
-import org.ssm.dufy.service.IInsiderService;
-import org.ssm.dufy.service.IPointPolicyService;
-import org.ssm.dufy.service.IPrimiumOrderService;
-import org.ssm.dufy.service.IInvnoService;
+import org.ssm.dufy.service.*;
 
 /**
  * endpointInterface  接口地址的全路径
@@ -42,6 +38,9 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 
 	@Autowired
 	private IInvnoService invnoService;
+
+	@Autowired
+	private ISxhsCerpBmsSaDocDtlService pjcerpService;
 	
 	@Autowired
     private EhCacheCacheManager cacheManager;
@@ -80,6 +79,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = invnoService.getSaInvno_Dgys(entryid, xmlData); //获取 【东莞药事平台】 【销售发票】
 		} else if(CommonConstant.OPER_GETSUINVO_INFO_DGYS.equals(oper.toLowerCase())){
 			retxml = invnoService.getSuInvno_Dgys(entryid, xmlData); //获取 【东莞药事平台】 【采购发票】
+		} else if(CommonConstant.OPER_GETSAINVNO_INFO_SXHS.equals(oper.toLowerCase())) {
+			retxml = pjcerpService.getSaInvno_Sxhs(entryid, xmlData); //【平嘉】根据销售单号获取销售单信息
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}
@@ -100,6 +101,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 		String retxml = "";
 		if(CommonConstant.OPER_CREATE_PRIMIUM_ORDER_LNJFSC.equals(oper.toLowerCase())) {
 			retxml = primiumOrderService.createPrimiumOrder(entryid, xmlData); //生成赠品订单
+		} else if(CommonConstant.OPER_CREATE_APPLY_ORDER_SXHS.equals(oper.toLowerCase())) {
+			retxml = pjcerpService.createApplyOrder(entryid, xmlData); //生成1067订单
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.ISxhsCerpBmsSaDocDtlDao" >
+
+
+  <select id="checkapplayorder" resultType="map">
+    select ZX_OUTERSYS_ORDERID from BMS_SA_CON_DOC
+    where ENTRYID = #{entryid}
+    and CUSTOMID = #{customid}
+    and ZX_OUTERSYS_ORDERID = #{orderid}
+  </select>
+
+  <select id="getdocseqvalue" resultType="java.lang.Long">
+    select bms_sa_con_doc_seq.nextval from dual
+  </select>
+  <select id="getdtlseqvalue" resultType="java.lang.Long">
+    select bms_sa_con_dtl_seq.nextval from dual
+  </select>
+
+  <select id="getcustominfo" resultType="map">
+    select b.customid, c.customname, b.priceid,b.reqprintquflag,b.invtype from pub_entry_customer b, pub_customer c
+    where b.customid = c.customid
+    and b.entryid = #{entryid}
+    and b.customid = #{customid}
+  </select>
+
+  <select id="getagentinfo" resultType="map">
+    select a.agentid, a.salerid, b.contactman, c.deptid from PUB_company_to_agent a,zx_bms_agent_def   b,pub_employee c
+    where a.agentid = b.agentid
+    and a.type = 2
+    and b.usestatus = 1
+    and a.entryid = #{entryid}
+    and a.agentid = #{agentid}
+    and trunc(sysdate) between a.Datefrom and a.Dateto
+    and a.salerid = c.employeeid
+    order by b.onlineflag desc,a.seqid desc
+  </select>
+
+  <select id="getCredit" resultType="map">
+    select nvl(a.credit,0) - nvl(a.owemoney,0) currentMoney,nvl(b.days,0) - nvl(b.owedays,0) currentDays
+	from  bms_credit_union_qry_v a ,bms_creditdays_union_qry_v b
+	where a.customid = b.customid(+) and a.salerid = b.salerid(+)
+	and a.agentid = b.agentid(+)
+	and a.customid = #{customid}
+	and a.agentid = #{agentid}
+  </select>
+
+  <select id="getTranPosId" resultType="java.lang.Long">
+    select a.tranposid from bms_tr_pos_def a
+	where a.companyid = #{companyid}
+	and a.entryid = #{entryid}
+	and a.tranposname = #{tranposname}
+  </select>
+
+  <select id="getChooseTranPosId" resultType="java.lang.Long">
+    select a.tranposid from bms_tr_pos_def a
+	where a.companyid = #{companyid}
+	and a.entryid = #{entryid}
+	order by a.tranposid
+  </select>
+
+  <select id="getErpGoodsInfo" resultType="map">
+    select b.goodsid, c.goodsdtlid from pub_entry_goods b, pub_goods_detail c
+	where b.goodsid = c.goodsid
+	and b.entryid = #{entryid}
+	and b.goodsid = #{goodsid}
+  </select>
+
+  <insert id="insertDoc" parameterType="org.ssm.dufy.entity.cerp.BmsSaConDoc">
+    insert into BMS_SA_CON_DOC (CONID, CONNO, CONTYPE,
+      CUSTOMID, CUSTOMNAME, SALERID,
+      SALESDEPTID, SIGNDATE, SIGNADDRESS,
+      SIGNMANID, VALIDBEGINDATE, VALIDENDDATE,
+      SUMMARY, INVTYPE, SETTLETYPEID,
+      DELIVERMETHOD, TRANMETHOD, TARGETPOSID,
+      URGENTFLAG, TRANPRIORITY, TARGETDATE,
+      TOTAL, INPUTMANID, CREDATE,
+      DTL_LINES, MEMO, ENTRYID,
+      FMID, EXCHANGE, USESTATUS,
+      CREDITFLAG, CREDIT, RECMONEY,
+      CREDITDAYSFLAG, CREDITDAYS, RECDATE,
+      LOWPRICEFLAG, APPROVEFLAG, APPROVEMANID,
+      APPROVEDATE, APPROVEMEMO, CONFIRMANID,
+      CONFIRMDATE, PRINTCOUNT, PRINTMANID,
+      PRINTDATE, COMEFROM, ASSESSDATE,
+      WFUSESTATUS, WFPROCESS, WFMEMO,
+      AGENTID, CNSCOMMITFLAG, FINISHFLAG,
+      NOWMSFLAG, PLANINVDATE, INVDEMAND,
+      PREDESPDATE, CONTACTMAN, ZX_STSETID,
+      ZX_ISB2BSEND, ZX_OUTERSYS_ORDERID, ZX_OUTERSYS_CREDATE,
+      ZX_OUTERSYS_STORAGEADDRESS, ZX_OUTERSYS_STORAGENAME,
+      REACTFLAG, ZX_OMSFLAG, CHARGES
+      )
+    values (#{conid,jdbcType=DECIMAL}, #{conno,jdbcType=VARCHAR}, #{contype,jdbcType=DECIMAL},
+      #{customid,jdbcType=DECIMAL}, #{customname,jdbcType=VARCHAR}, #{salerid,jdbcType=DECIMAL},
+      #{salesdeptid,jdbcType=DECIMAL}, #{signdate,jdbcType=DATE}, #{signaddress,jdbcType=VARCHAR},
+      #{signmanid,jdbcType=DECIMAL}, #{validbegindate,jdbcType=DATE}, #{validenddate,jdbcType=DATE},
+      #{summary,jdbcType=VARCHAR}, #{invtype,jdbcType=DECIMAL}, #{settletypeid,jdbcType=DECIMAL},
+      #{delivermethod,jdbcType=DECIMAL}, #{tranmethod,jdbcType=DECIMAL}, #{targetposid,jdbcType=DECIMAL},
+      #{urgentflag,jdbcType=DECIMAL}, #{tranpriority,jdbcType=DECIMAL}, #{targetdate,jdbcType=DATE},
+      #{total,jdbcType=DECIMAL}, #{inputmanid,jdbcType=DECIMAL}, sysdate,
+      #{dtlLines,jdbcType=DECIMAL}, #{memo,jdbcType=VARCHAR}, #{entryid,jdbcType=DECIMAL},
+      #{fmid,jdbcType=DECIMAL}, #{exchange,jdbcType=DECIMAL}, #{usestatus,jdbcType=DECIMAL},
+      #{creditflag,jdbcType=DECIMAL}, #{credit,jdbcType=DECIMAL}, #{recmoney,jdbcType=DECIMAL},
+      #{creditdaysflag,jdbcType=DECIMAL}, #{creditdays,jdbcType=DECIMAL}, #{recdate,jdbcType=DATE},
+      #{lowpriceflag,jdbcType=DECIMAL}, #{approveflag,jdbcType=DECIMAL}, #{approvemanid,jdbcType=DECIMAL},
+      #{approvedate,jdbcType=DATE}, #{approvememo,jdbcType=VARCHAR}, #{confirmanid,jdbcType=DECIMAL},
+      #{confirmdate,jdbcType=DATE}, #{printcount,jdbcType=DECIMAL}, #{printmanid,jdbcType=DECIMAL},
+      #{printdate,jdbcType=DATE}, #{comefrom,jdbcType=DECIMAL}, sysdate,
+      #{wfusestatus,jdbcType=DECIMAL}, #{wfprocess,jdbcType=DECIMAL}, #{wfmemo,jdbcType=VARCHAR},
+      #{agentid,jdbcType=DECIMAL}, #{cnscommitflag,jdbcType=DECIMAL}, #{finishflag,jdbcType=DECIMAL},
+      #{nowmsflag,jdbcType=DECIMAL}, #{planinvdate,jdbcType=DATE}, #{invdemand,jdbcType=DECIMAL},
+      sysdate, #{contactman,jdbcType=VARCHAR}, #{zxStsetid,jdbcType=DECIMAL},
+      #{zxIsb2bsend,jdbcType=VARCHAR}, #{zxOutersysOrderid,jdbcType=VARCHAR}, #{zxOutersysCredate,jdbcType=VARCHAR},
+      #{zxOutersysStorageaddress,jdbcType=VARCHAR}, #{zxOutersysStoragename,jdbcType=VARCHAR},
+      #{reactflag,jdbcType=DECIMAL}, #{zxOmsflag,jdbcType=DECIMAL}, #{charges,jdbcType=DECIMAL}
+      )
+  </insert>
+
+  <insert id="insertDtl" parameterType="org.ssm.dufy.entity.cerp.BmsSaConDtl">
+    insert into BMS_SA_CON_DTL (CONDTLID, CONID, GOODSID,
+      GOODSDTLID, PRICEID, GOODSQTY,
+      GOODSUSEUNIT, GOODSUSEQTY, UNITPRICE,
+      TOTAL_LINE, WHOLESALEPRICE, RESALEPRICE,
+      DISCOUNT, TIMEPRICEID, TIMEPRICE,
+      ACCSTQTY, DTLMEMO, INVALIDFLAG,
+      INVALIDMANID, INVALIDTIME, SPECIALLOTFLAG,
+      LOTMEMO, PRINTNO, PRINTLINE,
+      LOWERFLAG, SAPLACEQTY, CUSTOMLASTPRICE,
+      USESTATUS, USEPACKSIZE, REQPRINTQUFLAG,
+      AGREEMENTFLAG, AGRCONDTLID, OLDUNITPRICE,
+      CONTYPE, ZX_CHECKGARSS, ZX_CHECKGRASSRATE,
+      ZX_CHECKPRICETYPE, ZX_CHECKPRICE, TAXRATE,
+      ZX_OUTERSYS_ORDERID, ZX_OUTERSYS_ORDERINDEX,
+      ZX_OUTERSYS_SUPPLYID, ZX_OUTERSYS_ID, ZX_OUTERSYS_OLDSUPPLYID,
+      ZX_OUTERSYS_GOODSID, ZX_OUTERSYS_CUSTOMID,
+      ZX_OUTERSYS_MEMO, ZX_SUCONDTLID, OOSREC_FLAG
+      )
+    values
+    <foreach collection="list"  item="item" index="index" separator="," open="(" close=")">
+      #{item.condtlid,jdbcType=DECIMAL}, #{item.conid,jdbcType=DECIMAL}, #{item.goodsid,jdbcType=DECIMAL},
+      #{item.goodsdtlid,jdbcType=DECIMAL}, #{item.priceid,jdbcType=DECIMAL}, #{item.goodsqty,jdbcType=DECIMAL},
+      #{item.goodsuseunit,jdbcType=VARCHAR}, #{item.goodsuseqty,jdbcType=DECIMAL}, #{item.unitprice,jdbcType=DECIMAL},
+      #{item.totalLine,jdbcType=DECIMAL}, #{item.wholesaleprice,jdbcType=DECIMAL}, #{item.resaleprice,jdbcType=DECIMAL},
+      #{item.discount,jdbcType=DECIMAL}, #{item.timepriceid,jdbcType=DECIMAL}, #{item.timeprice,jdbcType=DECIMAL},
+      #{item.accstqty,jdbcType=DECIMAL}, #{item.dtlmemo,jdbcType=VARCHAR}, #{item.invalidflag,jdbcType=DECIMAL},
+      #{item.invalidmanid,jdbcType=DECIMAL}, #{item.invalidtime,jdbcType=DATE}, #{item.speciallotflag,jdbcType=DECIMAL},
+      #{item.lotmemo,jdbcType=VARCHAR}, #{item.printno,jdbcType=VARCHAR}, #{item.printline,jdbcType=DECIMAL},
+      #{item.lowerflag,jdbcType=DECIMAL}, #{item.saplaceqty,jdbcType=DECIMAL}, #{item.customlastprice,jdbcType=DECIMAL},
+      #{item.usestatus,jdbcType=DECIMAL}, #{item.usepacksize,jdbcType=DECIMAL}, #{item.reqprintquflag,jdbcType=DECIMAL},
+      #{item.agreementflag,jdbcType=DECIMAL}, #{item.agrcondtlid,jdbcType=DECIMAL}, #{item.oldunitprice,jdbcType=DECIMAL},
+      #{item.contype,jdbcType=DECIMAL}, #{item.zxCheckgarss,jdbcType=DECIMAL}, #{item.zxCheckgrassrate,jdbcType=DECIMAL},
+      #{item.zxCheckpricetype,jdbcType=DECIMAL}, #{item.zxCheckprice,jdbcType=DECIMAL}, #{item.taxrate,jdbcType=DECIMAL},
+      #{item.zxOutersysOrderid,jdbcType=VARCHAR}, #{item.zxOutersysOrderindex,jdbcType=VARCHAR},
+      #{item.zxOutersysSupplyid,jdbcType=VARCHAR}, #{item.zxOutersysId,jdbcType=DECIMAL}, #{item.zxOutersysOldsupplyid,jdbcType=VARCHAR},
+      #{item.zxOutersysGoodsid,jdbcType=VARCHAR}, #{item.zxOutersysCustomid,jdbcType=VARCHAR},
+      #{item.zxOutersysMemo,jdbcType=VARCHAR}, #{item.zxSucondtlid,jdbcType=DECIMAL}, #{item.oosrecFlag,jdbcType=DECIMAL}
+    </foreach>
+  </insert>
+
+
+    <select id="select" resultType="map" parameterType="java.lang.String">
+    select
+       a.salesid,
+       to_char(a.confirmdate,'YYYY-MM-DD HH24:MI:SS') confirmdate,
+       a.customid,
+       a.customname,
+       a.agentid,
+       a.total,
+       a.dtl_lines dtllines,
+
+       o.employeename inputmanname,
+       p.employeename confirmanname,
+
+       b.salesdtlid,
+       to_char(b.stiodate,'YYYY-MM-DD HH24:MI:SS') stiodate,
+       i.goodsname,
+       i.currencyname,
+       i.goodstype,
+       i.goodsunit,
+       j.factoryname,
+       g.lotno,
+       b.goodsqty,
+       b.unitprice,
+       b.total_line amount,
+       to_char(b.proddate,'YYYY-MM-DD') proddate,
+       to_char(g.invaliddate,'YYYY-MM-DD') invaliddate,
+       l.zx_outersys_orderid,
+       l.zx_outersys_orderindex,
+       b.storageid,
+       c.invcode,
+       c.invno
+    from bms_sa_doc a,
+         bms_sa_dtl b,
+         bms_sa_settle_doc c,
+         bms_sa_settle_dtl d,
+         bms_sa_doctoset h,
+         bms_lot_def g,
+         pub_goods i,
+         pub_factory j,
+         bms_sa_con_dtl l,
+         bms_sa_contodoc m,
+         pub_employee o,
+         pub_employee p
+    where a.salesid = b.salesid
+      and b.salesdtlid = m.salesdtlid(+)
+      and m.condtlid = l.condtlid(+)
+      and b.salesdtlid = h.salesdtlid(+)
+      and h.sasettledtlid = d.sasettledtlid(+)
+      and d.sasettleid = c.sasettleid(+)
+      and b.goodsid = i.goodsid
+      and b.lotid = g.lotid(+)
+      and i.factoryid = j.factoryid(+)
+      and a.inputmanid = o.employeeid(+)
+      and a.confirmanid = p.employeeid(+)
+      and a.entryid=#{entryid}
+      and a.salesid=#{salesid}
+    </select>
+</mapper>

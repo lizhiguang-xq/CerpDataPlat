@@ -26,6 +26,11 @@ public class CommonConstant {
 	public final static String OPER_CREATE_PRIMIUM_ORDER_LNJFSC = "createprimiumorder_lnjfsc";
 	
 	public final static String OPER_GETSAINVO_INFO_DGYS = "getsainvoinfo_dgys";
+
 	public final static String OPER_GETSUINVO_INFO_DGYS = "getsuinvoinfo_dgys";
+
+	public final static String OPER_CREATE_APPLY_ORDER_SXHS = "createapplyorder_sxhs";
+
+	public final static String OPER_GETSAINVNO_INFO_SXHS = "getsalesinfo_sxhs";
 	
 }
