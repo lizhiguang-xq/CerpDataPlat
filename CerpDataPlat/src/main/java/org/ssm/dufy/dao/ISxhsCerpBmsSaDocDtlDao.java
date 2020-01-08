@@ -23,7 +23,7 @@ public interface ISxhsCerpBmsSaDocDtlDao {
 
     int insertDoc(BmsSaConDoc record);
 
-    int insertDtl(List<BmsSaConDtl> list);
+    int insertDtl(BmsSaConDtl record);
 
     Long getTranPosId(@Param("entryid")String entryid, @Param("companyid")String companyid, @Param("tranposname")String tranposname);
 

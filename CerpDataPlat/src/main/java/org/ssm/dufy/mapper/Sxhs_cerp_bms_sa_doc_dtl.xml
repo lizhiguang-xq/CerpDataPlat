@@ -119,43 +119,19 @@
 
   <insert id="insertDtl" parameterType="org.ssm.dufy.entity.cerp.BmsSaConDtl">
     insert into BMS_SA_CON_DTL (CONDTLID, CONID, GOODSID,
-      GOODSDTLID, PRICEID, GOODSQTY,
-      GOODSUSEUNIT, GOODSUSEQTY, UNITPRICE,
-      TOTAL_LINE, WHOLESALEPRICE, RESALEPRICE,
-      DISCOUNT, TIMEPRICEID, TIMEPRICE,
-      ACCSTQTY, DTLMEMO, INVALIDFLAG,
-      INVALIDMANID, INVALIDTIME, SPECIALLOTFLAG,
-      LOTMEMO, PRINTNO, PRINTLINE,
-      LOWERFLAG, SAPLACEQTY, CUSTOMLASTPRICE,
-      USESTATUS, USEPACKSIZE, REQPRINTQUFLAG,
-      AGREEMENTFLAG, AGRCONDTLID, OLDUNITPRICE,
-      CONTYPE, ZX_CHECKGARSS, ZX_CHECKGRASSRATE,
-      ZX_CHECKPRICETYPE, ZX_CHECKPRICE, TAXRATE,
-      ZX_OUTERSYS_ORDERID, ZX_OUTERSYS_ORDERINDEX,
-      ZX_OUTERSYS_SUPPLYID, ZX_OUTERSYS_ID, ZX_OUTERSYS_OLDSUPPLYID,
+      GOODSDTLID, PRICEID, GOODSQTY,TOTAL_LINE, UNITPRICE,
+      DISCOUNT,ZX_OUTERSYS_ORDERID, ZX_OUTERSYS_ORDERINDEX,
       ZX_OUTERSYS_GOODSID, ZX_OUTERSYS_CUSTOMID,
-      ZX_OUTERSYS_MEMO, ZX_SUCONDTLID, OOSREC_FLAG
+      ZX_OUTERSYS_MEMO,REQPRINTQUFLAG
       )
     values
-    <foreach collection="list"  item="item" index="index" separator="," open="(" close=")">
-      #{item.condtlid,jdbcType=DECIMAL}, #{item.conid,jdbcType=DECIMAL}, #{item.goodsid,jdbcType=DECIMAL},
-      #{item.goodsdtlid,jdbcType=DECIMAL}, #{item.priceid,jdbcType=DECIMAL}, #{item.goodsqty,jdbcType=DECIMAL},
-      #{item.goodsuseunit,jdbcType=VARCHAR}, #{item.goodsuseqty,jdbcType=DECIMAL}, #{item.unitprice,jdbcType=DECIMAL},
-      #{item.totalLine,jdbcType=DECIMAL}, #{item.wholesaleprice,jdbcType=DECIMAL}, #{item.resaleprice,jdbcType=DECIMAL},
-      #{item.discount,jdbcType=DECIMAL}, #{item.timepriceid,jdbcType=DECIMAL}, #{item.timeprice,jdbcType=DECIMAL},
-      #{item.accstqty,jdbcType=DECIMAL}, #{item.dtlmemo,jdbcType=VARCHAR}, #{item.invalidflag,jdbcType=DECIMAL},
-      #{item.invalidmanid,jdbcType=DECIMAL}, #{item.invalidtime,jdbcType=DATE}, #{item.speciallotflag,jdbcType=DECIMAL},
-      #{item.lotmemo,jdbcType=VARCHAR}, #{item.printno,jdbcType=VARCHAR}, #{item.printline,jdbcType=DECIMAL},
-      #{item.lowerflag,jdbcType=DECIMAL}, #{item.saplaceqty,jdbcType=DECIMAL}, #{item.customlastprice,jdbcType=DECIMAL},
-      #{item.usestatus,jdbcType=DECIMAL}, #{item.usepacksize,jdbcType=DECIMAL}, #{item.reqprintquflag,jdbcType=DECIMAL},
-      #{item.agreementflag,jdbcType=DECIMAL}, #{item.agrcondtlid,jdbcType=DECIMAL}, #{item.oldunitprice,jdbcType=DECIMAL},
-      #{item.contype,jdbcType=DECIMAL}, #{item.zxCheckgarss,jdbcType=DECIMAL}, #{item.zxCheckgrassrate,jdbcType=DECIMAL},
-      #{item.zxCheckpricetype,jdbcType=DECIMAL}, #{item.zxCheckprice,jdbcType=DECIMAL}, #{item.taxrate,jdbcType=DECIMAL},
-      #{item.zxOutersysOrderid,jdbcType=VARCHAR}, #{item.zxOutersysOrderindex,jdbcType=VARCHAR},
-      #{item.zxOutersysSupplyid,jdbcType=VARCHAR}, #{item.zxOutersysId,jdbcType=DECIMAL}, #{item.zxOutersysOldsupplyid,jdbcType=VARCHAR},
-      #{item.zxOutersysGoodsid,jdbcType=VARCHAR}, #{item.zxOutersysCustomid,jdbcType=VARCHAR},
-      #{item.zxOutersysMemo,jdbcType=VARCHAR}, #{item.zxSucondtlid,jdbcType=DECIMAL}, #{item.oosrecFlag,jdbcType=DECIMAL}
-    </foreach>
+    (bms_sa_con_dtl_seq.nextval, #{conid,jdbcType=DECIMAL},
+        #{goodsid,jdbcType=DECIMAL},#{goodsdtlid,jdbcType=DECIMAL}, #{priceid,jdbcType=DECIMAL},
+        #{goodsqty,jdbcType=DECIMAL},#{totalLine,jdbcType=DECIMAL},
+        #{unitprice,jdbcType=DECIMAL},#{discount,jdbcType=DECIMAL},
+        #{zxOutersysOrderid,jdbcType=VARCHAR}, #{zxOutersysOrderindex,jdbcType=VARCHAR},
+        #{zxOutersysGoodsid,jdbcType=VARCHAR}, #{zxOutersysCustomid,jdbcType=VARCHAR},
+        #{zxOutersysMemo,jdbcType=VARCHAR},#{reqprintquflag,jdbcType=DECIMAL})
   </insert>
 
 

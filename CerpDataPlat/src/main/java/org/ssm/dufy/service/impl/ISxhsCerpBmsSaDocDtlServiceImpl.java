@@ -159,11 +159,11 @@ public class ISxhsCerpBmsSaDocDtlServiceImpl implements ISxhsCerpBmsSaDocDtlServ
             int docresult = sxhscerpDao.insertDoc(doc);
             if(docresult==1){
                 for(BmsSaConDtl dtl : dtllist){
-                    Long dtlseq = sxhscerpDao.getdtlseqvalue();
+//                    Long dtlseq = sxhscerpDao.getdtlseqvalue();
                     dtl.setConid(seq);
-                    dtl.setCondtlid(dtlseq);
+//                    dtl.setCondtlid(dtlseq);
+                    sxhscerpDao.insertDtl(dtl);
                 }
-                sxhscerpDao.insertDtl(dtllist);
                 resp.setReturncode("0");
                 resp.setReturnmsg("订单保存成功");
             }else{
