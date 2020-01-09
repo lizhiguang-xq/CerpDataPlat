@@ -7,7 +7,7 @@ public class User implements Serializable {
 
 	private Integer id;
 
-    private String userName;
+    private String user_name;
 
     private String password;
 
@@ -20,7 +20,7 @@ public class User implements Serializable {
 
 	public User(String userName, String password) {
 		super();
-		this.userName = userName;
+		this.user_name = userName;
 		this.password = password;
 	}
 
@@ -33,11 +33,11 @@ public class User implements Serializable {
     }
 
     public String getUserName() {
-        return userName;
+        return user_name;
     }
 
     public void setUserName(String userName) {
-        this.userName = userName == null ? null : userName.trim();
+        this.user_name = userName == null ? null : userName.trim();
     }
 
     public String getPassword() {

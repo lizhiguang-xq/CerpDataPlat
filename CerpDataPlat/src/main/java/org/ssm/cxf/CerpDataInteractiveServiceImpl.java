@@ -8,6 +8,7 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Component;
 import org.ssm.dufy.constant.CommonConstant;
 import org.ssm.dufy.entity.User;
+import org.ssm.dufy.redis.RUserDao;
 import org.ssm.dufy.service.*;
 
 /**
@@ -42,13 +43,17 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 	@Autowired
 	private ISxhsCerpBmsSaDocDtlService pjcerpService;
 	
+//	@Autowired
+//    private EhCacheCacheManager cacheManager;
+	
 	@Autowired
-    private EhCacheCacheManager cacheManager;
+	private IUserService userService;
 
 	@Override
 	public String tslCerpDataInteractive(String userName, String passWord, String oper, String xmlData) {
 		
-		User u = (User)cacheManager.getCache("userDataCache").get(userName).get();
+//		User u = (User)cacheManager.getCache("userDataCache").get(userName).get();
+		User u = userService.getUserByName(userName);
 		String entryid = "";		
 		if(u!=null) {
 			entryid = u.getEntryid().toString();
@@ -90,7 +95,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 	@Override
 	public String tslCerpDataUpdate(String userName, String passWord, String oper, String xmlData) {
 		
-		User u = (User)cacheManager.getCache("userDataCache").get(userName).get();
+//		User u = (User)cacheManager.getCache("userDataCache").get(userName).get();
+		User u = userService.getUserByName(userName);
 		String entryid = "";		
 		if(u!=null) {
 			entryid = u.getEntryid().toString();

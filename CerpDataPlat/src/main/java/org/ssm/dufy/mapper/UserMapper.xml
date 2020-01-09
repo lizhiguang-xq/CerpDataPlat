@@ -99,9 +99,8 @@
   </select>
   
   <select id="findUserByName" resultType="org.ssm.dufy.entity.User" parameterType="java.lang.String" >
-    select 
-    <include refid="Base_Column_List" />
-    from user_t
-    where user_name = #{uName,jdbcType=VARCHAR}
+    select id, user_name, password, entryid, opers
+      from user_t
+     where user_name = #{uName,jdbcType=VARCHAR}
   </select>
 </mapper>

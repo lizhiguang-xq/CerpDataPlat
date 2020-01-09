@@ -77,7 +77,12 @@
 	<!-- 配置jdbc文件 -->
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="locations" value="classpath:jdbc_prod.properties" />
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc_dev.properties</value>
+				<value>classpath:redis.properties</value>
+			</list>
+		</property>
 	</bean>
 
 	<!-- 扫描的包路径，这里不扫描被@Controller注解的类 --><!--使用<context:component-scan/> 可以不在配置<context:annotation-config/> -->
@@ -99,5 +104,31 @@
 		<property name="configLocation"
 			value="classpath:quartz.properties" />
 	</bean>
+	
+	<!-- 配置Redis连接池 -->
+	<bean class="redis.clients.jedis.JedisPoolConfig" id="poolConfig">
+		<property name="maxIdle" value="${redis.maxIdle}"/>
+		<property name="maxTotal" value="${redis.maxTotal}"/>
+		<property name="maxWaitMillis" value="${redis.maxWait}"/>
+		<property name="testOnBorrow" value="${redis.testOnBorrow}"/>
+	</bean>
+	
+	<!-- 配置redis链接信息 -->
+	<bean class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" id="connectionFactory">
+		<property name="hostName" value="${redis.host}"/>
+		<property name="port" value="${redis.port}"/>
+		<property name="poolConfig" ref="poolConfig"/>	
+	</bean>
+	
+	<!-- 配置RedisTemplate -->
+	<bean class="org.springframework.data.redis.core.RedisTemplate" id="redisTemplate">
+		<property name="connectionFactory" ref="connectionFactory"/>
+		<property name="keySerializer">
+			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+		</property>
+		<property name="valueSerializer">
+			<bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+		</property>
+	</bean>	
 
 </beans>
