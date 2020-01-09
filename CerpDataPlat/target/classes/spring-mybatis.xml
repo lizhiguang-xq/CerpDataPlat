@@ -78,10 +78,10 @@
     <!-- CERP生产库数据源-->
     <bean id="cerpzsdataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- 基本属性 url、user、password -->        
-        <property name="driverClassName" value="${oracle_jdbc_driverClassName}"/>
-		<property name="url" value="${oracle_jdbc_url}"/>
-        <property name="username" value="${oracle_jdbc_username}"/>
-        <property name="password" value="${oracle_jdbc_password}"/>
+        <property name="driverClassName" value="${oracle_zs_jdbc_driverClassName}"/>
+		<property name="url" value="${oracle_zs_jdbc_url}"/>
+        <property name="username" value="${oracle_zs_jdbc_username}"/>
+        <property name="password" value="${oracle_zs_jdbc_password}"/>
       
         <!-- 配置初始化大小、最小、最大 -->
         <property name="initialSize" value="10"/>
