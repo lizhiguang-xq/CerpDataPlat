@@ -21,7 +21,7 @@
 	http://www.springframework.org/schema/cache/spring-cache.xsd">
 
 	<import resource="classpath:spring-mybatis.xml" />
-	<!-- ÈÖçÁΩÆ WebService CXF -->
+	<!-- ≈‰÷√ WebService CXF -->
 	<import resource="classpath*:META-INF/cxf/cxf.xml" />
 	<import
 		resource="classpath*:META-INF/cxf/cxf-extension-soap.xml" />
@@ -31,21 +31,21 @@
 		base-package="org.ssm.cxf" />
 	<jaxws:endpoint implementor="org.ssm.cxf.CerpDataInteractiveServiceImpl" address="/CerpDataInteractiveService">
 		<jaxws:inInterceptors>
-			<!-- ÈÖçÁΩÆÊé•Êî∂Êä•ÊñáÊó•ÂøóÊã¶Êà™Âô® -->
+			<!-- ≈‰÷√Ω” ’±®Œƒ»’÷æ¿πΩÿ∆˜ -->
 			<bean name="logInInter"
 				class="org.apache.cxf.interceptor.LoggingInInterceptor" />
-			<!-- ÈÖçÁΩÆÊùÉÈôêÈ™åËØÅÊã¶Êà™Âô® -->
+			<!-- ≈‰÷√»®œﬁ—È÷§¿πΩÿ∆˜ -->
 			<bean name="authInterceptor"
 				class="org.ssm.cxf.interceptor.AuthInterceptor" />
 		</jaxws:inInterceptors>
 		<jaxws:outInterceptors>
-			<!-- ÈÖçÁΩÆËøîÂõûÊä•ÊñáÊó•ÂøóÊã¶Êà™Âô® -->
+			<!-- ≈‰÷√∑µªÿ±®Œƒ»’÷æ¿πΩÿ∆˜ -->
 			<bean name="logOutInter"
 				class="org.apache.cxf.interceptor.LoggingOutInterceptor" />
 		</jaxws:outInterceptors>
 	</jaxws:endpoint>
 
-	<!-- ÈÖçÁΩÆ ÂàáÊç¢Êï∞ÊçÆÊ∫êÂàáÈù¢ -->
+	<!-- ≈‰÷√ «–ªª ˝æ›‘¥«–√Ê -->
 	<aop:config>
 		<aop:aspect id="cerpdb" ref="cerpDBHandler">
 			<aop:pointcut id="allGetMethod"
@@ -59,7 +59,7 @@
 		</aop:aspect>
 	</aop:config>
 	
-	<!-- ÈÖçÁΩÆ ehcache ÁºìÂ≠ò -->
+	<!-- ≈‰÷√ ehcache ª∫¥Ê -->
 	<cache:annotation-driven cache-manager="cacheManager"/>
 	<bean id="cacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">  
         <property name="configLocation" value="classpath:ehcache.xml"/>  
@@ -74,7 +74,7 @@
 	<bean id="cerpZsDBHandler"
 		class="org.ssm.dufy.aspectj.CerpZsDBInterceptor" />
 
-	<!-- ÈÖçÁΩÆjdbcÊñá‰ª∂ -->
+	<!-- ≈‰÷√jdbcŒƒº˛ -->
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
@@ -85,7 +85,7 @@
 		</property>
 	</bean>
 
-	<!-- Êâ´ÊèèÁöÑÂåÖË∑ØÂæÑÔºåËøôÈáå‰∏çÊâ´ÊèèË¢´@ControllerÊ≥®Ëß£ÁöÑÁ±ª --><!--‰ΩøÁî®<context:component-scan/> ÂèØ‰ª•‰∏çÂú®ÈÖçÁΩÆ<context:annotation-config/> -->
+	<!-- …®√Ëµƒ∞¸¬∑æ∂£¨’‚¿Ô≤ª…®√Ë±ª@Controller◊¢Ω‚µƒ¿‡ --><!-- π”√<context:component-scan/> ø…“‘≤ª‘⁄≈‰÷√<context:annotation-config/> -->
 	<context:component-scan
 		base-package="org.ssm.dufy">
 		<context:exclude-filter type="annotation"
@@ -95,7 +95,7 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	<context:annotation-config></context:annotation-config>
 
-	<!-- ÈÖçÁΩÆ quartzÂÆöÊó∂‰ªªÂä° Ë∞ÉÂ∫¶Âô® -->
+	<!-- ≈‰÷√ quartz∂® ±»ŒŒÒ µ˜∂»∆˜ -->
 	<bean name="quartzScheduler"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
@@ -105,7 +105,7 @@
 			value="classpath:quartz.properties" />
 	</bean>
 	
-	<!-- ÈÖçÁΩÆRedisËøûÊé•Ê±† -->
+	<!-- ≈‰÷√Redis¡¨Ω”≥ÿ -->
 	<bean class="redis.clients.jedis.JedisPoolConfig" id="poolConfig">
 		<property name="maxIdle" value="${redis.maxIdle}"/>
 		<property name="maxTotal" value="${redis.maxTotal}"/>
@@ -113,14 +113,15 @@
 		<property name="testOnBorrow" value="${redis.testOnBorrow}"/>
 	</bean>
 	
-	<!-- ÈÖçÁΩÆredisÈìæÊé•‰ø°ÊÅØ -->
+	<!-- ≈‰÷√redis¡¥Ω”–≈œ¢ -->
 	<bean class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" id="connectionFactory">
 		<property name="hostName" value="${redis.host}"/>
 		<property name="port" value="${redis.port}"/>
-		<property name="poolConfig" ref="poolConfig"/>	
+		<property name="poolConfig" ref="poolConfig"/>
+		<property name="database" value="${redis.dbIndex}"/>
 	</bean>
 	
-	<!-- ÈÖçÁΩÆRedisTemplate -->
+	<!-- ≈‰÷√RedisTemplate -->
 	<bean class="org.springframework.data.redis.core.RedisTemplate" id="redisTemplate">
 		<property name="connectionFactory" ref="connectionFactory"/>
 		<property name="keySerializer">
