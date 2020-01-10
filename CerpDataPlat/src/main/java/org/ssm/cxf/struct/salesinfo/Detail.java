@@ -60,6 +60,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "salesid",
     "salesdtlid",
     "stiodate",
+    "goodsid",
     "goodsname",
     "currencyname",
     "goodstype",
@@ -92,6 +93,10 @@ public class Detail {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String stiodate;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String goodsid;
     @XmlElement(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
@@ -227,6 +232,30 @@ public class Detail {
      */
     public void setStiodate(String value) {
         this.stiodate = value;
+    }
+
+    /**
+     * 获取goodsid属性的值。
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getGoodsid() {
+        return goodsid;
+    }
+
+    /**
+     * 设置goodsid属性的值。
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setGoodsid(String value) {
+        this.goodsid = value;
     }
 
     /**

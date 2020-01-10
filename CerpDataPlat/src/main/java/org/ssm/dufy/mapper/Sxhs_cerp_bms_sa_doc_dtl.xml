@@ -147,7 +147,7 @@
 
        o.employeename inputmanname,
        p.employeename confirmanname,
-
+       b.goodsid,
        b.salesdtlid,
        to_char(b.stiodate,'YYYY-MM-DD HH24:MI:SS') stiodate,
        i.goodsname,

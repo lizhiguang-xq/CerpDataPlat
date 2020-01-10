@@ -210,6 +210,7 @@ public class ISxhsCerpBmsSaDocDtlServiceImpl implements ISxhsCerpBmsSaDocDtlServ
                 detail.setSalesid(StringUtil.doNullStr(map.get("SALESID")));
                 detail.setSalesdtlid(StringUtil.doNullStr(map.get("SALESDTLID")));
                 detail.setStiodate(StringUtil.doNullStr(map.get("STIODATE")));
+                detail.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
                 detail.setGoodsname(StringUtil.doNullStr(map.get("GOODSNAME")));
                 detail.setCurrencyname(StringUtil.doNullStr(map.get("CURRENCYNAME")));
                 detail.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
