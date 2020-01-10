@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}salesid"/>
  *         &lt;element ref="{}salesdtlid"/>
  *         &lt;element ref="{}stiodate"/>
+ *         &lt;element ref="{}goodsid"/>
  *         &lt;element ref="{}goodsname"/>
  *         &lt;element ref="{}currencyname"/>
  *         &lt;element ref="{}goodstype"/>
