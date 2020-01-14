@@ -39,6 +39,7 @@
 	   and e.inoutid = f.inoutid
 	   and e.comefrom = 3
 	   and c.total > 0
+	   and nvl(c.zx_batchsetflag,0) = 0
 	   <if test="entryid != null and entryid != '' " >
 	   and a.entryid = #{entryid}
 	   </if>
