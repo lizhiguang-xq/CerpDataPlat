@@ -13,50 +13,50 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 	default-lazy-init="true">
      
-    <!-- AOPåŠ¨æ€ä»£ç†  true è¡¨ç¤ºä½¿ç”¨CglibåŠ¨æ€ä»£ç†ï¼Œæ˜¯å¦éœ€è¦å¼•å…¥Cglibçš„jaråŒ…-->
+    <!-- AOP¶¯Ì¬´úÀí  true ±íÊ¾Ê¹ÓÃCglib¶¯Ì¬´úÀí£¬ÊÇ·ñÐèÒªÒýÈëCglibµÄjar°ü-->
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <context:annotation-config></context:annotation-config>
-    <!-- æ‰«æcontrollerï¼ˆcontrollerå±‚æ³¨å…¥ï¼‰ -->
+    <!-- É¨Ãècontroller£¨controller²ã×¢Èë£© -->
     <context:component-scan base-package="org.ssm.dufy.web" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
    
     <mvc:annotation-driven />
 
-      <!-- å†…å®¹åå•†ç®¡ç†å™¨  -->
-    <!--1ã€é¦–å…ˆæ£€æŸ¥è·¯å¾„æ‰©å±•åï¼ˆå¦‚my.pdfï¼‰ï¼›2ã€å…¶æ¬¡æ£€æŸ¥Parameterï¼ˆå¦‚my?format=pdfï¼‰ï¼›3ã€æ£€æŸ¥Accept Header-->
+      <!-- ÄÚÈÝÐ­ÉÌ¹ÜÀíÆ÷  -->
+    <!--1¡¢Ê×ÏÈ¼ì²éÂ·¾¶À©Õ¹Ãû£¨Èçmy.pdf£©£»2¡¢Æä´Î¼ì²éParameter£¨Èçmy?format=pdf£©£»3¡¢¼ì²éAccept Header-->
     <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-        <!-- æ‰©å±•åè‡³mimeTypeçš„æ˜ å°„,å³ /user.json => application/json -->
+        <!-- À©Õ¹ÃûÖÁmimeTypeµÄÓ³Éä,¼´ /user.json => application/json -->
         <property name="favorPathExtension" value="true"/>
-        <!-- ç”¨äºŽå¼€å¯ /userinfo/123?format=json çš„æ”¯æŒ -->
+        <!-- ÓÃÓÚ¿ªÆô /userinfo/123?format=json µÄÖ§³Ö -->
         <property name="favorParameter" value="true"/>
         <property name="parameterName" value="format"/>
-        <!-- æ˜¯å¦å¿½ç•¥Accept Header -->
+        <!-- ÊÇ·ñºöÂÔAccept Header -->
         <property name="ignoreAcceptHeader" value="false"/>
 
-        <property name="mediaTypes"> <!--æ‰©å±•ååˆ°MIMEçš„æ˜ å°„ï¼›favorPathExtension, favorParameteræ˜¯trueæ—¶èµ·ä½œç”¨  -->
+        <property name="mediaTypes"> <!--À©Õ¹Ãûµ½MIMEµÄÓ³Éä£»favorPathExtension, favorParameterÊÇtrueÊ±Æð×÷ÓÃ  -->
             <value>
                 json=application/json
                 xml=application/xml
                 html=text/html
             </value>
         </property>
-        <!-- é»˜è®¤çš„content type -->
+        <!-- Ä¬ÈÏµÄcontent type -->
         <property name="defaultContentType" value="text/html"/>
     </bean>
 
 
-    <!-- å½“åœ¨web.xml ä¸­   DispatcherServletä½¿ç”¨ <url-pattern>/</url-pattern> æ˜ å°„æ—¶ï¼Œèƒ½æ˜ å°„é™æ€èµ„æº -->
+    <!-- µ±ÔÚweb.xml ÖÐ   DispatcherServletÊ¹ÓÃ <url-pattern>/</url-pattern> Ó³ÉäÊ±£¬ÄÜÓ³Éä¾²Ì¬×ÊÔ´ -->
     <mvc:default-servlet-handler />  
-	<!-- é™æ€èµ„æºæ˜ å°„ -->
+	<!-- ¾²Ì¬×ÊÔ´Ó³Éä -->
     <mvc:resources mapping="/static/**" location="/WEB-INF/static/"/>
    
 
-   <!-- å¯¹æ¨¡åž‹è§†å›¾æ·»åŠ å‰åŽç¼€ 
+   <!-- ¶ÔÄ£ÐÍÊÓÍ¼Ìí¼ÓÇ°ºó×º 
      <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
       p:prefix="/WEB-INF/jsp/" p:suffix=".jsp"/>
       -->
-      <!-- é»˜è®¤çš„è§†å›¾è§£æžå™¨ åœ¨ä¸Šè¾¹çš„è§£æžé”™è¯¯æ—¶ä½¿ç”¨ (é»˜è®¤ä½¿ç”¨html)- -->
+      <!-- Ä¬ÈÏµÄÊÓÍ¼½âÎöÆ÷ ÔÚÉÏ±ßµÄ½âÎö´íÎóÊ±Ê¹ÓÃ (Ä¬ÈÏÊ¹ÓÃhtml)- -->
 	<bean id="defaultViewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
 		p:order="2">
@@ -66,5 +66,21 @@
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
 	</bean>
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+                        <property name="dateFormat">
+                            <bean class="java.text.SimpleDateFormat">
+                                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss" />
+                            </bean>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
 
 </beans>

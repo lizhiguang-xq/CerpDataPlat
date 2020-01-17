@@ -12,9 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.ssm.dufy.bean.AjaxResult;
 import org.ssm.dufy.constant.CommonConstant;
 import org.ssm.dufy.entity.User;
 import org.ssm.dufy.service.IEmployeeService;
@@ -59,6 +58,38 @@ public class UserController {
 		
 		return "user/login";
 	}
+
+	@RequestMapping(value="/doLogin")
+	public String doLogin(User user, Model model){
+
+		User dbUser = userService.getUser(user);
+		if(dbUser!=null) {
+			return "main";
+		} else {
+			String errMsg = "用户或密码不正确";
+			model.addAttribute("errMsg", errMsg);
+			return "redirect:toLogin";
+		}
+
+	}
+	@RequestMapping("/doAjaxLogin")
+	@ResponseBody
+	public Object doAjaxLogin(User user) {
+		User dbUser = userService.getUser(user);
+		AjaxResult ajaxResult = new AjaxResult();
+		if(dbUser!=null) {
+			ajaxResult.setSuccess(true);
+		} else {
+			ajaxResult.setSuccess(false);
+		}
+
+		return ajaxResult;
+	}
+	@RequestMapping("/main")
+	public String main(){
+		return "main";
+	}
+
 	
 	@RequestMapping(value="logout")
 	public String logout(HttpServletRequest request ){

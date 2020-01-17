@@ -17,7 +17,7 @@ public class RUserDao {
 	public void setUser(User user) {
 		ValueOperations<String, User> ops = redisTemplate.opsForValue();
 //		ops.set(user.getUserName(), user, 360, TimeUnit.SECONDS);
-		ops.set(user.getUserName(), user);
+		ops.set(user.getUser_name(), user);
 	}
 	
 	public User getUser(String username) {

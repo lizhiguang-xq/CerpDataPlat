@@ -2,3 +2,10 @@
 /.settings/
 /Users/
 /workspace_ssm/
+*.class
+*.log
+*.classpath
+*.project
+*.springBeans
+*.gitignore
+*.war

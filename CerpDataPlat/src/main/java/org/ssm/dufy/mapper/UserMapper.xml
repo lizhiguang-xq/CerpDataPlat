@@ -95,7 +95,7 @@
     select 
     <include refid="Base_Column_List" />
     from user_t
-    where user_name = #{userName,jdbcType=VARCHAR} AND password = #{password,jdbcType=VARCHAR}
+    where user_name = #{user_name,jdbcType=VARCHAR} AND password = #{password,jdbcType=VARCHAR}
   </select>
   
   <select id="findUserByName" resultType="org.ssm.dufy.entity.User" parameterType="java.lang.String" >

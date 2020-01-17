@@ -22,7 +22,7 @@ public class IUserServiceTest {
 	public void getUserByIdTest(){
 	 
 		User user = userService.getUserById(1);
-		System.out.println(user.getUserName());
+		System.out.println(user.getUser_name());
 	}
 	
 }

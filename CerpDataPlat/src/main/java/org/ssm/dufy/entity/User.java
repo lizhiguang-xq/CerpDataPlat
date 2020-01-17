@@ -32,12 +32,21 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getUserName() {
+//    public String getUserName() {
+//        return user_name;
+//    }
+//
+//    public void setUserName(String userName) {
+//        this.user_name = userName == null ? null : userName.trim();
+//    }
+
+
+    public String getUser_name() {
         return user_name;
     }
 
-    public void setUserName(String userName) {
-        this.user_name = userName == null ? null : userName.trim();
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 
     public String getPassword() {

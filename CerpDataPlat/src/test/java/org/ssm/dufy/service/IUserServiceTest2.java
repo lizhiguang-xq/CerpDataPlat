@@ -11,6 +11,6 @@ public class IUserServiceTest2 {
 		ApplicationContext application = new ClassPathXmlApplicationContext("applicationContext.xml");
 		IUserService uService = (IUserService) application.getBean("userService");
 		User user = uService.getUserById(1);
-		System.out.println(user.getUserName());
+		System.out.println(user.getUser_name());
 	}
 }
