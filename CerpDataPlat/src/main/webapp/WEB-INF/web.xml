@@ -37,6 +37,10 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+
+  <listener>
+    <listener-class>org.ssm.dufy.listener.ServerStartupListener</listener-class>
+  </listener>
   
    
   <context-param>

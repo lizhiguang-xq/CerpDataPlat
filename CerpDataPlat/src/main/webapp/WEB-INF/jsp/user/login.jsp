@@ -8,9 +8,9 @@
     <meta name="description" content="">
     <meta name="keys" content="">
     <meta name="author" content="">
-    <link rel="stylesheet" href="/CerpDataPlat/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/CerpDataPlat/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/CerpDataPlat/css/login.css">
+    <link rel="stylesheet" href="${APP_PATH}/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${APP_PATH}/css/font-awesome.min.css">
+    <link rel="stylesheet" href="${APP_PATH}/css/login.css">
     <style>
 
     </style>
@@ -57,9 +57,9 @@
         <a class="btn btn-lg btn-success btn-block" onclick="dologin()" > 登录</a>
     </form>
 </div>
-<script src="/CerpDataPlat/jquery/jquery-2.1.1.min.js"></script>
-<script src="/CerpDataPlat/bootstrap/js/bootstrap.min.js"></script>
-<script src="/CerpDataPlat/layer/layer.js"></script>
+<script src="${APP_PATH}/jquery/jquery-2.1.1.min.js"></script>
+<script src="${APP_PATH}/bootstrap/js/bootstrap.min.js"></script>
+<script src="${APP_PATH}/layer/layer.js"></script>
 <script>
     function dologin() {
         var user_name = $("#user_name").val();
@@ -87,7 +87,8 @@
             success : function(result){
                 layer.close(loadingIndex);
                 if(result.success) {
-                    window.location.href="/CerpDataPlat/quartz/listJob";
+                    // window.location.href="${APP_PATH}/quartz/listJob";
+                    window.location.href="${APP_PATH}/main";
                 } else {
                     layer.msg("用户登陆失败 用户名或密码错误", {time:2000, icon:5, shift:6}, function(){});
 

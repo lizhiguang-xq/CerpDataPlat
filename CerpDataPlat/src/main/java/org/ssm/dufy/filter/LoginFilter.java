@@ -37,7 +37,7 @@ public class LoginFilter implements Filter{
 			chain.doFilter(req, resp);
 		}else{
 			//若没有则，跳转到登录页面
-			response.sendRedirect(request.getContextPath() + "/user/toLogin");
+			response.sendRedirect(request.getContextPath() + "/user/login");
 		}
 	}
 
