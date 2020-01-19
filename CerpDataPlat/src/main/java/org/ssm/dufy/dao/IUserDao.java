@@ -2,6 +2,9 @@ package org.ssm.dufy.dao;
 
 import org.ssm.dufy.entity.User;
 
+import java.util.List;
+import java.util.Map;
+
 public interface IUserDao {
     int deleteByPrimaryKey(Integer id);
 
@@ -18,4 +21,6 @@ public interface IUserDao {
     User findUser(User user);
     
     User findUserByName(String uName);
+
+    List<User> pageQueryUserDate(Map<String, Object> map);
 }

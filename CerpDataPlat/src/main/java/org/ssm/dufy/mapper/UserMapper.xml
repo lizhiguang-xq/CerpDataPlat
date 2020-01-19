@@ -103,4 +103,9 @@
       from user_t
      where user_name = #{uName,jdbcType=VARCHAR}
   </select>
+
+  <select id="pageQueryUserDate" resultType="org.ssm.dufy.entity.User" >
+    select id, user_name, password, entryid, opers
+      from user_t limit #{start}, #{size}
+  </select>
 </mapper>

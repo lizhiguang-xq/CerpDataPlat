@@ -8,6 +8,9 @@ import org.ssm.dufy.entity.User;
 import org.ssm.dufy.redis.RUserDao;
 import org.ssm.dufy.service.IUserService;
 
+import java.util.List;
+import java.util.Map;
+
 @Service("userService")
 public class IUserServiceImpl  implements IUserService{
 
@@ -46,5 +49,10 @@ public class IUserServiceImpl  implements IUserService{
 			}
 		}
 	}
+
+    @Override
+    public List<User> pageQueryUserData(Map<String, Object> map) {
+		return udao.pageQueryUserDate(map);
+    }
 
 }
