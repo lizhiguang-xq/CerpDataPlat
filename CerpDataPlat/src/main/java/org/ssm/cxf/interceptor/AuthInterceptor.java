@@ -1,25 +1,23 @@
 package org.ssm.cxf.interceptor;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
+import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.ssm.dufy.entity.User;
 import org.ssm.dufy.service.IUserService;
-import org.w3c.dom.Node;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Component("authInterceptor")
 public class AuthInterceptor extends AbstractPhaseInterceptor<SoapMessage> {
-	
+
 	@Autowired
 	private IUserService userService;
 
@@ -53,11 +51,11 @@ public class AuthInterceptor extends AbstractPhaseInterceptor<SoapMessage> {
 		
 //		String userName = uList.item(0).getTextContent();
 //		String passWord = pList.item(0).getTextContent();
+		HttpServletRequest request = (HttpServletRequest)message.get(AbstractHTTPDestination.HTTP_REQUEST);
 		List<String> list = message.getContent(List.class);
 		String userName = list.get(0).toString();
 		String passWord = list.get(1).toString();
 		String oper = list.get(2).toString().trim().toLowerCase();
-		
 		
 		User u = userService.getUserByName(userName);
 		
@@ -74,7 +72,9 @@ public class AuthInterceptor extends AbstractPhaseInterceptor<SoapMessage> {
 		if(!operslist.contains(oper)) {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",不存在或未授权"));
 		}
-		
+
+		request.setAttribute("UserInfo", u);
+
 	}
 
 }

@@ -1,6 +1,10 @@
 package org.ssm.cxf;
 
+import javax.annotation.Resource;
 import javax.jws.WebService;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 import org.apache.cxf.interceptor.Fault;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,9 @@ import org.ssm.dufy.service.*;
 @Component("cerpDataInteractiveService")
 @WebService(endpointInterface="org.ssm.cxf.CerpDataInteractiveService",serviceName="CerpDataInteractiveService",targetNamespace="http://cxf.ssm.org/")
 public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveService {
+
+	@Resource
+	private WebServiceContext context;
 
 	@Autowired
 	private IGoodsService goodsService;
@@ -51,9 +58,12 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 
 	@Override
 	public String tslCerpDataInteractive(String userName, String passWord, String oper, String xmlData) {
-		
+
+		MessageContext messageContext = context.getMessageContext();
+		HttpServletRequest request = (HttpServletRequest) messageContext.get(MessageContext.SERVLET_REQUEST);
 //		User u = (User)cacheManager.getCache("userDataCache").get(userName).get();
-		User u = userService.getUserByName(userName);
+//		User u = userService.getUserByName(userName);
+		User u = (User)request.getAttribute("UserInfo");
 		String entryid = "";		
 		if(u!=null) {
 			entryid = u.getEntryid().toString();

@@ -9,7 +9,7 @@
 	<name>learn ssm_quart demo projet</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-		<spring.version>4.3.10.RELEASE</spring.version>
+		<spring.version>4.3.18.RELEASE</spring.version>
 		<mybatis.version>3.2.1</mybatis.version>
 		<slf4j.version>1.6.6</slf4j.version>
 		<log4j.version>1.2.12</log4j.version>
@@ -314,6 +314,7 @@
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
+					<stopKey/>
 				</configuration>
 			</plugin>
 		</plugins>

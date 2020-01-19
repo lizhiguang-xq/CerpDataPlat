@@ -8,6 +8,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 import org.ssm.dufy.entity.User;
 
+import java.util.concurrent.TimeUnit;
+
 @Repository
 public class RUserDao {
 	
@@ -16,8 +18,8 @@ public class RUserDao {
 	
 	public void setUser(User user) {
 		ValueOperations<String, User> ops = redisTemplate.opsForValue();
-//		ops.set(user.getUserName(), user, 360, TimeUnit.SECONDS);
-		ops.set(user.getUser_name(), user);
+		ops.set(user.getUser_name(), user, 360, TimeUnit.SECONDS);
+//		ops.set(user.getUser_name(), user);
 	}
 	
 	public User getUser(String username) {
