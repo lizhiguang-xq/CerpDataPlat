@@ -23,4 +23,6 @@ public interface IUserDao {
     User findUserByName(String uName);
 
     List<User> pageQueryUserDate(Map<String, Object> map);
+
+    int pageQueryTotalSize(Map<String, Object> map);
 }

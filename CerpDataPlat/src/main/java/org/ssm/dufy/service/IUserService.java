@@ -14,5 +14,7 @@ public interface IUserService {
 	public User getUserByName(String uName);
 
 	List<User> pageQueryUserData(Map<String, Object> map);
+
+    int pageQueryTotalSize(Map<String, Object> map);
 }
 

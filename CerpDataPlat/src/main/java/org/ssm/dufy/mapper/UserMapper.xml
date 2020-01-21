@@ -106,6 +106,21 @@
 
   <select id="pageQueryUserDate" resultType="org.ssm.dufy.entity.User" >
     select id, user_name, password, entryid, opers
-      from user_t limit #{start}, #{size}
+      from user_t
+      <where>
+        <if test="queryText != null">
+          and (user_name like concat('%',#{queryText},'%') or entryid = #{queryText})
+        </if>
+      </where>
+      limit #{start}, #{size}
+  </select>
+
+  <select id="pageQueryTotalSize" resultType="int" >
+    select count(1) cnt from user_t
+    <where>
+      <if test="queryText != null">
+        and (user_name like concat('%',#{queryText},'%') or entryid = #{queryText})
+      </if>
+    </where>
   </select>
 </mapper>

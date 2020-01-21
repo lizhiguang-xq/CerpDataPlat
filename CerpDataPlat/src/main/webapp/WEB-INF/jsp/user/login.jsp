@@ -76,7 +76,7 @@
         var loadingIndex = null;
         $.ajax({
             type : "POST",
-            url : "doAjaxLogin",
+            url : "${APP_PATH}/user/doAjaxLogin",
             data : {
                 "user_name" : user_name,
                 "password" : password

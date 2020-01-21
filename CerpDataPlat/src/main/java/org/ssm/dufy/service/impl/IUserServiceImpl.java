@@ -55,4 +55,9 @@ public class IUserServiceImpl  implements IUserService{
 		return udao.pageQueryUserDate(map);
     }
 
+	@Override
+	public int pageQueryTotalSize(Map<String, Object> map) {
+		return udao.pageQueryTotalSize(map);
+	}
+
 }
