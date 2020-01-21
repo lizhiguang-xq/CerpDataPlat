@@ -95,14 +95,6 @@ public class UserController {
 //	public String main(){
 //		return "main";
 //	}
-
-	
-	@RequestMapping(value="logout")
-	public String logout(HttpServletRequest request ){
-		HttpSession session = request.getSession();
-		session.invalidate();
-		return "redirect:/user/login";
-	}
 	
 	
 }

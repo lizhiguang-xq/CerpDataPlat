@@ -130,11 +130,14 @@
         </div>
 
         <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2 main">
-            <iframe id="mainframe" src=""
-                    frameborder="0" scrolling="no" marginheight="0" marginwidth="0" height="100%" width="100%">
-
-            </iframe>
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe id ="mainframe" class="embed-responsive-item" src=""></iframe>
+            </div>
         </div>
+
+
+
+
     </div>
 </div>
 <script src="${APP_PATH}/jquery/jquery-2.1.1.min.js"></script>
@@ -159,6 +162,7 @@
     function turn(url){
         $("#mainframe").attr('src',url);
     }
+
 </script>
 </body>
 </html>
