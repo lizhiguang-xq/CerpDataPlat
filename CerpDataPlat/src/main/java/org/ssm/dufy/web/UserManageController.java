@@ -12,6 +12,7 @@ import org.ssm.dufy.bean.Page;
 import org.ssm.dufy.entity.User;
 import org.ssm.dufy.service.IUserService;
 
+import javax.servlet.jsp.tagext.TryCatchFinally;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,23 @@ import java.util.Map;
 public class UserManageController {
     @Autowired
     private IUserService userService;
+    @RequestMapping("/add")
+    public String add() {
+        return "user/manage/add";
+    }
+    @RequestMapping("/insertUser")
+    @ResponseBody
+    public Object insertUser(User user) {
+        AjaxResult ajaxResult = new AjaxResult();
+        try{
+            userService.insertUser(user);
+            ajaxResult.setSuccess(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ajaxResult.setSuccess(false);
+        }
+        return ajaxResult;
+    }
 
     @RequestMapping("/index")
     public String index() {
@@ -58,6 +76,7 @@ public class UserManageController {
             ajaxResult.setData1(userPage);
             ajaxResult.setSuccess(true);
         }catch (Exception e) {
+            e.printStackTrace();
             ajaxResult.setSuccess(false);
         } finally {
 

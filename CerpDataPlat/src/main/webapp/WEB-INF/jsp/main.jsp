@@ -134,10 +134,6 @@
                 <iframe id ="mainframe" class="embed-responsive-item" src=""></iframe>
             </div>
         </div>
-
-
-
-
     </div>
 </div>
 <script src="${APP_PATH}/jquery/jquery-2.1.1.min.js"></script>

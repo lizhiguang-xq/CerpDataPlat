@@ -27,6 +27,12 @@
     values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{entryid,jdbcType=INTEGER}, #{opers,jdbcType=VARCHAR})
   </insert>
+  <insert id="insertUser" parameterType="org.ssm.dufy.entity.User" >
+    insert into user_t (user_name, password,
+      entryid,opers)
+    values (#{user_name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+      #{entryid,jdbcType=INTEGER}, #{opers,jdbcType=VARCHAR})
+  </insert>
   <insert id="insertSelective" parameterType="org.ssm.dufy.entity.User" >
     insert into user_t
     <trim prefix="(" suffix=")" suffixOverrides="," >

@@ -25,4 +25,6 @@ public interface IUserDao {
     List<User> pageQueryUserDate(Map<String, Object> map);
 
     int pageQueryTotalSize(Map<String, Object> map);
+
+    void insertUser(User user);
 }

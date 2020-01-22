@@ -16,5 +16,7 @@ public interface IUserService {
 	List<User> pageQueryUserData(Map<String, Object> map);
 
     int pageQueryTotalSize(Map<String, Object> map);
+
+    void insertUser(User user);
 }
 

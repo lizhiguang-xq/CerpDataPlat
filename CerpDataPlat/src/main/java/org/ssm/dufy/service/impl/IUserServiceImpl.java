@@ -60,4 +60,9 @@ public class IUserServiceImpl  implements IUserService{
 		return udao.pageQueryTotalSize(map);
 	}
 
+	@Override
+	public void insertUser(User user) {
+		udao.insertUser(user);
+	}
+
 }
