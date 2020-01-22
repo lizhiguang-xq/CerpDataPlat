@@ -18,5 +18,8 @@ public interface IUserService {
     int pageQueryTotalSize(Map<String, Object> map);
 
     void insertUser(User user);
+
+	int updateByPrimaryKey(User record);
+
 }
 

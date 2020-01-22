@@ -65,4 +65,10 @@ public class IUserServiceImpl  implements IUserService{
 		udao.insertUser(user);
 	}
 
+	@Override
+	public int updateByPrimaryKey(User user) {
+		return udao.updateByPrimaryKey(user);
+	}
+
+
 }

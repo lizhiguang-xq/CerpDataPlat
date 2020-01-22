@@ -22,10 +22,33 @@ import java.util.Map;
 public class UserManageController {
     @Autowired
     private IUserService userService;
+
+    @RequestMapping("/updateUser")
+    @ResponseBody
+    public Object updateUser(User user){
+        AjaxResult ajaxResult = new AjaxResult();
+        try{
+            userService.updateByPrimaryKey(user);
+            ajaxResult.setSuccess(true);
+        }catch (Exception e){
+            e.printStackTrace();
+            ajaxResult.setSuccess(false);
+        }
+        return ajaxResult;
+    }
+
+    @RequestMapping("/editUser")
+    public String editUser(Integer id, Model model) {
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "user/manage/edit";
+    }
+
     @RequestMapping("/add")
     public String add() {
         return "user/manage/add";
     }
+
     @RequestMapping("/insertUser")
     @ResponseBody
     public Object insertUser(User user) {

@@ -144,8 +144,8 @@
                         tableContent+='    <td>'+user.entryid+'</td>';
                         tableContent+='    <td>'+user.opers+'</td>';
                         tableContent+='    <td>';
-                        tableContent+='    <button type="button" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
-                        tableContent+='<button type="button" class="btn btn-primary btn-xs"><i class=" glyphicon glyphicon-pencil"></i></button>';
+                        // tableContent+='    <button type="button" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
+                        tableContent+='<button type="button" onclick="toEditPage('+user.id+')" class="btn btn-primary btn-xs"><i class=" glyphicon glyphicon-pencil"></i></button>    ';
                         tableContent+='<button type="button" class="btn btn-danger btn-xs"><i class=" glyphicon glyphicon-remove"></i></button>';
                         tableContent+='</td>';
                         tableContent+='</tr>';
@@ -179,6 +179,10 @@
                 }
             }
         });
+    }
+
+    function toEditPage(id) {
+        window.location.href = "${APP_PATH}/user/manage/editUser?id="+id;
     }
 </script>
 </body>
