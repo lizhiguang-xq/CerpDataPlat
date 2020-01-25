@@ -27,4 +27,6 @@ public interface IUserDao {
     int pageQueryTotalSize(Map<String, Object> map);
 
     void insertUser(User user);
+
+    int deleteUsers(Map<String, Object> map);
 }

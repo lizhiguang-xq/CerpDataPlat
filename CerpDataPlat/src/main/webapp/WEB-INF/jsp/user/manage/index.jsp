@@ -39,16 +39,17 @@
                 </div>
                 <button id="queryBtn" type="button" class="btn btn-warning"><i class="glyphicon glyphicon-search"></i> 查询</button>
             </form>
-            <button type="button" class="btn btn-danger" style="float:right;margin-left:10px;"><i class=" glyphicon glyphicon-remove"></i> 删除</button>
+            <button type="button" onclick="deleteUsers()" class="btn btn-danger" style="float:right;margin-left:10px;"><i class=" glyphicon glyphicon-remove"></i> 批量删除</button>
             <button type="button" class="btn btn-primary" style="float:right;" onclick="window.location.href='${APP_PATH}/user/manage/add'"><i class="glyphicon glyphicon-plus"></i> 新增</button>
             <br>
             <hr style="clear:both;">
             <div class="table-responsive">
+                <form id="userForm">
                 <table class="table  table-bordered">
                     <thead>
                     <tr >
                         <th width="30">#</th>
-                        <th width="30"><input type="checkbox"></th>
+                        <th width="30"><input id="allSelBox" type="checkbox"></th>
                         <th>用户ID</th>
                         <th>用户名</th>
                         <th>独立单元ID</th>
@@ -69,6 +70,7 @@
                         </tr>
                     </tfoot>
                 </table>
+                </form>
             </div>
         </div>
     </div>
@@ -102,7 +104,16 @@
                 likeflg = true;
             }
             queryPage(1);
-        })
+        });
+
+        $("#allSelBox").click(function () {
+            var chkFlag = this.checked;
+            $("#userData :checkbox").each(function () {
+                this.checked = chkFlag;
+            });
+        });
+
+
     });
     $("tbody .btn-success").click(function(){
         window.location.href = "assignRole.html";
@@ -113,7 +124,7 @@
 
     function queryPage(pageno) {
         var loadingIndex = null;
-        var jsonData = {"pageno" : pageno, "pagesize" : 2 };
+        var jsonData = {"pageno" : pageno, "pagesize" : 5 };
         if(likeflg == true) {
             jsonData.queryText = $("#queryText").val();
         }
@@ -138,7 +149,7 @@
                     $.each(users, function(i, user) {
                         tableContent+='<tr>';
                         tableContent+='<td>'+(i+1)+'</td>';
-                        tableContent+='<td><input type="checkbox"></td>';
+                        tableContent+='<td><input type="checkbox" name="chkUserId" value="'+user.id+'"></td>';
                         tableContent+='    <td>'+user.id+'</td>';
                         tableContent+='    <td>'+user.user_name+'</td>';
                         tableContent+='    <td>'+user.entryid+'</td>';
@@ -146,7 +157,7 @@
                         tableContent+='    <td>';
                         // tableContent+='    <button type="button" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
                         tableContent+='<button type="button" onclick="toEditPage('+user.id+')" class="btn btn-primary btn-xs"><i class=" glyphicon glyphicon-pencil"></i></button>    ';
-                        tableContent+='<button type="button" class="btn btn-danger btn-xs"><i class=" glyphicon glyphicon-remove"></i></button>';
+                        tableContent+='<button type="button" onclick="deleteUSer('+user.id+',\''+user.user_name+'\')" class="btn btn-danger btn-xs"><i class=" glyphicon glyphicon-remove"></i></button>';
                         tableContent+='</td>';
                         tableContent+='</tr>';
                     });
@@ -183,6 +194,63 @@
 
     function toEditPage(id) {
         window.location.href = "${APP_PATH}/user/manage/editUser?id="+id;
+    }
+
+    function deleteUSer(id, user_name){
+        layer.confirm("删除用户"+user_name+", 是否继续?",  {icon: 3, title:'提示'}, function(cindex){
+
+            $.ajax({
+                type : "POST",
+                url : "${APP_PATH}/user/manage/deleteUser",
+                data : {"id" : id},
+                success(result) {
+                    if(result.success) {
+                        queryPage(1);
+                    } else {
+                        layer.msg("删除信息失败", {time:2000, icon:5, shift:6}, function(){});
+                    }
+                }
+            });
+
+            layer.close(cindex);
+        }, function(cindex){
+            layer.close(cindex);
+        });
+
+    }
+    
+    function deleteUsers() {
+        var selBoxs = $("#userData :checkbox");
+        var chkFlag = false;
+        selBoxs.each(function(){
+            if(this.checked){
+                chkFlag = true;
+            }
+        })
+
+        if(!chkFlag){
+            layer.msg("请选择需要删除的用户信息", {time:2000, icon:5, shift:6}, function(){});
+        } else {
+            layer.confirm("删除用户选择的用户信息, 是否继续?",  {icon: 3, title:'提示'}, function(cindex){
+
+                $.ajax({
+                    type : "POST",
+                    url : "${APP_PATH}/user/manage/deleteUsers",
+                    data : $("#userForm").serialize(),
+                    success(result) {
+                        if(result.success) {
+                            queryPage(1);
+                        } else {
+                            layer.msg("删除信息失败", {time:2000, icon:5, shift:6}, function(){});
+                        }
+                    }
+                });
+
+                layer.close(cindex);
+            }, function(cindex){
+                layer.close(cindex);
+            });
+        }
     }
 </script>
 </body>

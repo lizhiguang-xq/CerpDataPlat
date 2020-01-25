@@ -23,6 +23,42 @@ public class UserManageController {
     @Autowired
     private IUserService userService;
 
+    @RequestMapping("/deleteUsers")
+    @ResponseBody
+    public Object deleteUsers(Integer[] chkUserId) {
+        AjaxResult ajaxResult = new AjaxResult();
+
+        try {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("userids", chkUserId);
+            userService.deleteUsers(map);
+
+            ajaxResult.setSuccess(true);
+        }catch (Exception e){
+            e.printStackTrace();
+            ajaxResult.setSuccess(false);
+        }
+
+        return ajaxResult;
+    }
+
+    @RequestMapping("/deleteUser")
+    @ResponseBody
+    public Object deleteUser(Integer id){
+        AjaxResult ajaxResult = new AjaxResult();
+        try {
+            userService.deleteByPrimaryKey(id);
+            ajaxResult.setSuccess(true);
+        }catch (Exception e) {
+            e.printStackTrace();
+            ajaxResult.setSuccess(false);
+        }
+
+
+        return ajaxResult;
+    }
+
+
     @RequestMapping("/updateUser")
     @ResponseBody
     public Object updateUser(User user){

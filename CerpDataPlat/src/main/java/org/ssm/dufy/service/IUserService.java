@@ -21,5 +21,8 @@ public interface IUserService {
 
 	int updateByPrimaryKey(User record);
 
+    int deleteByPrimaryKey(Integer id);
+
+    int deleteUsers(Map<String, Object> map);
 }
 

@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="panel-body">
-                <form role="form">
+                <form id="userForm" role="form">
                     <div class="form-group">
                         <label>用户名</label>
                         <input type="text" class="form-control" id="txtusername" value="${user.user_name}" placeholder="请输入用户名">
@@ -52,8 +52,8 @@
                         <label>接口权限</label>
                         <input type="text" class="form-control" id="txtopers" value="${user.opers}" placeholder="请输入接口权限">
                     </div>
-                    <button id="updateBtn" type="button" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> 修改</button>
-                    <button type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重置</button>
+                    <button id="updateBtn" type="button" class="btn btn-success"><i class="glyphicon glyphicon-pencil"></i> 修改</button>
+                    <button id="resetBtn" type="button" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i> 重置</button>
                 </form>
             </div>
         </div>
@@ -125,6 +125,10 @@
 
             });
         });
+
+        $("#resetBtn").click(function(){
+            $("#userForm")[0].reset();
+        })
 
     });
 </script>

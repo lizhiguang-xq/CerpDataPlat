@@ -70,5 +70,15 @@ public class IUserServiceImpl  implements IUserService{
 		return udao.updateByPrimaryKey(user);
 	}
 
+    @Override
+    public int deleteByPrimaryKey(Integer id) {
+        return udao.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public int deleteUsers(Map<String, Object> map) {
+        return udao.deleteUsers(map);
+    }
+
 
 }
