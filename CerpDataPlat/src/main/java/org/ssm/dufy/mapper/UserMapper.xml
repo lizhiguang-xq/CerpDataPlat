@@ -137,4 +137,18 @@
       #{userid}
     </foreach>
   </delete>
+
+  <insert id="insertUserRoles">
+    insert into user_role_t (userid, roleid) values
+    <foreach collection="roleids" item="roleid" separator=",">
+      (#{userid}, #{roleid})
+    </foreach>
+  </insert>
+
+  <delete id="deleteUserRoles">
+    delete from user_role_t where userid = #{userid} and roleid in
+    <foreach collection="roleids" item="roleid" open="(" close=")" separator=",">
+      #{roleid}
+    </foreach>
+  </delete>
 </mapper>

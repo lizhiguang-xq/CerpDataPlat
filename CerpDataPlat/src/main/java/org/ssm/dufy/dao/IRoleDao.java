@@ -1,5 +1,6 @@
 package org.ssm.dufy.dao;
 
+import org.apache.ibatis.annotations.Select;
 import org.ssm.dufy.entity.Role;
 
 import java.util.List;
@@ -28,4 +29,7 @@ public interface IRoleDao {
     void insertRole(Role user);
 
     int deleteRoles(Map<String, Object> map);
+
+    @Select("select id, name, comment from role_t")
+    List<Role> queryAllRoles();
 }

@@ -115,9 +115,6 @@
 
 
     });
-    $("tbody .btn-success").click(function(){
-        window.location.href = "assignRole.html";
-    });
 
     function queryPage(pageno) {
         var loadingIndex = null;
@@ -152,7 +149,7 @@
                         tableContent+='     <td>'+user.entryid+'</td>';
                         tableContent+='     <td>'+user.opers+'</td>';
                         tableContent+='     <td>';
-                        tableContent+='         <button type="button" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
+                        tableContent+='         <button type="button" onclick="toAssignPage('+user.id+')" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
                         tableContent+='         <button type="button" onclick="toEditPage('+user.id+')" class="btn btn-primary btn-xs"><i class=" glyphicon glyphicon-pencil"></i></button>    ';
                         tableContent+='         <button type="button" onclick="deleteUser('+user.id+',\''+user.user_name+'\')" class="btn btn-danger btn-xs"><i class=" glyphicon glyphicon-remove"></i></button>';
                         tableContent+='     </td>';
@@ -248,6 +245,10 @@
                 layer.close(cindex);
             });
         }
+    }
+
+    function toAssignPage(id) {
+        window.location.href = "${APP_PATH}/user/manage/assign?id="+id;
     }
 </script>
 </body>

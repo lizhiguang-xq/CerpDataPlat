@@ -22,5 +22,7 @@ public interface IRoleService {
     int deleteByPrimaryKey(Integer id);
 
     int deleteRoles(Map<String, Object> map);
+
+    List<Role> queryAllRoles();
 }
 
