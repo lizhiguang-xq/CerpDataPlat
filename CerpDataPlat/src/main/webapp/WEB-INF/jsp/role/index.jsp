@@ -137,7 +137,7 @@
                         tableContent+='     <td>'+role.name+'</td>';
                         tableContent+='     <td>'+role.comment+'</td>';
                         tableContent+='     <td>';
-                        tableContent+='         <button type="button" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
+                        tableContent+='         <button type="button" onclick="goAssignPage('+role.id+')" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
                         tableContent+='         <button type="button" onclick="toEditPage('+role.id+')" class="btn btn-primary btn-xs"><i class=" glyphicon glyphicon-pencil"></i></button>    ';
                         tableContent+='         <button type="button" onclick="deleteRole('+role.id+',\''+role.name+'\')" class="btn btn-danger btn-xs"><i class=" glyphicon glyphicon-remove"></i></button>';
                         tableContent+='     </td>';
@@ -236,9 +236,13 @@
         }
     }
 
-    $("tbody .btn-success").click(function(){
-        window.location.href = "assignPermission.html";
-    });
+    // $("tbody .btn-success").click(function(){
+    //     window.location.href = "assignPermission.html";
+    // });
+
+    function goAssignPage(id) {
+        window.location.href = "${APP_PATH}/role/assign?id="+id;
+    }
 </script>
 </body>
 </html>

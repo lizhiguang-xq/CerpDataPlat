@@ -60,4 +60,10 @@ public class IRoleServiceImpl implements IRoleService{
     public List<Role> queryAllRoles() {
         return roleDao.queryAllRoles();
     }
+
+	@Override
+	public void insertRolePermission(Map<String, Object> paramMap) {
+		roleDao.deleteRolePermissions(paramMap);
+		roleDao.insertRolePermission(paramMap);
+	}
 }

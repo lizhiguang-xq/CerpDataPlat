@@ -105,4 +105,15 @@
       #{roleid}
     </foreach>
   </delete>
+
+  <insert id="insertRolePermission">
+    insert into role_permission_t (roleid, permissionid) values
+    <foreach collection="permissionids" item="permissionid" separator=",">
+      ( #{roleid}, #{permissionid} )
+    </foreach>
+  </insert>
+
+  <delete id="deleteRolePermissions">
+        delete from role_permission_t where roleid = #{roleid}
+    </delete>
 </mapper>

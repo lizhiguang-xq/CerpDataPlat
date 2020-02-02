@@ -32,4 +32,8 @@ public interface IRoleDao {
 
     @Select("select id, name, comment from role_t")
     List<Role> queryAllRoles();
+
+    void deleteRolePermissions(Map<String, Object> paramMap);
+
+    void insertRolePermission(Map<String, Object> paramMap);
 }
