@@ -23,6 +23,37 @@
    
     <mvc:annotation-driven />
 
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/user/login" />
+            <mvc:exclude-mapping path="/user/doAjaxLogin" />
+            <mvc:exclude-mapping path="/bootstrap/**" />
+            <mvc:exclude-mapping path="/css/**" />
+            <mvc:exclude-mapping path="/fonts/**" />
+            <mvc:exclude-mapping path="/img/**" />
+            <mvc:exclude-mapping path="/jquery/**" />
+            <mvc:exclude-mapping path="/layer/**" />
+            <mvc:exclude-mapping path="/script/**" />
+            <mvc:exclude-mapping path="/ztree/**" />
+            <bean class="org.ssm.dufy.interceptor.LoginInterceptor"></bean>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/user/login" />
+            <mvc:exclude-mapping path="/user/doAjaxLogin" />
+            <mvc:exclude-mapping path="/bootstrap/**" />
+            <mvc:exclude-mapping path="/css/**" />
+            <mvc:exclude-mapping path="/fonts/**" />
+            <mvc:exclude-mapping path="/img/**" />
+            <mvc:exclude-mapping path="/jquery/**" />
+            <mvc:exclude-mapping path="/layer/**" />
+            <mvc:exclude-mapping path="/script/**" />
+            <mvc:exclude-mapping path="/ztree/**" />
+            <bean class="org.ssm.dufy.interceptor.AuthInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
       <!-- 内容协商管理器  -->
     <!--1、首先检查路径扩展名（如my.pdf）；2、其次检查Parameter（如my?format=pdf）；3、检查Accept Header-->
     <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
