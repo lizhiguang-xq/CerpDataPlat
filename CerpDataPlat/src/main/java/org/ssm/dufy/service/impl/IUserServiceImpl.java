@@ -8,6 +8,7 @@ import org.ssm.dufy.entity.User;
 import org.ssm.dufy.redis.RUserDao;
 import org.ssm.dufy.service.IUserService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,5 +60,41 @@ public class IUserServiceImpl  implements IUserService{
 	public int pageQueryTotalSize(Map<String, Object> map) {
 		return udao.pageQueryTotalSize(map);
 	}
+
+	@Override
+	public void insertUser(User user) {
+		udao.insertUser(user);
+	}
+
+	@Override
+	public int updateByPrimaryKey(User user) {
+		return udao.updateByPrimaryKey(user);
+	}
+
+    @Override
+    public int deleteByPrimaryKey(Integer id) {
+        return udao.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public int deleteUsers(Map<String, Object> map) {
+        return udao.deleteUsers(map);
+    }
+
+	@Override
+	public void insertUserRoles(HashMap<String, Object> map) {
+		udao.insertUserRoles(map);
+	}
+
+	@Override
+	public void deleteUserRoles(HashMap<String, Object> map) {
+		udao.deleteUserRoles(map);
+	}
+
+	@Override
+	public List<Integer> queryRolesidByUserid(Integer id) {
+		return udao.queryRolesidByUserid(id);
+	}
+
 
 }

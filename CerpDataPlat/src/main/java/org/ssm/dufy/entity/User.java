@@ -15,14 +15,7 @@ public class User implements Serializable {
     
     private String opers;
 
-	public User() {
-	}
 
-	public User(String userName, String password) {
-		super();
-		this.user_name = userName;
-		this.password = password;
-	}
 
 	public Integer getId() {
         return id;
@@ -31,14 +24,6 @@ public class User implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
-//    public String getUserName() {
-//        return user_name;
-//    }
-//
-//    public void setUserName(String userName) {
-//        this.user_name = userName == null ? null : userName.trim();
-//    }
 
 
     public String getUser_name() {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ssm.dufy.dao.IPermissionDao" >
+    
+    <select id="queryPermissionsByUser" resultType="org.ssm.dufy.entity.Permission">
+        select
+            *
+        from permission_t
+        where id in (
+            select
+               permissionid
+            from role_permission_t
+            where roleid in (
+                select
+                    roleid
+                from user_role_t
+                where userid = #{id}
+            )
+        )
+    </select>
+    
+    <insert id="insertPermission">
+        insert into permission_t (
+            name, url, pid
+        ) values (
+            #{name}, #{url}, #{pid}
+        )
+    </insert>
+    
+    <update id="updatePermission">
+        update permission_t
+        set name = #{name}, url = #{url}
+        where id = #{id}
+    </update>
+    
+    <delete id="deletePermission">
+        delete from permission_t where id = #{id}
+    </delete>
+    
+</mapper>

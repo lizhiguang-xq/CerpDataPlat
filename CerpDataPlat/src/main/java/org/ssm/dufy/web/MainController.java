@@ -19,4 +19,9 @@ public class MainController {
         session.invalidate();
         return "redirect:/user/login";
     }
+
+    @RequestMapping("/error")
+    public String error() {
+        return "error";
+    }
 }

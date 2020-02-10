@@ -1,7 +1,7 @@
 package org.ssm.dufy.web;
 
 import java.io.IOException;
-import java.util.UUID;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +15,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.ssm.dufy.bean.AjaxResult;
 import org.ssm.dufy.constant.CommonConstant;
+import org.ssm.dufy.entity.Permission;
 import org.ssm.dufy.entity.User;
 import org.ssm.dufy.service.IEmployeeService;
+import org.ssm.dufy.service.IPermissionService;
 import org.ssm.dufy.service.IUserService;
 
 @Controller
@@ -26,8 +28,11 @@ public class UserController {
 	@Autowired
 	private IUserService userService;
 	
+//	@Autowired
+//	private IEmployeeService employeeService;
+
 	@Autowired
-	private IEmployeeService employeeService;
+	private IPermissionService permissionService;
 	
 //	@RequestMapping(value="/toLogin",method=RequestMethod.GET)
 //	public String toLogin(HttpServletRequest request,HttpServletResponse response) throws IOException{
@@ -58,6 +63,7 @@ public class UserController {
 //
 //		return "user/login";
 //	}
+
 	@RequestMapping("/login")
 	public String login() {
 		return "/user/login";
@@ -83,6 +89,30 @@ public class UserController {
 		AjaxResult ajaxResult = new AjaxResult();
 		if(dbUser!=null) {
 			session.setAttribute("loginUser", dbUser);
+
+			// 获取用户权限信息
+			List<Permission> permissions = permissionService.queryPermissionsByUser(dbUser);
+			Map<Integer, Permission> permissionMap = new HashMap<Integer, Permission>();
+			Permission root = null;
+			Set<String> uriSet = new HashSet<String>();
+			for ( Permission permission : permissions ) {
+				permissionMap.put(permission.getId(), permission);
+				if ( permission.getUrl() != null && !"".equals(permission.getUrl()) ) {
+					uriSet.add(session.getServletContext().getContextPath() + "/" +permission.getUrl());
+				}
+			}
+			session.setAttribute("authUriSet", uriSet);
+			for ( Permission permission : permissions ) {
+				Permission child = permission;
+				if ( child.getPid() == 0 ) {
+					root = permission;
+				} else {
+					Permission parent = permissionMap.get(child.getPid());
+					parent.getChildren().add(child);
+				}
+			}
+			session.setAttribute("rootPermission", root);
+
 			ajaxResult.setSuccess(true);
 		} else {
 			ajaxResult.setSuccess(false);
