@@ -49,12 +49,18 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 
 	@Autowired
 	private ISxhsCerpBmsSaDocDtlService pjcerpService;
+
+	@Autowired
+	private ISalesInfoService salesService;
 	
 //	@Autowired
 //    private EhCacheCacheManager cacheManager;
 	
 	@Autowired
 	private IUserService userService;
+
+	@Autowired
+	private IWyCerpBmsSaDocDtlService wycerpService;
 
 	@Override
 	public String tslCerpDataInteractive(String userName, String passWord, String oper, String xmlData) {
@@ -96,6 +102,10 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = invnoService.getSuInvno_Dgys(entryid, xmlData); //获取 【东莞药事平台】 【采购发票】
 		} else if(CommonConstant.OPER_GETSAINVNO_INFO_SXHS.equals(oper.toLowerCase())) {
 			retxml = pjcerpService.getSaInvno_Sxhs(entryid, xmlData); //【平嘉】根据销售单号获取销售单信息
+		} else if(CommonConstant.OPER_GETGOODS_INFO_NORMAL.equals(oper.toLowerCase())) {
+			retxml = goodsService.getGoods_normal(entryid, xmlData); //【增城妇幼保健】根据货品ID获取货品信息
+		} else if(CommonConstant.OPER_GETSAINVNO_INFO_ZCFY.equals(oper.toLowerCase())) {
+			retxml = salesService.selectNotTranslateCodeAndNotApplyOrderSalesInfo(entryid, xmlData); //【增城妇幼保健】根据销售单号获取销售单信息
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}
@@ -119,6 +129,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = primiumOrderService.createPrimiumOrder(entryid, xmlData); //生成赠品订单
 		} else if(CommonConstant.OPER_CREATE_APPLY_ORDER_SXHS.equals(oper.toLowerCase())) {
 			retxml = pjcerpService.createApplyOrder(entryid, xmlData); //生成1067订单
+		} else if(CommonConstant.OPER_CREATE_APPLY_ORDER_WY.equals(oper.toLowerCase())) {
+			retxml = wycerpService.createApplyOrder(entryid, xmlData); //微医生成1067订单
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

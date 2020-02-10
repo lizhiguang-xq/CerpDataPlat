@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.ISalesInfoDao" >
+
+
+    <select id="selectNotTranslateCodeAndNotApplyOrderAndOnlyUpload" resultType="map" parameterType="java.lang.String">
+    select
+        a.entryid,
+        a.customid,
+        a.customname,
+        a.salesid,
+        b.salesdtlid,
+        f.iodtlid,
+        b.goodsid,
+        i.goodsname,
+        i.goodstype,
+        i.goodsunit,
+        j.packname,
+        j.packsize,
+        b.unitprice,
+        f.dtlgoodsqty,
+        to_char(a.credate,'YYYY-MM-DD HH24:MI:SS') credate,
+        g.lotno,
+        to_char(g.proddate,'YYYY-MM-DD')  proddate,
+        to_char(g.invaliddate,'YYYY-MM-DD') invaliddate,
+        to_char(trunc(g.invaliddate)+1 ,'YYYY-MM-DD') sxq,
+        g.killlotno,
+        to_char(g.killdate,'YYYY-MM-DD') killdate,
+        c.invcode,
+        c.invno,
+        c.invtype,
+        to_char(nvl(c.zx_jsdate, c.credate),'YYYY-MM-DD')  zxjsdate,
+        a.total,
+        b.taxrate,
+        a.dtl_lines dtllines
+    from bms_sa_doc a,
+        bms_sa_dtl b,
+        bms_sa_settle_doc c,
+        bms_sa_settle_dtl d,
+        bms_st_io_doc e,
+        bms_st_io_dtl f,
+        bms_sa_doctoset h,
+        bms_lot_def g,
+        pub_goods i,
+        pub_goods_detail j
+    where a.salesid = b.salesid
+        and b.goodsid = i.goodsid
+        and b.goodsid = j.goodsid
+        and b.salesdtlid = h.salesdtlid(+)
+        and h.sasettledtlid = d.sasettledtlid(+)
+        and d.sasettleid = c.sasettleid(+)
+        and b.salesdtlid = e.sourceid
+        and e.inoutid = f.inoutid
+        and f.lotid = g.lotid(+)
+        and e.comefrom = 3
+        and (a.comefrom != 3 and a.comefrom != 4)
+        and a.entryid=#{entryid}
+        and a.salesid=#{salesid}
+    </select>
+</mapper>

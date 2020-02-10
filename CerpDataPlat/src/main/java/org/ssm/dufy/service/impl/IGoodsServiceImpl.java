@@ -1,6 +1,7 @@
 package org.ssm.dufy.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -11,6 +12,10 @@ import org.ssm.common.utility.StringUtil;
 import org.ssm.cxf.struct.goodsinfo.GOODSINFO;
 import org.ssm.cxf.struct.goodsinfo.GOODSINFOREQ;
 import org.ssm.cxf.struct.goodsinfo.GOODSINFORESP;
+import org.ssm.cxf.struct.goodsinfo_normal.GOODSINFONORMALREQ;
+import org.ssm.cxf.struct.goodsinfo_normal.GOODSINFONORMALRESP;
+import org.ssm.cxf.struct.goodsinfo_normal.GoodsItem;
+import org.ssm.cxf.struct.goodsinfo_normal.GoodsinfoNormal;
 import org.ssm.cxf.struct.stock.STOCKINFO;
 import org.ssm.cxf.struct.stock.STOCKINFOREQ;
 import org.ssm.cxf.struct.stock.STOCKINFORESP;
@@ -167,6 +172,60 @@ public class IGoodsServiceImpl implements IGoodsService {
 		
 		try {
 			retxml = JAXBUtil.marshToXmlBinding(STOCKINFORESP.class, stockinforesp, "UTF-8");
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		return retxml;
+	}
+
+	@Override
+	public String getGoods_normal(String entryid, String xmldata) {
+		GOODSINFONORMALREQ req = JAXBUtil.unmarshToObjBinding(GOODSINFONORMALREQ.class, xmldata, "UTF-8");
+		String str = req.getGoodsid();
+		entryid = req.getEntryid();
+		String[] goodsids = str.split(",");
+		String goodsid = "";
+		if(goodsids.length==1){
+			goodsid = goodsids[0];
+		}
+		String retxml = "";
+		GOODSINFONORMALRESP resp = new GOODSINFONORMALRESP();
+		List<Map<String,Object>> lists = goodsdao.getGoods_gdzcfy(entryid, goodsid, goodsids);
+		if(lists.size()==0){
+			resp.setReturncode("-1");
+			resp.setReturnmsg("未查询到数据");
+		}else{
+			GoodsinfoNormal goods = new GoodsinfoNormal();
+			resp.setGoodsinfoNormal(goods);
+			List<GoodsItem> list = resp.getGoodsinfoNormal().getGoodsItem();
+			for(Map<String,Object> map:lists){
+				GoodsItem item = new GoodsItem();
+				item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+				item.setOpcode(StringUtil.doNullStr(map.get("OPCODE")));
+				item.setGoodsname(StringUtil.doNullStr(map.get("GOODSNAME")));
+				item.setGoodsinvname(StringUtil.doNullStr(map.get("GOODSINVNAME")));
+				item.setGoodstype(StringUtil.doNullStr(map.get("GOODSTYPE")));
+				item.setGoodspinyin(StringUtil.doNullStr(map.get("GOODSPINYIN")));
+				item.setCurrencyname(StringUtil.doNullStr(map.get("CURRENCYNAME")));
+				item.setGoodsengname(StringUtil.doNullStr(map.get("GOODSENGNAME")));
+				item.setGoodsshortname(StringUtil.doNullStr(map.get("GOODSSHORTNAME")));
+				item.setGoodsunit(StringUtil.doNullStr(map.get("GOODSUNIT")));
+				item.setProdarea(StringUtil.doNullStr(map.get("PRODAREA")));
+				item.setFactoryid(StringUtil.doNullStr(map.get("FACTORYID")));
+				item.setFactoryname(StringUtil.doNullStr(map.get("FACTORYNAME")));
+				item.setStoragecondition(StringUtil.doNullStr(map.get("STORAGECONDITION")));
+				item.setBarcode(StringUtil.doNullStr(map.get("BARCODE")));
+				item.setApprovedocno(StringUtil.doNullStr(map.get("APPROVEDOCNO")));
+				item.setRegistdocno(StringUtil.doNullStr(map.get("REGISTDOCNO")));
+				item.setUsestatus(StringUtil.doNullStr(map.get("USESTATUS")));
+				item.setPacksize(StringUtil.doNullStr(map.get("PACKSIZE")));
+				list.add(item);
+			}
+			resp.setReturncode("0");
+			resp.setReturnmsg("查询成功");
+		}
+		try {
+			retxml = JAXBUtil.marshToXmlBinding(GOODSINFONORMALRESP.class, resp, "UTF-8");
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}

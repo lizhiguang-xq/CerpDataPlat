@@ -17,5 +17,7 @@ public interface IGoodsService {
 	public String getGoods_Lnjfsc(String entryid, String xmldata);
 	
 	public String getStock_Lnjfsc(String entryid, String xmldata);
+
+	public String getGoods_normal(String entryid, String xmldata);
 }
 

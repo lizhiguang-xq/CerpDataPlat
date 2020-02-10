@@ -140,6 +140,46 @@ public class BmsSaConDoc {
 
     private BigDecimal charges;
 
+    private String zxReceiveaddr;
+
+    private String zxReceiveman;
+
+    private String zxReceivephone;
+
+    private Long zxOutersysId;
+
+    public Long getZxOutersysId() {
+        return zxOutersysId;
+    }
+
+    public void setZxOutersysId(Long zxOutersysId) {
+        this.zxOutersysId = zxOutersysId;
+    }
+
+    public String getZxReceiveaddr() {
+        return zxReceiveaddr;
+    }
+
+    public void setZxReceiveaddr(String zxReceiveaddr) {
+        this.zxReceiveaddr = zxReceiveaddr;
+    }
+
+    public String getZxReceiveman() {
+        return zxReceiveman;
+    }
+
+    public void setZxReceiveman(String zxReceiveman) {
+        this.zxReceiveman = zxReceiveman;
+    }
+
+    public String getZxReceivephone() {
+        return zxReceivephone;
+    }
+
+    public void setZxReceivephone(String zxReceivephone) {
+        this.zxReceivephone = zxReceivephone;
+    }
+
     public Long getConid() {
         return conid;
     }

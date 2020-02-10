@@ -81,4 +81,44 @@
 	             and ROWNUM &lt;= 100*#{ym}) table_alias
 	 WHERE table_alias.rowno > 100*(#{ym}-1)
   </select>
+
+	<select id="getGoods_gdzcfy" resultType="map" >
+		select
+			b.goodsid,
+			b.opcode,
+			b.goodsname,
+			b.goodsinvname,
+			b.goodstype,
+			b.goodspinyin,
+			b.currencyname,
+			b.goodsengname,
+			b.goodsshortname,
+			b.goodsunit,
+			b.prodarea,
+			b.factoryid,
+			c.factoryname,
+			b.storagecondition,
+			b.barcode,
+			b.approvedocno,
+			b.registdocno,
+			a.usestatus,
+			j.packsize
+		from  pub_entry_goods a, pub_goods b, pub_factory c, pub_goods_detail j
+		where a.goodsid = b.goodsid
+		and b.goodsid = j.goodsid
+		and j.usestatus=1
+		and b.factoryid = c.factoryid
+		and a.entryid = #{entryid}
+		<choose>
+			<when test="goodsid != null and goodsid != '' ">
+				and a.goodsid = #{goodsid}
+			</when>
+			<otherwise>
+				and a.goodsid in
+				<foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
+					#{item}
+				</foreach>
+			</otherwise>
+		</choose>
+	</select>
 </mapper>
