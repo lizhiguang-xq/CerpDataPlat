@@ -11,6 +11,6 @@ public interface IGoodsDao {
 	List<Goods> getGoodsByParam(@Param("entryid")String entryid, @Param("goodsid")String goodsid, @Param("sys_modifydate")String sys_modifydate, @Param("ym")int ym);
 	
 	List<Goods> getGoods_Lnjfsc(@Param("entrycompanyid")String entrycompanyid, @Param("goodsid")String goodsid, @Param("sys_modifydate")String sys_modifydate, @Param("ym")int ym);
-
+	//增城妇幼获取货品信息
 	List<Map<String, Object>> getGoods_gdzcfy(@Param("entryid")String entryid, @Param("goodsid")String goodsid, @Param("array")String[] array);
 }

@@ -16,7 +16,7 @@ public interface IWyCerpBmsSaDocDtlDao {
     List<Map<String, Object>> getagentinfo(@Param("entryid")String entryid, @Param("agentid")String agentid);
 
     List<Map<String, Object>> getCredit(@Param("customid")String customid, @Param("agentid")String agentid);
-
+    //获取外接系统信息
     List<Map<String, Object>> getentryoutersysid(@Param("entryid")String entryid, @Param("entryoutersysid")String entryoutersysid);
 
     int insertDoc(BmsSaConDoc record);

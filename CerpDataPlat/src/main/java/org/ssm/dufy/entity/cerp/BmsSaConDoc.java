@@ -148,6 +148,7 @@ public class BmsSaConDoc {
 
     private Long zxOutersysId;
 
+
     public Long getZxOutersysId() {
         return zxOutersysId;
     }

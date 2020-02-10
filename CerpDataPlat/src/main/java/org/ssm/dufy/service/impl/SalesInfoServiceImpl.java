@@ -85,5 +85,4 @@ public class SalesInfoServiceImpl implements ISalesInfoService {
         return retxml;
     }
 
-
 }

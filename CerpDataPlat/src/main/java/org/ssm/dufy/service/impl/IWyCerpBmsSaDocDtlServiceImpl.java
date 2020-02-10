@@ -34,15 +34,6 @@ public class IWyCerpBmsSaDocDtlServiceImpl implements IWyCerpBmsSaDocDtlService 
         entryid = order_req.getEntryid();
         String customid = order_req.getCustomid();
         String outersysid = order_req.getZxOutersysId();
-//        String orderid = order_req.getZxOutersysOrderid();
-
-        //验证订单号是否重复  根据订单号查询，此字段未加索引，暂时不判断
-//        List<Map<String, Object>> applyorders = sxhscerpDao.checkapplayorder(entryid,customid,orderid);
-//        if(applyorders.size()>0){
-//            resp.setReturncode("-1");
-//            resp.setReturnmsg("订单号已存在，请勿重复发送");
-//            return resp.toXml();
-//        }
 
         List<Map<String, Object>> outersyslist = wycerpDao.getentryoutersysid(entryid, outersysid);
         if(outersyslist.size()==0){

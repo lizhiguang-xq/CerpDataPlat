@@ -130,7 +130,7 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 		} else if(CommonConstant.OPER_CREATE_APPLY_ORDER_SXHS.equals(oper.toLowerCase())) {
 			retxml = pjcerpService.createApplyOrder(entryid, xmlData); //生成1067订单
 		} else if(CommonConstant.OPER_CREATE_APPLY_ORDER_WY.equals(oper.toLowerCase())) {
-			retxml = wycerpService.createApplyOrder(entryid, xmlData); //微医生成1067订单
+			retxml = wycerpService.createApplyOrder(entryid, xmlData); //微医 生成1067订单
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

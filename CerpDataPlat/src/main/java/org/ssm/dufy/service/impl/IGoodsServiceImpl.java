@@ -178,6 +178,7 @@ public class IGoodsServiceImpl implements IGoodsService {
 		return retxml;
 	}
 
+
 	@Override
 	public String getGoods_normal(String entryid, String xmldata) {
 		GOODSINFONORMALREQ req = JAXBUtil.unmarshToObjBinding(GOODSINFONORMALREQ.class, xmldata, "UTF-8");

@@ -4,4 +4,5 @@ public interface IWyCerpBmsSaDocDtlService {
 
     public String createApplyOrder(String entryid, String xmldata);
 
+
 }

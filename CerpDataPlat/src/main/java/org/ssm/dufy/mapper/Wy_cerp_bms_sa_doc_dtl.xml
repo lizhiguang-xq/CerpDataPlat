@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.ssm.dufy.dao.IWyCerpBmsSaDocDtlDao" >
 
-
   <select id="checkapplayorder" resultType="map">
     select ZX_OUTERSYS_ORDERID from BMS_SA_CON_DOC
     where ENTRYID = #{entryid}
