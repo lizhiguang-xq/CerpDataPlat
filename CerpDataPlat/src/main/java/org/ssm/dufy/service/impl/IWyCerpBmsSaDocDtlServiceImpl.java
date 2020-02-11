@@ -101,7 +101,9 @@ public class IWyCerpBmsSaDocDtlServiceImpl implements IWyCerpBmsSaDocDtlService 
             BmsSaConDtl dtl = new BmsSaConDtl();
             dtl.setGoodsid(Long.valueOf(goodsid));
             dtl.setGoodsdtlid(Long.valueOf(goodsdtlid));
-            dtl.setPriceid(Long.valueOf(priceid));
+            if(null!=priceid&&!priceid.equals("")){
+                dtl.setPriceid(Long.valueOf(priceid));
+            }
             dtl.setGoodsqty(new BigDecimal(detail.getGoodsqty()));
             dtl.setTotalLine(detail.getTotalLine());
             dtl.setUnitprice(detail.getUnitprice());
@@ -111,7 +113,9 @@ public class IWyCerpBmsSaDocDtlServiceImpl implements IWyCerpBmsSaDocDtlService 
             dtl.setZxOutersysGoodsid(goodsid);
             dtl.setZxOutersysCustomid(order_req.getCustomid());
             dtl.setZxOutersysMemo(detail.getZxOutersysMemo());
-            dtl.setReqprintquflag(Long.valueOf(reqprintquflag));
+            if(null!=reqprintquflag&&!reqprintquflag.equals("")){
+                dtl.setReqprintquflag(Long.valueOf(reqprintquflag));
+            }
             total = total.add(detail.getTotalLine());
             dtllist.add(dtl);
         }
