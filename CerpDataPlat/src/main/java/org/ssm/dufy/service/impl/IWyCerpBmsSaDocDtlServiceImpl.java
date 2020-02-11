@@ -8,11 +8,13 @@ import org.ssm.common.utility.StringUtil;
 import org.ssm.cxf.struct.applyorder.APPLYORDERRESP;
 import org.ssm.cxf.struct.applyorder_wy.APPLYORDERWYREQ;
 import org.ssm.cxf.struct.applyorder_wy.Orderdetail;
+import org.ssm.cxf.struct.salesinfo_outerorderid.*;
 import org.ssm.dufy.dao.IWyCerpBmsSaDocDtlDao;
 import org.ssm.dufy.entity.cerp.BmsSaConDoc;
 import org.ssm.dufy.entity.cerp.BmsSaConDtl;
 import org.ssm.dufy.service.IWyCerpBmsSaDocDtlService;
 
+import javax.xml.bind.JAXBException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,6 +177,71 @@ public class IWyCerpBmsSaDocDtlServiceImpl implements IWyCerpBmsSaDocDtlService 
             resp.setReturnmsg("主单序列获取失败");
         }
         return resp.toXml();
+    }
+
+    @Override
+    public String getSaInvno_WY(String entryid, String xmldata) {
+        ORDERSALEINFORESP resp = new ORDERSALEINFORESP();
+        ORDERSALEINFOREQ req = JAXBUtil.unmarshToObjBinding(ORDERSALEINFOREQ.class, xmldata, "UTF-8");
+        entryid = req.getEntryid();
+        String zx_outersys_orderid = req.getZxOutersysOrderid();
+        List<Map<String, Object>> lists = wycerpDao.select(entryid, zx_outersys_orderid);
+        if(lists.size()==0){
+            resp.setReturncode("-1");
+            resp.setReturnmsg("没有数据");
+        }else{
+            resp.setReturncode("0");
+            resp.setReturnmsg("成功");
+            Salesinfo sales = new Salesinfo();
+            Details details = new Details();
+            resp.setSalesinfo(sales);
+            sales.setDetails(details);
+            List<Detail> detaillist = details.getDetail();
+
+            sales.setCustomid(StringUtil.doNullStr(lists.get(0).get("CUSTOMID")));
+            sales.setCustomname(StringUtil.doNullStr(lists.get(0).get("CUSTOMNAME")));
+            sales.setAgentid(StringUtil.doNullStr(lists.get(0).get("AGENTID")));
+            sales.setDtllines(StringUtil.doNullStr(lists.size()));
+            BigDecimal total = new BigDecimal("0");
+            for(Map<String, Object> map: lists){
+                Detail detail = new Detail();
+                detail.setSalesid(StringUtil.doNullStr(map.get("SALESID")));
+                detail.setSalesdtlid(StringUtil.doNullStr(map.get("SALESDTLID")));
+                detail.setStiodate(StringUtil.doNullStr(map.get("STIODATE")));
+                detail.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+                detail.setGoodsname(StringUtil.doNullStr(map.get("GOODSNAME")));
+                detail.setCurrencyname(StringUtil.doNullStr(map.get("CURRENCYNAME")));
+                detail.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
+                detail.setGoodsunit(StringUtil.doNullStr(map.get("GOODSUNIT")));
+                detail.setFactoryname(StringUtil.doNullStr(map.get("FACTORYNAME")));
+                detail.setLotno(StringUtil.doNullStr(map.get("LOTNO")));
+                detail.setGoodstype(StringUtil.doNullStr(map.get("GOODSTYPE")));
+                detail.setUnitprice(StringUtil.doNullStr(map.get("UNITPRICE")));
+                detail.setAmount(StringUtil.doNullStr(map.get("AMOUNT")));
+                detail.setProddate(StringUtil.doNullStr(map.get("PRODDATE")));
+                detail.setInvaliddate(StringUtil.doNullStr(map.get("INVALIDDATE")));
+                detail.setZxOutersysOrderid(StringUtil.doNullStr(map.get("ZX_OUTERSYS_ORDERID")));
+                detail.setZxOutersysOrderindex(StringUtil.doNullStr(map.get("ZX_OUTERSYS_ORDERINDEX")));
+                detail.setStorageid(StringUtil.doNullStr(map.get("STORAGEID")));
+                detail.setInvcode(StringUtil.doNullStr(map.get("INVCODE")));
+                detail.setInvno(StringUtil.doNullStr(map.get("INVNO")));
+                detail.setConfirmdate(StringUtil.doNullStr(map.get("CONFIRMDATE")));
+                detail.setInputmanname(StringUtil.doNullStr(map.get("INPUTMANNAME")));
+                detail.setConfirmanname(StringUtil.doNullStr(map.get("CONFIRMANNAME")));
+                String amount = StringUtil.doNullStr(map.get("AMOUNT"));
+                total = total.add(new BigDecimal(amount));
+                detaillist.add(detail);
+            }
+            sales.setTotal(String.valueOf(total));
+        }
+
+        String retxml= "";
+        try {
+            retxml = JAXBUtil.marshToXmlBinding(ORDERSALEINFORESP.class, resp, "UTF-8");
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return retxml;
     }
 
 }

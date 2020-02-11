@@ -106,6 +106,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = goodsService.getGoods_normal(entryid, xmlData); //【增城妇幼保健】根据货品ID获取货品信息
 		} else if(CommonConstant.OPER_GETSAINVNO_INFO_ZCFY.equals(oper.toLowerCase())) {
 			retxml = salesService.selectNotTranslateCodeAndNotApplyOrderSalesInfo(entryid, xmlData); //【增城妇幼保健】根据销售单号获取销售单信息
+		} else if(CommonConstant.OPER_GETSAINVNO_INFO_WY.equals(oper.toLowerCase())) {
+			retxml = wycerpService.getSaInvno_WY(entryid, xmlData); //【微医】根据外接系统订单id获取销售单信息
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

@@ -29,6 +29,6 @@ public interface IWyCerpBmsSaDocDtlDao {
 
     List<Map<String, Object>> getErpGoodsInfo(@Param("entryid")String entryid, @Param("goodsid")String goodsid);
 
-    List<Map<String, Object>> select(@Param("entryid")String entryid, @Param("salesid")String salesid);
+    List<Map<String, Object>> select(@Param("entryid")String entryid, @Param("zxOutersysOrderid")String zxOutersysOrderid);
 
 }

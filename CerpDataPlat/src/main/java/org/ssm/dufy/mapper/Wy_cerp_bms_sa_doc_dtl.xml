@@ -194,6 +194,6 @@
       and a.inputmanid = o.employeeid(+)
       and a.confirmanid = p.employeeid(+)
       and a.entryid=#{entryid}
-      and a.salesid=#{salesid}
+      and l.zx_outersys_orderid=#{zxOutersysOrderid}
     </select>
 </mapper>

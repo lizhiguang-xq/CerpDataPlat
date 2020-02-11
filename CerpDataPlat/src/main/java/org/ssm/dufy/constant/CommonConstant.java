@@ -38,5 +38,7 @@ public class CommonConstant {
 	public final static String OPER_GETSAINVNO_INFO_ZCFY = "getsalesinfo_zcfy";
 
 	public final static String OPER_CREATE_APPLY_ORDER_WY = "createapplyorder_wy";
+
+	public final static String OPER_GETSAINVNO_INFO_WY = "getsalesinfo_wy";
 	
 }
