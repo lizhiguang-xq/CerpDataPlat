@@ -62,6 +62,9 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 	@Autowired
 	private IWyCerpBmsSaDocDtlService wycerpService;
 
+	@Autowired
+	private IElemeService elemeService;
+
 	@Override
 	public String tslCerpDataInteractive(String userName, String passWord, String oper, String xmlData) {
 
@@ -108,6 +111,14 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = salesService.selectNotTranslateCodeAndNotApplyOrderSalesInfo(entryid, xmlData); //【增城妇幼保健】根据销售单号获取销售单信息
 		} else if(CommonConstant.OPER_GETSAINVNO_INFO_WY.equals(oper.toLowerCase())) {
 			retxml = wycerpService.getSaInvno_WY(entryid, xmlData); //【微医】根据外接系统订单id获取销售单信息
+		} else if(CommonConstant.OPER_GETGOODSCLASSTYPE_ELM.equals(oper.toLowerCase())) {
+			retxml = elemeService.getGoodsClassType(entryid, xmlData); //【饿了么】获取分类信息
+		} else if(CommonConstant.OPER_GETGOODS_ELM.equals(oper.toLowerCase())) {
+			retxml = elemeService.getGoodsInfo(entryid, xmlData); //【饿了么】获取货品信息
+		} else if(CommonConstant.OPER_GETGOODS_QTY_ELM.equals(oper.toLowerCase())) {
+			retxml = elemeService.getGoodsQty(entryid, xmlData); //【饿了么】获取库存
+		} else if(CommonConstant.OPER_GETGOODS_PRICE_ELM.equals(oper.toLowerCase())) {
+			retxml = elemeService.getGoodsPrice(entryid, xmlData); //【饿了么】获取货价
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}
@@ -133,6 +144,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = pjcerpService.createApplyOrder(entryid, xmlData); //生成1067订单
 		} else if(CommonConstant.OPER_CREATE_APPLY_ORDER_WY.equals(oper.toLowerCase())) {
 			retxml = wycerpService.createApplyOrder(entryid, xmlData); //微医 生成1067订单
+		} else if(CommonConstant.OPER_CREATEORDER_ELM.equals(oper.toLowerCase())) {
+			retxml = elemeService.createOrder(entryid, xmlData); //【饿了么】生成10067零售订单
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

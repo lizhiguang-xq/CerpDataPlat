@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IElemeDao" >
+
+    <select id="getGoodsClassType" resultType="map" >
+        select
+        t.classid,t.classname,t.leafflag
+        from  pub_goods_class t,
+        pub_goods_classtype t1
+        where
+        t.classtypeid = t1.classtypeid
+        and t1.entryid = #{entryid}
+        and t1.classtypeid=#{classtypeid}
+        order by t.classid
+    </select>
+
+    <select id="getGoods" resultType="map" >
+        select
+        a.placepointid,
+        a.goodsid,
+        c.opcode,
+        c.goodsname,
+        c.goodstype,
+        c.goodsunit,
+        a.priceunit,
+        a.price,
+        c.barcode,
+        c.trademark
+        from
+        ngpcs_all_price a,
+        gpcs_placepoint b,
+        pub_goods c,
+        pub_goods_class_dtl t
+        where
+        a.placepointid = b.placepointid
+        and a.goodsid = c.goodsid
+        and a.goodsid = t.goodsid
+        and b.entryid = #{entryid}
+        and t.classid = #{classid}
+        and b.placepointid = #{placepointid}
+        and a.priceid = #{priceid}
+    </select>
+
+    <select id="getGoodsQty" resultType="map" >
+        select
+        a.goodsid,
+        sum(a.goodsqty-nvl(c.dtlgoodsqty,0)) goodsqty
+        from
+        bms_st_qty_lst a,
+        gpcs_placepoint b,
+        bms_st_io_dtl_tmp c
+        where a.storageid = b.storageid
+        and a.batchid = c.batchid(+)
+        and a.goodsstatusid = 1
+        and b.entryid = #{entryid}
+        and b.placepointid = #{placepointid}
+        and a.goodsid in
+        <foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        group by a.goodsid
+    </select>
+
+    <select id="getGoodsPrice" resultType="map" >
+        select
+        a.goodsid,
+        a.price
+        from
+        ngpcs_all_price a,
+        gpcs_placepoint b
+        where
+        a.placepointid = b.placepointid
+        and b.placepointid=#{placepointid}
+        and b.entryid = #{entryid}
+        and a.priceid=#{priceid}
+        and a.goodsid in
+        <foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
+                #{item}
+        </foreach>
+    </select>
+
+
+
+</mapper>

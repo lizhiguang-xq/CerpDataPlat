@@ -40,5 +40,15 @@ public class CommonConstant {
 	public final static String OPER_CREATE_APPLY_ORDER_WY = "createapplyorder_wy";
 
 	public final static String OPER_GETSAINVNO_INFO_WY = "getsalesinfo_wy";
+
+	public final static String OPER_GETGOODSCLASSTYPE_ELM = "getgoodsclasstype_elm";
+
+	public final static String OPER_GETGOODS_ELM = "getgoods_elm";
+
+	public final static String OPER_GETGOODS_QTY_ELM = "getgoodsqty_elm";
+
+	public final static String OPER_GETGOODS_PRICE_ELM = "getgoodsprice_elm";
+
+	public final static String OPER_CREATEORDER_ELM = "createorder_elm";
 	
 }
