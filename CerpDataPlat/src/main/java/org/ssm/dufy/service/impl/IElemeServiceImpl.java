@@ -245,6 +245,7 @@ public class IElemeServiceImpl implements IElemeService {
             for (Product pro : lists) {
                 CreateSaDtl(con, pro, docid, placepointid, req.getReceivalmoney(), storageid, req.getZxOrderno());
             }
+
             //生成收款明细数据
             InsertHelper payh = new InsertHelper("gresa_sa_lst");
             String rsalstid = NgpcsDBHelper.getSeqValue(con, "gresa_sa_lst_seq");
