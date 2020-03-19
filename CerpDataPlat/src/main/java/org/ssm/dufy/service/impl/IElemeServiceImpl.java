@@ -240,15 +240,25 @@ public class IElemeServiceImpl implements IElemeService {
             if(storageid == null || storageid.equals("")){
                System.out.println("门店ID【"+placepointid+"】在INCA系统中不存在！");
                throw new BopException("-1", "门店ID【"+placepointid+"】在INCA系统中不存在！");
-            }else{
-                List<Product> lists = req.getProducts().getProduct();
-                for (Product pro : lists) {
-                    CreateSaDtl(con, pro, docid, placepointid, req.getReceivalmoney(), storageid, req.getZxOrderno());
-                }
-                con.commit();
-                resp.setReturncode("0");
-                resp.setReturnmsg("零售单生成成功");
             }
+            List<Product> lists = req.getProducts().getProduct();
+            for (Product pro : lists) {
+                CreateSaDtl(con, pro, docid, placepointid, req.getReceivalmoney(), storageid, req.getZxOrderno());
+            }
+            //生成收款明细数据
+            InsertHelper payh = new InsertHelper("gresa_sa_lst");
+            String rsalstid = NgpcsDBHelper.getSeqValue(con, "gresa_sa_lst_seq");
+            payh.bindParam("rsalstid", rsalstid);
+            payh.bindParam("rsaid", docid);
+            payh.bindParam("gathertype", "120");//先默认一个收款方式.线上微信支付.
+            payh.bindParam("recmoney", req.getReceivalmoney());//总单应收款
+            payh.bindParam("realmoney",req.getReceivalmoney());//总单实际收款
+            payh.bindParam("changemoney", "0");
+            payh.executeInsert(con);
+
+            con.commit();
+            resp.setReturncode("0");
+            resp.setReturnmsg("零售单生成成功");
         } catch (BopException e){
             e.printStackTrace();
             try {
@@ -539,17 +549,6 @@ public class IElemeServiceImpl implements IElemeService {
             System.out.println("当前货品ID【"+goodsid+"】已无库存！");
             throw new BopException("-1", "当前货品ID【"+goodsid+"】已无库存！");
         }
-
-        //生成收款明细数据
-        InsertHelper ih = new InsertHelper("gresa_sa_lst");
-        String rsalstid = NgpcsDBHelper.getSeqValue(con, "gresa_sa_lst_seq");
-        ih.bindParam("rsalstid", rsalstid);
-        ih.bindParam("rsaid", docid);
-        ih.bindParam("gathertype", "120");//先默认一个收款方式.线上微信支付.
-        ih.bindParam("recmoney", totalmoney);//总单应收款
-        ih.bindParam("realmoney",totalmoney);//总单实际收款
-        ih.bindParam("changemoney", "0");
-        ih.executeInsert(con);
     }
     /**
      * 获取cansalemd中符合记录的条数.
