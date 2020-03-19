@@ -47,7 +47,7 @@ public class IWyCerpBmsSaDocDtlServiceImpl implements IWyCerpBmsSaDocDtlService 
         String usestatus = "1"; //0:作废 1:临时 2:正式 3:完成
         String invtype = "2"; //2:增值税普通发票
         String settletypeid = "3"; //3:公司电汇
-        String delivermethod = "3"; //3:市内配送
+        String delivermethod = "11"; //3:市内配送 11：托运1
 
         //验证 外接客户ID 是否已经在ERP中有对应customId: 不存在直接返回错误信息。
         List<Map<String, Object>> customlist = wycerpDao.getcustominfo(entryid, order_req.getCustomid());
