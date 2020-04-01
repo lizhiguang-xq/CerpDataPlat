@@ -43,7 +43,7 @@
 
     <select id="getGoodsQty" resultType="map" >
         select d.goodsid,
-        nvl(sum(a.goodsqty-nvl(c.dtlgoodsqty,0)),0) goodsqty
+        floor(nvl(sum(a.goodsqty-nvl(c.dtlgoodsqty,0)),0)) goodsqty
         from
         bms_st_qty_lst a,
         gpcs_placepoint b,

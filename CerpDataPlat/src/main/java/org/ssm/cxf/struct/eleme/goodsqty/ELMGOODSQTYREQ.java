@@ -43,7 +43,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(name = "", propOrder = {
     "entryid",
     "placepointid",
-    "goodsids"
+    "goodsids",
+    "lasteventtime"
 })
 @XmlRootElement(name = "ELM_GOODSQTY_REQ")
 public class ELMGOODSQTYREQ {
