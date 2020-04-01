@@ -2,16 +2,15 @@ package org.ssm.dufy.service.impl;
 
 import com.inca.np.gui.control.DBTableModel;
 import com.inca.np.util.DecimalHelper;
-import com.inca.np.util.DefaultNPParam;
 import com.inca.np.util.InsertHelper;
 import com.inca.np.util.SelectHelper;
-import com.inca.npserver.dbcp.DBConnectPoolFactory;
 import com.inca.pubsrv.NpbusiDBHelper;
 import com.inca.pubsrv.NptrDBHelper;
 import com.inca.resale.tools.NgpcsDBHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ssm.common.utility.CommonUtils;
 import org.ssm.common.utility.JAXBUtil;
 import org.ssm.common.utility.StringUtil;
 import org.ssm.cxf.struct.eleme.applyorder.ELMAPPLYORDERREQ;
@@ -42,10 +41,7 @@ import javax.xml.bind.JAXBException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Service("elemeService")
 public class IElemeServiceImpl implements IElemeService {
@@ -137,30 +133,80 @@ public class IElemeServiceImpl implements IElemeService {
         ELMGOODSQTYREQ req = JAXBUtil.unmarshToObjBinding(ELMGOODSQTYREQ.class, xmldata, "UTF-8");
         String placepointid = req.getPlacepointid();
         String goodsidstr = req.getGoodsids();
-        if(goodsidstr.length()<1){
-            resp.setReturncode("-1");
-            resp.setReturnmsg("货品ID不能为空");
-        }
-        String[] goodsids = goodsidstr.split(",");
+        String lasteventtime = req.getLasteventtime(); //查询库存是否有变化的时间依据
         entryid = req.getEntryid();
         String retxml = "";
-        List<Map<String,Object>> lists = elemeDao.getGoodsQty(entryid, placepointid,goodsids);
-        if(lists.size()==0){
+        String[] goodsIdArray = null; //最终要查询的货品集合
+        boolean queryFlag = true; //查询库存flag
+        if(StringUtil.isEmpty(goodsidstr)){
             resp.setReturncode("-1");
-            resp.setReturnmsg("未查询到数据");
-        }else{
-            Goodsqtylist goodslist = new Goodsqtylist();
-            resp.setGoodsqtylist(goodslist);
-            List<GoodsqtyItem> list = resp.getGoodsqtylist().getGoodsqtyItem();
-            for(Map<String,Object> map:lists){
-                GoodsqtyItem item = new GoodsqtyItem();
-                item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
-                item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
-                list.add(item);
+            resp.setReturnmsg("货品ID不能为空");
+        } else if (StringUtil.isEmpty(placepointid)) {
+            resp.setReturncode("-1");
+            resp.setReturnmsg("门店ID不能为空");
+        }else {
+            String[] goodsids = goodsidstr.split(",");
+
+            //goodsids 如果超过1000条，进行拆分，放入goodsArrayList中，下面循环处理
+            List<String[]> goodsArrayList = null;
+            if (goodsids.length > 1000) {
+                goodsArrayList = CommonUtils.splitArray(goodsids, 1000);
+            } else {
+                goodsArrayList = new ArrayList<String[]>();
+                goodsArrayList.add(goodsids);
             }
-            resp.setReturncode("0");
-            resp.setReturnmsg("查询成功");
+
+            //查询哪些货品有库存变化
+            if (!StringUtil.isEmpty(lasteventtime)) {
+                String changegoodsids = ""; //有变化的货品ID字符串
+                for (String[] goodsArray : goodsArrayList) {
+                    List<Map<String, Object>> changeGoodsList = elemeDao.getChangeGoodsIds(placepointid, lasteventtime, goodsArray);
+                    for (Map<String, Object> map : changeGoodsList) {
+                        changegoodsids += "," + StringUtil.doNullStr(map.get("GOODSID"));
+                    }
+                }
+                //有库存变化
+                //TODO :预计库存变化的数据不会超过1000条，先不进行拆分处理，如有需要后续完善
+                if (changegoodsids.length() > 0) {
+                    //库存变化的货品ID
+                    changegoodsids = changegoodsids.substring(1);
+                    //限制最多只拆分1000个id,万一越界，第1000个元素是 “1,2,3...”这样的。
+                    goodsIdArray = changegoodsids.split(",", 1000);
+                    if (goodsIdArray.length == 1000) {
+                        goodsIdArray[999] = "0"; //越界的话：把第1000个元素改成 0
+                    }
+                } else {
+                    resp.setReturncode("-1");
+                    resp.setReturnmsg("未查询到时间段内有变化的数据");
+                    queryFlag = false;
+                }
+            } else{
+                //未收到lasteventtime 只能把传过来的货品ID都进行查询
+                goodsIdArray = goodsArrayList.get(0);
+            }
+
+            if(queryFlag) {
+                //查询这些有变化的货品ID的库存情况
+                List<Map<String, Object>> lists = elemeDao.getGoodsQty(entryid, placepointid, goodsIdArray);
+                if (lists.size() == 0) {
+                    resp.setReturncode("-1");
+                    resp.setReturnmsg("未查询到数据");
+                } else {
+                    Goodsqtylist goodslist = new Goodsqtylist();
+                    resp.setGoodsqtylist(goodslist);
+                    List<GoodsqtyItem> list = resp.getGoodsqtylist().getGoodsqtyItem();
+                    for (Map<String, Object> map : lists) {
+                        GoodsqtyItem item = new GoodsqtyItem();
+                        item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+                        item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
+                        list.add(item);
+                    }
+                    resp.setReturncode("0");
+                    resp.setReturnmsg("查询成功");
+                }
+            }
         }
+
         try {
             retxml = JAXBUtil.marshToXmlBinding(ELMGOODSQTYRESP.class, resp, "UTF-8");
         } catch (JAXBException e) {

@@ -42,23 +42,24 @@
     </select>
 
     <select id="getGoodsQty" resultType="map" >
-        select
-        a.goodsid,
-        sum(a.goodsqty-nvl(c.dtlgoodsqty,0)) goodsqty
+        select d.goodsid,
+        nvl(sum(a.goodsqty-nvl(c.dtlgoodsqty,0)),0) goodsqty
         from
         bms_st_qty_lst a,
         gpcs_placepoint b,
-        bms_st_io_dtl_tmp c
-        where a.storageid = b.storageid
+        bms_st_io_dtl_tmp c,
+        pub_goods d
+        where d.goodsid = a.goodsid(+)
+        and a.storageid = b.storageid(+)
         and a.batchid = c.batchid(+)
-        and a.goodsstatusid = 1
-        and b.entryid = #{entryid}
-        and b.placepointid = #{placepointid}
-        and a.goodsid in
+        and a.goodsstatusid(+) = 1
+        and b.entryid(+) = #{entryid}
+        and b.placepointid(+) = #{placepointid}
+        and d.goodsid in
         <foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        group by a.goodsid
+        group by d.goodsid
     </select>
 
     <select id="getGoodsPrice" resultType="map" >
@@ -79,6 +80,25 @@
         </foreach>
     </select>
 
-
-
+    <select id="getChangeGoodsIds" resultType="map" >
+        select distinct t.goodsid
+        from bms_st_io_doc t
+        where t.storageid =
+        (select storageid from gpcs_placepoint a where a.placepointid = #{placepointid})
+        and t.credate > to_date(#{lasteventtime},'YYYYMMDDHH24MISS') - 1/96
+        and t.goodsid in
+        <foreach collection="goodsids" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        union
+        select distinct t.goodsid
+        from bms_st_io_doc_tmp t
+        where t.storageid =
+        (select storageid from gpcs_placepoint a where a.placepointid = #{placepointid})
+        and t.credate > to_date(#{lasteventtime},'YYYYMMDDHH24MISS') - 1/96
+        and t.goodsid in
+        <foreach collection="goodsids" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

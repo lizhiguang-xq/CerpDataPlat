@@ -58,6 +58,16 @@ public class ELMGOODSQTYREQ {
     protected String placepointid;
     @XmlElement(required = true)
     protected String goodsids;
+    @XmlElement(required = true)
+    protected String lasteventtime;
+
+    public String getLasteventtime() {
+        return lasteventtime;
+    }
+
+    public void setLasteventtime(String lasteventtime) {
+        this.lasteventtime = lasteventtime;
+    }
 
     /**
      * 获取entryid属性的值。

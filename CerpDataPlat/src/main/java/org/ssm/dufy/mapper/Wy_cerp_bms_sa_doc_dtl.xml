@@ -138,8 +138,7 @@
         #{zxOutersysMemo,jdbcType=VARCHAR},#{reqprintquflag,jdbcType=DECIMAL})
   </insert>
 
-
-    <select id="select" resultType="map" parameterType="java.lang.String">
+  <select id="select" resultType="map" parameterType="java.lang.String">
     select
        a.salesid,
        to_char(a.confirmdate,'YYYY-MM-DD HH24:MI:SS') confirmdate,
@@ -169,7 +168,8 @@
        l.zx_outersys_orderindex,
        b.storageid,
        c.invcode,
-       c.invno
+       c.invno,
+       a.wmsnum
     from bms_sa_doc a,
          bms_sa_dtl b,
          bms_sa_settle_doc c,
