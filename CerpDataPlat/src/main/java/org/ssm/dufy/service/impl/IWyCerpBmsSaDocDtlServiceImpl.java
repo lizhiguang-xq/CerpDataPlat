@@ -206,6 +206,7 @@ public class IWyCerpBmsSaDocDtlServiceImpl implements IWyCerpBmsSaDocDtlService 
             sales.setCustomname(StringUtil.doNullStr(lists.get(0).get("CUSTOMNAME")));
             sales.setAgentid(StringUtil.doNullStr(lists.get(0).get("AGENTID")));
             sales.setDtllines(StringUtil.doNullStr(lists.size()));
+            sales.setWmsnum(StringUtil.doNullStr(lists.get(0).get("WMSNUM")));
             BigDecimal total = new BigDecimal("0");
             for(Map<String, Object> map: lists){
                 Detail detail = new Detail();

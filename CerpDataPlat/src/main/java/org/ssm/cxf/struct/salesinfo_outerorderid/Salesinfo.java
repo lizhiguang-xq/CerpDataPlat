@@ -49,6 +49,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "agentid",
     "total",
     "dtllines",
+    "wmsnum",
     "details"
 })
 @XmlRootElement(name = "salesinfo")
@@ -75,7 +76,35 @@ public class Salesinfo {
     @XmlSchemaType(name = "NCName")
     protected String dtllines;
     @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String wmsnum;
+    @XmlElement(required = true)
     protected Details details;
+
+    /**
+     * 获取Wmsnum属性的值。
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getWmsnum() {
+        return wmsnum;
+    }
+
+    /**
+     * 设置Wmsnum属性的值。
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setWmsnum(String value) {
+        this.wmsnum = value;
+    }
 
     /**
      * 获取customid属性的值。
