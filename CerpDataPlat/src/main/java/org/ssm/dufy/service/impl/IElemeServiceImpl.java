@@ -130,6 +130,7 @@ public class IElemeServiceImpl implements IElemeService {
 
     @Override
     public String getGoodsQty(String entryid, String xmldata) {
+
         ELMGOODSQTYRESP resp = new ELMGOODSQTYRESP();
         ELMGOODSQTYREQ req = JAXBUtil.unmarshToObjBinding(ELMGOODSQTYREQ.class, xmldata, "UTF-8");
         String placepointid = req.getPlacepointid();
@@ -207,7 +208,6 @@ public class IElemeServiceImpl implements IElemeService {
                 }
             }
         }
-
         try {
             retxml = JAXBUtil.marshToXmlBinding(ELMGOODSQTYRESP.class, resp, "UTF-8");
         } catch (JAXBException e) {
