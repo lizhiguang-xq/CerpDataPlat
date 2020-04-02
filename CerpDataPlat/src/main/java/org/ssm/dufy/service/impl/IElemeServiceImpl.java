@@ -86,6 +86,7 @@ public class IElemeServiceImpl implements IElemeService {
 
     @Override
     public String getGoodsInfo(String entryid, String xmldata) {
+
         ELMGOODSREQ req = JAXBUtil.unmarshToObjBinding(ELMGOODSREQ.class, xmldata, "UTF-8");
         String classid = req.getClassid();
         String placepointid = req.getPlacepointid();
