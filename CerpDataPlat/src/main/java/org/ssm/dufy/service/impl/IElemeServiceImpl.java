@@ -2,16 +2,16 @@ package org.ssm.dufy.service.impl;
 
 import com.inca.np.gui.control.DBTableModel;
 import com.inca.np.util.DecimalHelper;
-import com.inca.np.util.DefaultNPParam;
 import com.inca.np.util.InsertHelper;
 import com.inca.np.util.SelectHelper;
-import com.inca.npserver.dbcp.DBConnectPoolFactory;
+import com.inca.np.util.UpdateHelper;
 import com.inca.pubsrv.NpbusiDBHelper;
 import com.inca.pubsrv.NptrDBHelper;
 import com.inca.resale.tools.NgpcsDBHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ssm.common.utility.CommonUtils;
 import org.ssm.common.utility.JAXBUtil;
 import org.ssm.common.utility.StringUtil;
 import org.ssm.cxf.struct.eleme.applyorder.ELMAPPLYORDERREQ;
@@ -42,14 +42,10 @@ import javax.xml.bind.JAXBException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Service("elemeService")
 public class IElemeServiceImpl implements IElemeService {
-
     @Autowired
     private IElemeDao elemeDao;
     @Autowired
@@ -113,6 +109,7 @@ public class IElemeServiceImpl implements IElemeService {
                 item.setGoodsname(StringUtil.doNullStr(map.get("GOODSNAME")));
                 item.setGoodstype(StringUtil.doNullStr(map.get("GOODSTYPE")));
                 item.setGoodsunit(StringUtil.doNullStr(map.get("GOODSUNIT")));
+                item.setGoodstqty(StringUtil.doNullStr(map.get("GOODSQTY")));
                 item.setPriceunit(StringUtil.doNullStr(map.get("PRICEUNIT")));
                 item.setBarcode(StringUtil.doNullStr(map.get("BARCODE")));
                 item.setTrademark(StringUtil.doNullStr(map.get("TRADEMARK")));
@@ -137,30 +134,80 @@ public class IElemeServiceImpl implements IElemeService {
         ELMGOODSQTYREQ req = JAXBUtil.unmarshToObjBinding(ELMGOODSQTYREQ.class, xmldata, "UTF-8");
         String placepointid = req.getPlacepointid();
         String goodsidstr = req.getGoodsids();
-        if(goodsidstr.length()<1){
-            resp.setReturncode("-1");
-            resp.setReturnmsg("货品ID不能为空");
-        }
-        String[] goodsids = goodsidstr.split(",");
+        String lasteventtime = req.getLasteventtime(); //查询库存是否有变化的时间依据
         entryid = req.getEntryid();
         String retxml = "";
-        List<Map<String,Object>> lists = elemeDao.getGoodsQty(entryid, placepointid,goodsids);
-        if(lists.size()==0){
+        String[] goodsIdArray = null; //最终要查询的货品集合
+        boolean queryFlag = true; //查询库存flag
+        if(StringUtil.isEmpty(goodsidstr)){
             resp.setReturncode("-1");
-            resp.setReturnmsg("未查询到数据");
-        }else{
-            Goodsqtylist goodslist = new Goodsqtylist();
-            resp.setGoodsqtylist(goodslist);
-            List<GoodsqtyItem> list = resp.getGoodsqtylist().getGoodsqtyItem();
-            for(Map<String,Object> map:lists){
-                GoodsqtyItem item = new GoodsqtyItem();
-                item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
-                item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
-                list.add(item);
+            resp.setReturnmsg("货品ID不能为空");
+        } else if (StringUtil.isEmpty(placepointid)) {
+            resp.setReturncode("-1");
+            resp.setReturnmsg("门店ID不能为空");
+        }else {
+            String[] goodsids = goodsidstr.split(",");
+
+            //goodsids 如果超过1000条，进行拆分，放入goodsArrayList中，下面循环处理
+            List<String[]> goodsArrayList = null;
+            if (goodsids.length > 1000) {
+                goodsArrayList = CommonUtils.splitArray(goodsids, 1000);
+            } else {
+                goodsArrayList = new ArrayList<String[]>();
+                goodsArrayList.add(goodsids);
             }
-            resp.setReturncode("0");
-            resp.setReturnmsg("查询成功");
+
+            //查询哪些货品有库存变化
+            if (!StringUtil.isEmpty(lasteventtime)) {
+                String changegoodsids = ""; //有变化的货品ID字符串
+                for (String[] goodsArray : goodsArrayList) {
+                    List<Map<String, Object>> changeGoodsList = elemeDao.getChangeGoodsIds(placepointid, lasteventtime, goodsArray);
+                    for (Map<String, Object> map : changeGoodsList) {
+                        changegoodsids += "," + StringUtil.doNullStr(map.get("GOODSID"));
+                    }
+                }
+                //有库存变化
+                //TODO :预计库存变化的数据不会超过1000条，先不进行拆分处理，如有需要后续完善
+                if (changegoodsids.length() > 0) {
+                    //库存变化的货品ID
+                    changegoodsids = changegoodsids.substring(1);
+                    //限制最多只拆分1000个id,万一越界，第1000个元素是 “1,2,3...”这样的。
+                    goodsIdArray = changegoodsids.split(",", 1000);
+                    if (goodsIdArray.length == 1000) {
+                        goodsIdArray[999] = "0"; //越界的话：把第1000个元素改成 0
+                    }
+                } else {
+                    resp.setReturncode("-1");
+                    resp.setReturnmsg("未查询到时间段内有变化的数据");
+                    queryFlag = false;
+                }
+            } else{
+                //未收到lasteventtime 只能把传过来的货品ID都进行查询
+                goodsIdArray = goodsArrayList.get(0);
+            }
+
+            if(queryFlag) {
+                //查询这些有变化的货品ID的库存情况
+                List<Map<String, Object>> lists = elemeDao.getGoodsQty(entryid, placepointid, goodsIdArray);
+                if (lists.size() == 0) {
+                    resp.setReturncode("-1");
+                    resp.setReturnmsg("未查询到数据");
+                } else {
+                    Goodsqtylist goodslist = new Goodsqtylist();
+                    resp.setGoodsqtylist(goodslist);
+                    List<GoodsqtyItem> list = resp.getGoodsqtylist().getGoodsqtyItem();
+                    for (Map<String, Object> map : lists) {
+                        GoodsqtyItem item = new GoodsqtyItem();
+                        item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+                        item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
+                        list.add(item);
+                    }
+                    resp.setReturncode("0");
+                    resp.setReturnmsg("查询成功");
+                }
+            }
         }
+
         try {
             retxml = JAXBUtil.marshToXmlBinding(ELMGOODSQTYRESP.class, resp, "UTF-8");
         } catch (JAXBException e) {
@@ -241,9 +288,31 @@ public class IElemeServiceImpl implements IElemeService {
                System.out.println("门店ID【"+placepointid+"】在INCA系统中不存在！");
                throw new BopException("-1", "门店ID【"+placepointid+"】在INCA系统中不存在！");
             }
+            String rate = DecimalHelper.divide(req.getRealmoney(), req.getReceivalmoney(),12);
             List<Product> lists = req.getProducts().getProduct();
             for (Product pro : lists) {
-                CreateSaDtl(con, pro, docid, placepointid, req.getReceivalmoney(), storageid, req.getZxOrderno());
+                CreateSaDtl(con, pro, docid, placepointid, rate, storageid, req.getZxOrderno());
+            }
+            //进行调价
+            String sql = "select * from gresa_sa_dtl where rsaid = ?";
+            SelectHelper sh = new SelectHelper(sql);
+            sh.bindParam(docid);
+            DBTableModel dtls = sh.executeSelect(con, 0, 9999);
+            String realmoney = "";
+            for(int i=0;i<dtls.getRowCount();i++){
+                realmoney = DecimalHelper.add(realmoney, dtls.getItemValue(i,"realmoney"), 2);
+
+            }
+            String ce = DecimalHelper.sub(req.getRealmoney(), realmoney, 2);
+            if(DecimalHelper.comparaDecimal(ce,"0")!=0){
+                String dtlrealmoney = DecimalHelper.add(dtls.getItemValue(0,"realmoney"), ce, 2);
+                String dtlprice = DecimalHelper.divide(dtlrealmoney, dtls.getItemValue(0,"goodsqty"), 10);
+                String rsql = "update gresa_sa_dtl set realmoney=?,useprice=? where rsadtlid =?";
+                UpdateHelper uh = new UpdateHelper(rsql);
+                uh.bindParam(dtlrealmoney);
+                uh.bindParam(dtlprice);
+                uh.bindParam(dtls.getItemValue(0,"rsadtlid"));
+                uh.executeUpdate(con);
             }
 
             //生成收款明细数据
@@ -253,7 +322,7 @@ public class IElemeServiceImpl implements IElemeService {
             payh.bindParam("rsaid", docid);
             payh.bindParam("gathertype", "120");//先默认一个收款方式.线上微信支付.
             payh.bindParam("recmoney", req.getReceivalmoney());//总单应收款
-            payh.bindParam("realmoney",req.getReceivalmoney());//总单实际收款
+            payh.bindParam("realmoney",req.getRealmoney());//总单实际收款
             payh.bindParam("changemoney", "0");
             payh.executeInsert(con);
 
@@ -308,10 +377,11 @@ public class IElemeServiceImpl implements IElemeService {
      * @param storageid
      * @throws Exception
      */
-    private void CreateSaDtl(Connection con, Product pro, String docid,String placepointid,String totalmoney, String storageid, String orderid) throws Exception {
+    private void CreateSaDtl(Connection con, Product pro, String docid,String placepointid,String rate, String storageid, String orderid) throws Exception {
         String goodsid = pro.getGoodsid();
         String goodsqty = pro.getGoodsqty();
         String unitprice = pro.getUnitprice();
+        String price = DecimalHelper.divide(DecimalHelper.multi(pro.getTotalLine(), rate, 12), goodsqty, 10);
         String priceid = pro.getPriceid();
         String cansaleqty = "";//可销库存数量
         //查询当前门店该货品的可销库存.//出库时按近效期的批号规则出库.
@@ -334,9 +404,9 @@ public class IElemeServiceImpl implements IElemeService {
                 ih.bindParam("goodsid", goodsid);//货品ID
                 ih.bindParam("goodsqty", goodsqty);//数量
                 ih.bindParam("total_line", DecimalHelper.multi(unitprice, goodsqty, 2));//应收金额
-                ih.bindParam("realmoney", DecimalHelper.multi(unitprice, goodsqty, 2));//实收金额
+                ih.bindParam("realmoney", DecimalHelper.multi(price, goodsqty, 2));//实收金额
                 ih.bindParam("storageid", storageid);//保管账ID
-                ih.bindParam("useprice", unitprice);//单价
+                ih.bindParam("useprice", price);//单价
                 ih.bindParam("placepointid", placepointid);//门店ID
                 ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
                 ih.bindParam("resaprice", unitprice);//单价
@@ -408,9 +478,9 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("goodsid", goodsid);//货品ID
                         ih.bindParam("goodsqty", DecimalHelper.sub(goodsqty, accqty, 2));//数量
                         ih.bindParam("total_line", DecimalHelper.multi(unitprice, DecimalHelper.sub(goodsqty, accqty, 2), 2));//应收金额
-                        ih.bindParam("realmoney", DecimalHelper.multi(unitprice, DecimalHelper.sub(goodsqty, accqty, 2), 2));//实收金额
+                        ih.bindParam("realmoney", DecimalHelper.multi(price, DecimalHelper.sub(goodsqty, accqty, 2), 2));//实收金额
                         ih.bindParam("storageid", storageid);//保管账ID
-                        ih.bindParam("useprice", unitprice);//单价
+                        ih.bindParam("useprice", price);//单价
                         ih.bindParam("placepointid", placepointid);//门店ID
                         ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
                         ih.bindParam("resaprice", unitprice);//单价
@@ -476,10 +546,11 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("rsaid",docid);//总单ID
                         ih.bindParam("goodsid", goodsid);//货品ID
                         ih.bindParam("goodsqty", tmpqty);//数量
+                        String total_line = DecimalHelper.multi(unitprice, tmpqty, 2);
                         ih.bindParam("total_line", DecimalHelper.multi(unitprice, tmpqty, 2));//应收金额
-                        ih.bindParam("realmoney", DecimalHelper.multi(unitprice, tmpqty, 2));//实收金额
+                        ih.bindParam("realmoney", DecimalHelper.multi(price, tmpqty, 2));//实收金额
                         ih.bindParam("storageid", storageid);//保管账ID
-                        ih.bindParam("useprice", unitprice);//单价
+                        ih.bindParam("useprice", price);//单价
                         ih.bindParam("placepointid", placepointid);//门店ID
                         ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
                         ih.bindParam("resaprice", unitprice);//单价
