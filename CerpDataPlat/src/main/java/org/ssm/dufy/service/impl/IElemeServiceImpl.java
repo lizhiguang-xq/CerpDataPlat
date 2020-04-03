@@ -114,7 +114,6 @@ public class IElemeServiceImpl implements IElemeService {
                 item.setBarcode(StringUtil.doNullStr(map.get("BARCODE")));
                 item.setTrademark(StringUtil.doNullStr(map.get("TRADEMARK")));
                 item.setPrice(StringUtil.doNullStr(map.get("PRICE")));
-                item.setGoodstqty("0");
                 list.add(item);
             }
             resp.setReturncode("0");
