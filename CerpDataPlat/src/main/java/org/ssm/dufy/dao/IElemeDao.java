@@ -16,4 +16,6 @@ public interface IElemeDao {
     List<Map<String, Object>> getGoodsPrice(@Param("entryid")String entryid, @Param("placepointid")String placepointid, @Param("priceid")String priceid, @Param("array")String[] array);
 
     List<Map<String, Object>> getChangeGoodsIds(@Param("placepointid")String placepointid, @Param("lasteventtime")String lasteventtime, @Param("goodsids")String[] goodsids);
+
+    List<Map<String, Object>> getUserinfos(@Param("entryid")String entryid, @Param("employeeids")String[] employeeids);
 }

@@ -12,5 +12,7 @@ public interface IElemeService {
 
     public String createOrder(String entryid, String xmldata);
 
+    public String getUsers(String entryid, String xmldata);
+
 
 }

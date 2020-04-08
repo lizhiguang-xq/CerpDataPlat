@@ -50,5 +50,7 @@ public class CommonConstant {
 	public final static String OPER_GETGOODS_PRICE_ELM = "getgoodsprice_elm";
 
 	public final static String OPER_CREATEORDER_ELM = "createorder_elm";
+
+	public final static String OPER_GETUSERINFO_ELM = "getuserinfo_elm";
 	
 }

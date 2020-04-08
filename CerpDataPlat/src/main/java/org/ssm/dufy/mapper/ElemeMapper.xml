@@ -2,6 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.ssm.dufy.dao.IElemeDao" >
 
+    <select id="getUserinfos" resultType="map" >
+        select
+        t.employeeid,
+        t.employeename,
+        t.zx_entryid,
+        t.webpass,
+        t.md5count,
+        p.placepointid
+        from
+        pub_employee t,
+        gpcs_placepoint p
+        where
+        t.zx_entryid = p.entryid(+)
+        and t.deptid = p.placepointid(+)
+        and t.usestatus=1
+        and t.zx_entryid = #{entryid}
+        and t.employeeid in
+        <foreach collection="employeeids" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
     <select id="getGoodsClassType" resultType="map" >
         select
         t.classid,t.classname,t.leafflag

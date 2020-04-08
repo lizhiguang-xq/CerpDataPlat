@@ -33,6 +33,10 @@ import org.ssm.cxf.struct.eleme.goodsqty.ELMGOODSQTYREQ;
 import org.ssm.cxf.struct.eleme.goodsqty.ELMGOODSQTYRESP;
 import org.ssm.cxf.struct.eleme.goodsqty.GoodsqtyItem;
 import org.ssm.cxf.struct.eleme.goodsqty.Goodsqtylist;
+import org.ssm.cxf.struct.eleme.userinfo.ELMUSERINFOREQ;
+import org.ssm.cxf.struct.eleme.userinfo.ELMUSERINFORESP;
+import org.ssm.cxf.struct.eleme.userinfo.Userinfo;
+import org.ssm.cxf.struct.eleme.userinfo.Userlist;
 import org.ssm.dufy.dao.IElemeDao;
 import org.ssm.dufy.exception.BopException;
 import org.ssm.dufy.service.IElemeService;
@@ -367,6 +371,44 @@ public class IElemeServiceImpl implements IElemeService {
         }
         return retxml;
     }
+
+    @Override
+    public String getUsers(String entryid, String xmldata) {
+        ELMUSERINFOREQ req = JAXBUtil.unmarshToObjBinding(ELMUSERINFOREQ.class, xmldata, "UTF-8");
+        String employeeids = req.getUserids();
+        entryid = req.getEntryid();
+        String[] ids = employeeids.split(",");
+        String retxml = "";
+        ELMUSERINFORESP resp = new ELMUSERINFORESP();
+        List<Map<String,Object>> lists = elemeDao.getUserinfos(entryid, ids);
+        if(lists.size()==0){
+            resp.setReturncode("-1");
+            resp.setReturnmsg("未查询到数据");
+        }else{
+            Userlist ulists = new Userlist();
+            resp.setUserlist(ulists);
+            List<Userinfo> list = resp.getUserlist().getUserinfo();
+            for(Map<String,Object> map:lists){
+                Userinfo item = new Userinfo();
+                item.setEntryid(StringUtil.doNullStr(map.get("ZX_ENTRYID")));
+                item.setMd5Count(StringUtil.doNullStr(map.get("MD5COUNT")));
+                item.setPassword(StringUtil.doNullStr(map.get("WEBPASS")));
+                item.setUserid(StringUtil.doNullStr(map.get("EMPLOYEEID")));
+                item.setUsername(StringUtil.doNullStr(map.get("EMPLOYEENAME")));
+                item.setPlacepointid(StringUtil.doNullStr(map.get("PLACEPOINTID")));
+                list.add(item);
+            }
+            resp.setReturncode("0");
+            resp.setReturnmsg("查询成功");
+        }
+        try {
+            retxml = JAXBUtil.marshToXmlBinding(ELMUSERINFORESP.class, resp, "UTF-8");
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return retxml;
+    }
+
     /**
      * 生成零售细单
      * @param con
