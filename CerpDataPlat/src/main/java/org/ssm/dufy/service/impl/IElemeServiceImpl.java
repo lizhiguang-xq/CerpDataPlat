@@ -323,7 +323,7 @@ public class IElemeServiceImpl implements IElemeService {
             String rsalstid = NgpcsDBHelper.getSeqValue(con, "gresa_sa_lst_seq");
             payh.bindParam("rsalstid", rsalstid);
             payh.bindParam("rsaid", docid);
-            payh.bindParam("gathertype", "120");//先默认一个收款方式.线上微信支付.
+            payh.bindParam("gathertype", req.getGathertype());//先默认一个收款方式.线上微信支付.
             payh.bindParam("recmoney", req.getReceivalmoney());//总单应收款
             payh.bindParam("realmoney",req.getRealmoney());//总单实际收款
             payh.bindParam("changemoney", "0");

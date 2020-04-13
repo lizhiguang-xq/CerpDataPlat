@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}credate"/>
  *         &lt;element ref="{}receivalmoney"/>
  *         &lt;element ref="{}realmoney"/>
+ *         &lt;element ref="{}gathertype"/>
  *         &lt;element ref="{}dtl_lines"/>
  *         &lt;element ref="{}zx_orderno"/>
  *         &lt;element ref="{}products"/>
@@ -51,6 +52,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "credate",
     "receivalmoney",
     "realmoney",
+    "gathertype",
     "dtlLines",
     "zxOrderno",
     "products"
@@ -78,6 +80,10 @@ public class ELMAPPLYORDERREQ {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String realmoney;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String gathertype;
     @XmlElement(name = "dtl_lines", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
@@ -207,6 +213,30 @@ public class ELMAPPLYORDERREQ {
      */
     public void setRealmoney(String value) {
         this.realmoney = value;
+    }
+
+    /**
+     * 获取gathertype属性的值。
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getGathertype() {
+        return gathertype;
+    }
+
+    /**
+     * 设置gathertype属性的值。
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setGathertype(String value) {
+        this.gathertype = value;
     }
 
     /**
