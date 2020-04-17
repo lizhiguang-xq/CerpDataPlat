@@ -281,7 +281,11 @@ public class IElemeServiceImpl implements IElemeService {
             ih.bindParam("usestatus", "1");//使用状态
             ih.bindDateParam("useday", getUseDay(con));//逻辑日
             ih.bindParam("rsatype", "1");//销售类型 零售.
-            ih.bindParam("cashierid", "0");//收款员ID 暂时定为系统管理员.
+            if(StringUtil.doNullInteger(entryid)==14){
+                ih.bindParam("cashierid", "14575");//收款员ID 暂时定为系统管理员. 天津生产14575,测试28549
+            }else{
+                ih.bindParam("cashierid", "0");//收款员ID 暂时定为系统管理员.
+            }
             ih.bindParam("rsaclass", getRsaClass(con));//班次
             ih.bindParam("zx_orderno", req.getZxOrderno());//微医订单号.
             ih.executeInsert(con);
