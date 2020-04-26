@@ -121,7 +121,7 @@
         and b.placepointid=#{placepointid}
         and b.entryid = #{entryid}
         and a.priceid=#{priceid}
-        <if test=" lasteventtime != null and lasteventtime! = ''">
+        <if test="lasteventtime != null and lasteventtime != '' ">
             and a.sys_modifydate > to_date(#{lasteventtime},'YYYYMMDDHH24MISS') - 1/96
         </if>
         and a.goodsid in
