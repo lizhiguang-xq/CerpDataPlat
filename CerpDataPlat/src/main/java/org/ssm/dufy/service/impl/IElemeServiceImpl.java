@@ -226,6 +226,7 @@ public class IElemeServiceImpl implements IElemeService {
         String placepointid = req.getPlacepointid();
         String priceid = req.getPriceid();
         String goodsidstr = req.getGoodsids();
+        String lasteventtime = req.getLasteventtime(); //查询价格是否有变化的时间依据
         String[] goodsids = goodsidstr.split(",");
         if(goodsidstr.length()<1){
             resp.setReturncode("-1");
@@ -233,10 +234,10 @@ public class IElemeServiceImpl implements IElemeService {
         }
         entryid = req.getEntryid();
         String retxml = "";
-        List<Map<String,Object>> lists = elemeDao.getGoodsPrice(entryid, placepointid,priceid,goodsids);
+        List<Map<String,Object>> lists = elemeDao.getGoodsPrice(entryid, placepointid, priceid, lasteventtime, goodsids);
         if(lists.size()==0){
             resp.setReturncode("-1");
-            resp.setReturnmsg("未查询到数据");
+            resp.setReturnmsg("未查询到价格数据");
         }else{
             Goodspricelist goodslist = new Goodspricelist();
             resp.setGoodspricelist(goodslist);

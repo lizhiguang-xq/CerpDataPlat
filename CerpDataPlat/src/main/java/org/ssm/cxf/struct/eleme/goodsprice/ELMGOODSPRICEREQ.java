@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}placepointid"/>
  *         &lt;element ref="{}priceid"/>
  *         &lt;element ref="{}goodsids"/>
+ *         &lt;element ref="{}lasteventtime"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -45,7 +46,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "entryid",
     "placepointid",
     "priceid",
-    "goodsids"
+    "goodsids",
+    "lasteventtime"
 })
 @XmlRootElement(name = "ELM_GOODSPRICE_REQ")
 public class ELMGOODSPRICEREQ {
@@ -64,7 +66,17 @@ public class ELMGOODSPRICEREQ {
     protected String priceid;
     @XmlElement(required = true)
     protected String goodsids;
+    @XmlElement(required = true)
+    protected String lasteventtime;
 
+
+    public String getLasteventtime() {
+        return lasteventtime;
+    }
+
+    public void setLasteventtime(String lasteventtime) {
+        this.lasteventtime = lasteventtime;
+    }
     /**
      * 获取entryid属性的值。
      * 
