@@ -221,6 +221,7 @@ public class IElemeServiceImpl implements IElemeService {
 
     @Override
     public String getGoodsPrice(String entryid, String xmldata) {
+        String retxml = "";
         ELMGOODSPRICERESP resp = new ELMGOODSPRICERESP();
         ELMGOODSPRICEREQ req = JAXBUtil.unmarshToObjBinding(ELMGOODSPRICEREQ.class, xmldata, "UTF-8");
         String placepointid = req.getPlacepointid();
@@ -228,26 +229,57 @@ public class IElemeServiceImpl implements IElemeService {
         String goodsidstr = req.getGoodsids();
         String lasteventtime = req.getLasteventtime(); //查询价格是否有变化的时间依据
         String[] goodsids = goodsidstr.split(",");
+        List<String[]> grouplist = new ArrayList<>();
         if(goodsidstr.length()<1){
             resp.setReturncode("-1");
             resp.setReturnmsg("货品ID不能为空");
         }
         entryid = req.getEntryid();
-        String retxml = "";
-        List<Map<String,Object>> lists = elemeDao.getGoodsPrice(entryid, placepointid, priceid, lasteventtime, goodsids);
-        if(lists.size()==0){
+        //超过900条的进行分次查询
+        if(goodsids.length>900){
+            int groupsize = 900;
+            List<String> strlist = new ArrayList<>();
+            for(int i=0;i<goodsids.length;i++){
+                strlist.add(goodsids[i]);
+            }
+            int total = strlist.size();
+            int count = total/groupsize;
+            if(total%groupsize>0){
+                count = count+1;
+            }
+            for(int i=0;i<count;i++){
+                int end = (i+1)*groupsize;
+                if(i == (count-1)){
+                    end = total;
+                }
+                List<String> clist = strlist.subList(i*groupsize, end);
+                String[] gstr = new String[clist.size()];
+                for(int z=0,y=clist.size();z<y;z++){
+                    gstr[z] = clist.get(z);
+                };
+                grouplist.add(gstr);
+            }
+        }else{
+            grouplist.add(goodsids);
+        }
+        Goodspricelist goodslist = new Goodspricelist();
+        resp.setGoodspricelist(goodslist);
+        List<GoodspriceItem> list = resp.getGoodspricelist().getGoodspriceItem();
+        for(int i=0;i<grouplist.size();i++){
+            List<Map<String,Object>> lists = elemeDao.getGoodsPrice(entryid, placepointid, priceid, lasteventtime, grouplist.get(i));
+            if(lists.size()>0){
+                for(Map<String,Object> map:lists){
+                    GoodspriceItem item = new GoodspriceItem();
+                    item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+                    item.setPrice(StringUtil.doNullStr(map.get("PRICE")));
+                    list.add(item);
+                }
+            }
+        }
+        if(list.size()==0){
             resp.setReturncode("-1");
             resp.setReturnmsg("未查询到价格数据");
         }else{
-            Goodspricelist goodslist = new Goodspricelist();
-            resp.setGoodspricelist(goodslist);
-            List<GoodspriceItem> list = resp.getGoodspricelist().getGoodspriceItem();
-            for(Map<String,Object> map:lists){
-                GoodspriceItem item = new GoodspriceItem();
-                item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
-                item.setPrice(StringUtil.doNullStr(map.get("PRICE")));
-                list.add(item);
-            }
             resp.setReturncode("0");
             resp.setReturnmsg("查询成功");
         }
