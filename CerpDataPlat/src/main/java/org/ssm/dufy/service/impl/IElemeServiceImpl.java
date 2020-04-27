@@ -155,7 +155,7 @@ public class IElemeServiceImpl implements IElemeService {
             //goodsids 如果超过1000条，进行拆分，放入goodsArrayList中，下面循环处理
             List<String[]> goodsArrayList = null;
             if (goodsids.length > 1000) {
-                goodsArrayList = CommonUtils.splitArray(goodsids, 1000);
+                goodsArrayList = CommonUtils.splitArrayString(goodsids, 1000);
             } else {
                 goodsArrayList = new ArrayList<String[]>();
                 goodsArrayList.add(goodsids);
