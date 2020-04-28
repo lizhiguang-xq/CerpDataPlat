@@ -13,7 +13,7 @@ public class CommonUtils {
      * @param subSize 分割的块大小
      * @return
      */
-    public static<T> List<T[]> splitArray(T[] ary, Class<T> classType, int subSize) {
+    public static<T> List<T[]> splitArray(T[] ary, int subSize) {
         int count = ary.length % subSize == 0 ? ary.length / subSize
                 : ary.length / subSize + 1;
         //存放【子list】的list
@@ -35,7 +35,7 @@ public class CommonUtils {
         for (int i = 0; i < subAryList.size(); i++) {
             List<T> subList = subAryList.get(i);
             @SuppressWarnings("unchecked")
-            T[] subAryItem = (T[]) getArray(classType, subList.size());//new Object[subList.size()];
+            T[] subAryItem = (T[]) getArray(ary.getClass().getComponentType(), subList.size());
             for (int j = 0; j < subList.size(); j++) {
                 subAryItem[j] = (T)subList.get(j);
             }
