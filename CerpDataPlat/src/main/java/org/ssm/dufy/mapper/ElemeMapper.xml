@@ -48,7 +48,7 @@
         t.price,
         t.barcode,
         t.trademark,
-        nvl(sum(nvl(e.goodsqty, 0) - nvl(f.dtlgoodsqty, 0)), 0) goodsqty
+        floor(nvl(sum(nvl(e.goodsqty, 0) - nvl(f.dtlgoodsqty, 0)), 0)) goodsqty
         from
         (select
           a.placepointid,a.goodsid,c.opcode,c.goodsname,
@@ -89,24 +89,27 @@
     </select>
 
     <select id="getGoodsQty" resultType="map" >
-        select d.goodsid,
-        floor(nvl(sum(a.goodsqty-nvl(c.dtlgoodsqty,0)),0)) goodsqty
+        select t.goodsid,
+        floor(nvl(sum(e.goodsqty-nvl(f.dtlgoodsqty,0)),0)) goodsqty
         from
-        bms_st_qty_lst a,
-        gpcs_placepoint b,
-        bms_st_io_dtl_tmp c,
-        pub_goods d
-        where d.goodsid = a.goodsid(+)
-        and a.storageid = b.storageid(+)
-        and a.batchid = c.batchid(+)
-        and a.goodsstatusid(+) = 1
-        and b.entryid(+) = #{entryid}
-        and b.placepointid(+) = #{placepointid}
-        and d.goodsid in
-        <foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-        group by d.goodsid
+        (
+        select pe.goodsid,b.storageid from pub_entry_goods pe, gpcs_placepoint b
+            where pe.entryid=b.entryid
+            and b.placepointid=#{placepointid}
+            and b.entryid=#{entryid}
+            and pe.goodsid in
+            <foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        ) t,
+        bms_st_qty_lst e,
+        bms_st_io_dtl_tmp f
+        where
+        t.goodsid = e.goodsid(+)
+        and t.storageid = e.storageid(+)
+        and e.batchid = f.batchid(+)
+        and e.goodsstatusid(+) = 1
+        group by t.goodsid
     </select>
 
     <select id="getGoodsPrice" resultType="map" >
