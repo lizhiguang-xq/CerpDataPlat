@@ -152,6 +152,7 @@ public class IElemeServiceImpl implements IElemeService {
         }else {
             String[] goodsids = goodsidstr.split(",");
 
+            List<String[]> grouplist = new ArrayList<>(); //最终要查询的货品集合
             //goodsids 如果超过1000条，进行拆分，放入goodsArrayList中，下面循环处理
             List<String[]> goodsArrayList = null;
             if (goodsids.length > 1000) {
@@ -180,6 +181,7 @@ public class IElemeServiceImpl implements IElemeService {
                     if (goodsIdArray.length == 1000) {
                         goodsIdArray[999] = "0"; //越界的话：把第1000个元素改成 0
                     }
+                    grouplist.add(goodsIdArray);
                 } else {
                     resp.setReturncode("-1");
                     resp.setReturnmsg("未查询到时间段内有变化的数据");
@@ -187,25 +189,28 @@ public class IElemeServiceImpl implements IElemeService {
                 }
             } else{
                 //未收到lasteventtime 只能把传过来的货品ID都进行查询
-                goodsIdArray = goodsArrayList.get(0);
+                grouplist = goodsArrayList;
             }
 
             if(queryFlag) {
-                //查询这些有变化的货品ID的库存情况
-                List<Map<String, Object>> lists = elemeDao.getGoodsQty(entryid, placepointid, goodsIdArray);
-                if (lists.size() == 0) {
+                Goodsqtylist goodslist = new Goodsqtylist();
+                resp.setGoodsqtylist(goodslist);
+                List<GoodsqtyItem> list = resp.getGoodsqtylist().getGoodsqtyItem();
+                for(int i=0;i<grouplist.size();i++){
+                    List<Map<String, Object>> lists = elemeDao.getGoodsQty(entryid, placepointid, grouplist.get(i));
+                    if (lists.size() > 0) {
+                        for (Map<String, Object> map : lists) {
+                            GoodsqtyItem item = new GoodsqtyItem();
+                            item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+                            item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
+                            list.add(item);
+                        }
+                    }
+                }
+                if (list.size() == 0) {
                     resp.setReturncode("-1");
                     resp.setReturnmsg("未查询到数据");
                 } else {
-                    Goodsqtylist goodslist = new Goodsqtylist();
-                    resp.setGoodsqtylist(goodslist);
-                    List<GoodsqtyItem> list = resp.getGoodsqtylist().getGoodsqtyItem();
-                    for (Map<String, Object> map : lists) {
-                        GoodsqtyItem item = new GoodsqtyItem();
-                        item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
-                        item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
-                        list.add(item);
-                    }
                     resp.setReturncode("0");
                     resp.setReturnmsg("查询成功");
                 }
