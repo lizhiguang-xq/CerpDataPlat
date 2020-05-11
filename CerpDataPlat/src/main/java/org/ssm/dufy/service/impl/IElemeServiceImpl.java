@@ -297,9 +297,8 @@ public class IElemeServiceImpl implements IElemeService {
     }
 
     @Override
-    @Transactional
     public String createOrder(String entryid, String xmldata) {
-        ELMAPPLYORDERRESP resp = new ELMAPPLYORDERRESP();
+            ELMAPPLYORDERRESP resp = new ELMAPPLYORDERRESP();
 
         ELMAPPLYORDERREQ req = JAXBUtil.unmarshToObjBinding(ELMAPPLYORDERREQ.class, xmldata, "UTF-8");
         String placepointid = req.getPlacepointid();
@@ -307,6 +306,7 @@ public class IElemeServiceImpl implements IElemeService {
         try {
 
             con = cerpzsdataSource.getConnection();
+            con.setAutoCommit(false);
             String docid = NpbusiDBHelper.getSeqValue(con, "gresa_sa_doc_seq");//零售总单ID
             //生成零售总单.BEGIN.
             InsertHelper ih = new InsertHelper("gresa_sa_doc");
@@ -399,6 +399,7 @@ public class IElemeServiceImpl implements IElemeService {
         }finally {
             if (con != null) {
                 try {
+                    con.setAutoCommit(true);
                     con.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
