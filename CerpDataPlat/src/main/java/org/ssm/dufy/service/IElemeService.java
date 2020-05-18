@@ -10,6 +10,10 @@ public interface IElemeService {
 
     public String getGoodsPrice(String entryid, String xmldata);
 
+    public String getGoodsQtyByClasstypeid(String entryid, String xmldata);
+
+    public String getGoodsPriceByClasstypeid(String entryid, String xmldata);
+
     public String createOrder(String entryid, String xmldata);
 
     public String getUsers(String entryid, String xmldata);

@@ -154,4 +154,79 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="getChangeGoodsIdsByClasstypeid" resultType="map" >
+        select distinct t.goodsid
+        from bms_st_io_doc t,
+        (select c.goodsid from pub_goods_classtype a, pub_goods_class_dtl c
+        where a.classtypeid = c.classtypeid and a.entryid = #{entryid} and a.classtypeid=#{classtypeid}) z
+        where t.storageid =
+        (select storageid from gpcs_placepoint a where a.placepointid = #{placepointid})
+        and t.credate > to_date(#{lasteventtime},'YYYYMMDDHH24MISS') - 1/96
+        and t.goodsid = z.goodsid
+        union
+        select distinct t.goodsid
+        from bms_st_io_doc_tmp t,
+        (select c.goodsid from pub_goods_classtype a, pub_goods_class_dtl c
+        where a.classtypeid = c.classtypeid and a.entryid = #{entryid} and a.classtypeid=#{classtypeid}) z
+        where t.storageid =
+        (select storageid from gpcs_placepoint a where a.placepointid = #{placepointid})
+        and t.credate > to_date(#{lasteventtime},'YYYYMMDDHH24MISS') - 1/96
+        and t.goodsid = z.goodsid
+    </select>
+
+
+    <select id="getGoodsQtyByClasstypeid" resultType="map" >
+        select t.goodsid,
+        floor(nvl(sum(e.goodsqty-nvl(f.dtlgoodsqty,0)),0)) goodsqty
+        from
+        (
+        select c.goodsid,b.storageid
+        from gpcs_placepoint b,
+        pub_goods_classtype a,
+        pub_goods_class_dtl c
+        where
+        a.classtypeid = c.classtypeid(+)
+        and b.entryid=a.entryid(+)
+        and a.classtypeid = #{classtypeid}
+        and b.placepointid = #{placepointid}
+        <if test="array != null">
+            and c.goodsid in
+            <foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        ) t,
+        bms_st_qty_lst e,
+        bms_st_io_dtl_tmp f
+        where
+        t.goodsid = e.goodsid(+)
+        and t.storageid = e.storageid(+)
+        and e.batchid = f.batchid(+)
+        and e.goodsstatusid(+) = 1
+        group by t.goodsid
+    </select>
+
+    <select id="getGoodsPriceByClasstypeid" resultType="map" >
+        select
+        a.goodsid,
+        a.price
+        from
+        ngpcs_all_price a,
+        gpcs_placepoint b,
+        pub_goods_classtype c,
+        pub_goods_class_dtl d
+        where
+        a.placepointid = b.placepointid
+        and b.entryid = c.entryid(+)
+        and c.classtypeid = d.classtypeid(+)
+        and a.goodsid = d.goodsid
+        and b.placepointid=#{placepointid}
+        and b.entryid = #{entryid}
+        and a.priceid=#{priceid}
+        and c.classtypeid=#{classtypeid}
+        <if test="lasteventtime != null and lasteventtime != '' ">
+            and a.sys_modifydate > to_date(#{lasteventtime},'YYYYMMDDHH24MISS') - 1/96
+        </if>
+    </select>
 </mapper>

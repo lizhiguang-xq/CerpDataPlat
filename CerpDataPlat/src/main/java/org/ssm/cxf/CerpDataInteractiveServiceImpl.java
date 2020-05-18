@@ -121,6 +121,10 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = elemeService.getGoodsPrice(entryid, xmlData); //【饿了么】获取货价
 		} else if(CommonConstant.OPER_GETUSERINFO_ELM.equals(oper.toLowerCase())) {
 			retxml = elemeService.getUsers(entryid, xmlData); //【饿了么】查询用户信息
+		} else if(CommonConstant.OPER_GETGOODS_QTY_CLASSTYPEID_ELM.equals(oper.toLowerCase())) {
+			retxml = elemeService.getGoodsQtyByClasstypeid(entryid, xmlData); //【饿了么】根据分类查询库存
+		} else if(CommonConstant.OPER_GETGOODS_PRICE_CLASSTYPEID_ELM.equals(oper.toLowerCase())) {
+			retxml = elemeService.getGoodsPriceByClasstypeid(entryid, xmlData); //【饿了么】根据分类查询价格
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

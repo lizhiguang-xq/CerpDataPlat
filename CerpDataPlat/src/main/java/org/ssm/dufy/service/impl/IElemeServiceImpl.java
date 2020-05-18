@@ -297,7 +297,119 @@ public class IElemeServiceImpl implements IElemeService {
     }
 
     @Override
-    @Transactional
+    public String getGoodsQtyByClasstypeid(String entryid, String xmldata) {
+        ELMGOODSQTYRESP resp = new ELMGOODSQTYRESP();
+        ELMGOODSQTYREQ req = JAXBUtil.unmarshToObjBinding(ELMGOODSQTYREQ.class, xmldata, "UTF-8");
+        String placepointid = req.getPlacepointid();
+        String classtypeid = req.getGoodsids();
+        String lasteventtime = req.getLasteventtime(); //查询库存是否有变化的时间依据
+        entryid = req.getEntryid();
+        String retxml = "";
+        String[] goodsIdArray = null; //最终要查询的货品集合
+        boolean queryFlag = true; //查询库存flag
+        if(StringUtil.isEmpty(classtypeid)){
+            resp.setReturncode("-1");
+            resp.setReturnmsg("货品ID不能为空");
+        } else if (StringUtil.isEmpty(placepointid)) {
+            resp.setReturncode("-1");
+            resp.setReturnmsg("门店ID不能为空");
+        }else {
+            List<String[]> grouplist = new ArrayList<>(); //最终要查询的货品集合
+            //查询哪些货品有库存变化
+            if (!StringUtil.isEmpty(lasteventtime)) {
+                String changegoodsids = ""; //有变化的货品ID字符串
+                List<Map<String, Object>> changeGoodsList = elemeDao.getChangeGoodsIdsByClasstypeid(entryid, placepointid, classtypeid, lasteventtime);
+                for (Map<String, Object> map : changeGoodsList) {
+                    changegoodsids += "," + StringUtil.doNullStr(map.get("GOODSID"));
+                }
+                //有库存变化
+                //TODO :预计库存变化的数据不会超过1000条，先不进行拆分处理，如有需要后续完善
+                if (changegoodsids.length() > 0) {
+                    //库存变化的货品ID
+                    changegoodsids = changegoodsids.substring(1);
+                    //限制最多只拆分1000个id,万一越界，第1000个元素是 “1,2,3...”这样的。
+                    goodsIdArray = changegoodsids.split(",", 1000);
+                    if (goodsIdArray.length == 1000) {
+                        goodsIdArray[999] = "0"; //越界的话：把第1000个元素改成 0
+                    }
+                    grouplist.add(goodsIdArray);
+                } else {
+                    resp.setReturncode("-1");
+                    resp.setReturnmsg("未查询到时间段内有变化的数据");
+                    queryFlag = false;
+                }
+            }
+
+            if(queryFlag) {
+                Goodsqtylist goodslist = new Goodsqtylist();
+                resp.setGoodsqtylist(goodslist);
+                List<GoodsqtyItem> list = resp.getGoodsqtylist().getGoodsqtyItem();
+                for(int i=0;i<grouplist.size();i++){
+                    List<Map<String, Object>> lists = elemeDao.getGoodsQtyByClasstypeid(entryid, placepointid, classtypeid, grouplist.get(i));
+                    if (lists.size() > 0) {
+                        for (Map<String, Object> map : lists) {
+                            GoodsqtyItem item = new GoodsqtyItem();
+                            item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+                            item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
+                            list.add(item);
+                        }
+                    }
+                }
+                if (list.size() == 0) {
+                    resp.setReturncode("-1");
+                    resp.setReturnmsg("未查询到数据");
+                } else {
+                    resp.setReturncode("0");
+                    resp.setReturnmsg("查询成功");
+                }
+            }
+        }
+        try {
+            retxml = JAXBUtil.marshToXmlBinding(ELMGOODSQTYRESP.class, resp, "UTF-8");
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return retxml;
+    }
+
+    @Override
+    public String getGoodsPriceByClasstypeid(String entryid, String xmldata) {
+        String retxml = "";
+        ELMGOODSPRICERESP resp = new ELMGOODSPRICERESP();
+        ELMGOODSPRICEREQ req = JAXBUtil.unmarshToObjBinding(ELMGOODSPRICEREQ.class, xmldata, "UTF-8");
+        String placepointid = req.getPlacepointid();
+        String priceid = req.getPriceid();
+        String classtypeid = req.getGoodsids();
+        String lasteventtime = req.getLasteventtime(); //查询价格是否有变化的时间依据
+        entryid = req.getEntryid();
+        Goodspricelist goodslist = new Goodspricelist();
+        resp.setGoodspricelist(goodslist);
+        List<GoodspriceItem> list = resp.getGoodspricelist().getGoodspriceItem();
+        List<Map<String,Object>> lists = elemeDao.getGoodsPriceByClasstypeid(entryid, placepointid, priceid, lasteventtime, classtypeid);
+        if(lists.size()>0){
+            for(Map<String,Object> map:lists){
+                GoodspriceItem item = new GoodspriceItem();
+                item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+                item.setPrice(StringUtil.doNullStr(map.get("PRICE")));
+                list.add(item);
+            }
+        }
+        if(list.size()==0){
+            resp.setReturncode("-1");
+            resp.setReturnmsg("未查询到价格数据");
+        }else{
+            resp.setReturncode("0");
+            resp.setReturnmsg("查询成功");
+        }
+        try {
+            retxml = JAXBUtil.marshToXmlBinding(ELMGOODSPRICERESP.class, resp, "UTF-8");
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return retxml;
+    }
+
+    @Override
     public String createOrder(String entryid, String xmldata) {
         ELMAPPLYORDERRESP resp = new ELMAPPLYORDERRESP();
 
@@ -307,11 +419,23 @@ public class IElemeServiceImpl implements IElemeService {
         try {
 
             con = cerpzsdataSource.getConnection();
+            con.setAutoCommit(false);
+
+            //判断是否是重复订单
+            String zxsql = "select * from gresa_sa_doc where zx_orderno = ?";
+            SelectHelper docsh = new SelectHelper(zxsql);
+            docsh.bindParam(req.getZxOrderno());
+            DBTableModel docmodel = docsh.executeSelect(con, 0, 1);
+            if(docmodel.getRowCount()>0){
+                throw new BopException("-99", "该订单号已生成零售单，请勿重复发送！");
+            }
+
+
             String docid = NpbusiDBHelper.getSeqValue(con, "gresa_sa_doc_seq");//零售总单ID
             //生成零售总单.BEGIN.
             InsertHelper ih = new InsertHelper("gresa_sa_doc");
             ih.bindParam("rsaid", docid);
-            ih.bindDateParam("credate", TimeStampToDate(req.getCredate()));//创建时间
+            ih.bindDateParam("credate", NpbusiDBHelper.getSysdate(con));//创建时间
             ih.bindParam("placepointid", placepointid);//门店ID
             ih.bindParam("receivalmoney", req.getReceivalmoney());//应收
             ih.bindParam("realmoney", req.getRealmoney());//实收
@@ -399,6 +523,7 @@ public class IElemeServiceImpl implements IElemeService {
         }finally {
             if (con != null) {
                 try {
+                    con.setAutoCommit(true);
                     con.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
