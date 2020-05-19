@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}entryid"/>
  *         &lt;element ref="{}placepointid"/>
  *         &lt;element ref="{}credate"/>
+ *         &lt;element ref="{}totalmoney"/>
  *         &lt;element ref="{}receivalmoney"/>
  *         &lt;element ref="{}realmoney"/>
  *         &lt;element ref="{}gathertype"/>
@@ -50,6 +51,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "entryid",
     "placepointid",
     "credate",
+    "totalmoney",
     "receivalmoney",
     "realmoney",
     "gathertype",
@@ -72,6 +74,10 @@ public class ELMAPPLYORDERREQ {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String credate;
+    @XmlElement(required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String totalmoney;
     @XmlElement(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
@@ -165,6 +171,30 @@ public class ELMAPPLYORDERREQ {
      */
     public void setCredate(String value) {
         this.credate = value;
+    }
+
+    /**
+     * 获取totalmoney属性的值。
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getTotalmoney() {
+        return totalmoney;
+    }
+
+    /**
+     * 设置totalmoney属性的值。
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setTotalmoney(String value) {
+        this.totalmoney = value;
     }
 
     /**

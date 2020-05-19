@@ -429,7 +429,12 @@ public class IElemeServiceImpl implements IElemeService {
             if(docmodel.getRowCount()>0){
                 throw new BopException("-99", "该订单号已生成零售单，请勿重复发送！");
             }
-
+            String cashierid = "";
+            if(StringUtil.doNullInteger(entryid)==14){
+                cashierid = "14575";//收款员ID 天津生产14575,测试28549
+            }else{
+                cashierid = "0";//收款员ID 暂时定为系统管理员.
+            }
 
             String docid = NpbusiDBHelper.getSeqValue(con, "gresa_sa_doc_seq");//零售总单ID
             //生成零售总单.BEGIN.
@@ -443,11 +448,7 @@ public class IElemeServiceImpl implements IElemeService {
             ih.bindParam("usestatus", "1");//使用状态
             ih.bindDateParam("useday", getUseDay(con));//逻辑日
             ih.bindParam("rsatype", "1");//销售类型 零售.
-            if(StringUtil.doNullInteger(entryid)==14){
-                ih.bindParam("cashierid", "14575");//收款员ID 暂时定为系统管理员. 天津生产14575,测试28549
-            }else{
-                ih.bindParam("cashierid", "0");//收款员ID 暂时定为系统管理员.
-            }
+            ih.bindParam("cashierid", cashierid);//收款员ID
             ih.bindParam("rsaclass", getRsaClass(con));//班次
             ih.bindParam("zx_orderno", req.getZxOrderno());//微医订单号.
             ih.executeInsert(con);
@@ -458,9 +459,10 @@ public class IElemeServiceImpl implements IElemeService {
                throw new BopException("-1", "门店ID【"+placepointid+"】在INCA系统中不存在！");
             }
             String rate = DecimalHelper.divide(req.getRealmoney(), req.getReceivalmoney(),12);
+            String rate2 = DecimalHelper.divide(req.getReceivalmoney(), req.getTotalmoney(),12);
             List<Product> lists = req.getProducts().getProduct();
             for (Product pro : lists) {
-                CreateSaDtl(con, pro, docid, placepointid, rate, storageid, req.getZxOrderno());
+                CreateSaDtl(con, pro, docid, placepointid, rate, rate2, storageid, req.getZxOrderno(), cashierid);
             }
             //进行调价
             String sql = "select * from gresa_sa_dtl where rsaid = ?";
@@ -468,9 +470,19 @@ public class IElemeServiceImpl implements IElemeService {
             sh.bindParam(docid);
             DBTableModel dtls = sh.executeSelect(con, 0, 9999);
             String realmoney = "";
+            String realmoney2 = "";
             for(int i=0;i<dtls.getRowCount();i++){
                 realmoney = DecimalHelper.add(realmoney, dtls.getItemValue(i,"realmoney"), 2);
-
+                realmoney2  = DecimalHelper.add(realmoney2, dtls.getItemValue(i,"total_line"), 2);
+            }
+            String ce2 = DecimalHelper.sub(req.getReceivalmoney(), realmoney2, 2);
+            if(DecimalHelper.comparaDecimal(ce2,"0")!=0){
+                String dtlrealmoney = DecimalHelper.add(dtls.getItemValue(0,"total_line"), ce2, 2);
+                String rsql = "update gresa_sa_dtl set total_line=? where rsadtlid =?";
+                UpdateHelper uh = new UpdateHelper(rsql);
+                uh.bindParam(dtlrealmoney);
+                uh.bindParam(dtls.getItemValue(0,"rsadtlid"));
+                uh.executeUpdate(con);
             }
             String ce = DecimalHelper.sub(req.getRealmoney(), realmoney, 2);
             if(DecimalHelper.comparaDecimal(ce,"0")!=0){
@@ -585,11 +597,12 @@ public class IElemeServiceImpl implements IElemeService {
      * @param storageid
      * @throws Exception
      */
-    private void CreateSaDtl(Connection con, Product pro, String docid,String placepointid,String rate, String storageid, String orderid) throws Exception {
+    private void CreateSaDtl(Connection con, Product pro, String docid,String placepointid,String rate, String rate2, String storageid, String orderid, String cashierid) throws Exception {
         String goodsid = pro.getGoodsid();
         String goodsqty = pro.getGoodsqty();
         String unitprice = pro.getUnitprice();
-        String price = DecimalHelper.divide(DecimalHelper.multi(pro.getTotalLine(), rate, 12), goodsqty, 10);
+        String total_line_total = DecimalHelper.multi(pro.getTotalLine(), rate2, 12);
+        String price = DecimalHelper.divide(DecimalHelper.multi(total_line_total, rate, 12), goodsqty, 10);
         String priceid = pro.getPriceid();
         String cansaleqty = "";//可销库存数量
         //查询当前门店该货品的可销库存.//出库时按近效期的批号规则出库.
@@ -611,8 +624,10 @@ public class IElemeServiceImpl implements IElemeService {
                 ih.bindParam("rsaid",docid);//总单ID
                 ih.bindParam("goodsid", goodsid);//货品ID
                 ih.bindParam("goodsqty", goodsqty);//数量
-                ih.bindParam("total_line", DecimalHelper.multi(unitprice, goodsqty, 2));//应收金额
-                ih.bindParam("realmoney", DecimalHelper.multi(price, goodsqty, 2));//实收金额
+                String realmoney = DecimalHelper.multi(price, goodsqty, 2);
+                ih.bindParam("realmoney", realmoney);//实收金额
+                String total_line = DecimalHelper.divide(realmoney, rate, 2);
+                ih.bindParam("total_line", total_line);//应收金额
                 ih.bindParam("storageid", storageid);//保管账ID
                 ih.bindParam("useprice", price);//单价
                 ih.bindParam("placepointid", placepointid);//门店ID
@@ -630,7 +645,7 @@ public class IElemeServiceImpl implements IElemeService {
                 ih.bindParam("goodsdtlid",cansalemd.getItemValue(0, "goodsdtlid"));//货品明细ID.
                 ih.bindParam("goodsstatusid","1");//货品状态
                 ih.bindParam("memo","该零售细单由微医订单生成！");//备注
-                ih.bindParam("clerkerid","0");//营业员ID
+                ih.bindParam("clerkerid",cashierid);//营业员ID
                 ih.executeInsert(con);
 
                 String presstockflag = getStorageID(con,placepointid).getItemValue(0, "presstockflag");
@@ -685,8 +700,14 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("rsaid",docid);//总单ID
                         ih.bindParam("goodsid", goodsid);//货品ID
                         ih.bindParam("goodsqty", DecimalHelper.sub(goodsqty, accqty, 2));//数量
-                        ih.bindParam("total_line", DecimalHelper.multi(unitprice, DecimalHelper.sub(goodsqty, accqty, 2), 2));//应收金额
-                        ih.bindParam("realmoney", DecimalHelper.multi(price, DecimalHelper.sub(goodsqty, accqty, 2), 2));//实收金额
+//                        ih.bindParam("total_line", DecimalHelper.multi(unitprice, DecimalHelper.sub(goodsqty, accqty, 2), 2));//应收金额
+//                        ih.bindParam("realmoney", DecimalHelper.multi(price, DecimalHelper.sub(goodsqty, accqty, 2), 2));//实收金额
+
+                        String realmoney = DecimalHelper.multi(price, DecimalHelper.sub(goodsqty, accqty, 2), 2);
+                        ih.bindParam("realmoney", realmoney);//实收金额
+                        String total_line = DecimalHelper.divide(realmoney, rate, 2);
+                        ih.bindParam("total_line", total_line);//应收金额
+
                         ih.bindParam("storageid", storageid);//保管账ID
                         ih.bindParam("useprice", price);//单价
                         ih.bindParam("placepointid", placepointid);//门店ID
@@ -704,7 +725,7 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("goodsdtlid",cansalemd.getItemValue(c, "goodsdtlid"));//货品明细ID.
                         ih.bindParam("goodsstatusid","1");//货品状态
                         ih.bindParam("memo","该零售细单由饿了么订单生成！");//备注
-                        ih.bindParam("clerkerid","0");//营业员ID
+                        ih.bindParam("clerkerid",cashierid);//营业员ID
                         ih.executeInsert(con);
 
                         String presstockflag = getStorageID(con,placepointid).getItemValue(0, "presstockflag");
@@ -754,9 +775,12 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("rsaid",docid);//总单ID
                         ih.bindParam("goodsid", goodsid);//货品ID
                         ih.bindParam("goodsqty", tmpqty);//数量
-                        String total_line = DecimalHelper.multi(unitprice, tmpqty, 2);
-                        ih.bindParam("total_line", DecimalHelper.multi(unitprice, tmpqty, 2));//应收金额
-                        ih.bindParam("realmoney", DecimalHelper.multi(price, tmpqty, 2));//实收金额
+
+                        String realmoney = DecimalHelper.multi(price, tmpqty, 2);
+                        ih.bindParam("realmoney", realmoney);//实收金额
+                        String total_line = DecimalHelper.divide(realmoney, rate, 2);
+                        ih.bindParam("total_line", total_line);//应收金额
+
                         ih.bindParam("storageid", storageid);//保管账ID
                         ih.bindParam("useprice", price);//单价
                         ih.bindParam("placepointid", placepointid);//门店ID
@@ -774,7 +798,7 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("goodsdtlid",cansalemd.getItemValue(c, "goodsdtlid"));//货品明细ID.
                         ih.bindParam("goodsstatusid","1");//货品状态
                         ih.bindParam("memo","该零售细单由饿了么订单生成！");//备注
-                        ih.bindParam("clerkerid","0");//营业员ID
+                        ih.bindParam("clerkerid",cashierid);//营业员ID
                         ih.executeInsert(con);
 
                         String presstockflag = getStorageID(con,placepointid).getItemValue(0, "presstockflag");
