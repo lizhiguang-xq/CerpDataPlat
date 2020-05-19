@@ -417,7 +417,6 @@ public class IElemeServiceImpl implements IElemeService {
         String placepointid = req.getPlacepointid();
         Connection con = null;
         try {
-
             con = cerpzsdataSource.getConnection();
             con.setAutoCommit(false);
 
