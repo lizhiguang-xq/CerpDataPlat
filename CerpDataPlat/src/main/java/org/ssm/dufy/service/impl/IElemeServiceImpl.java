@@ -314,7 +314,6 @@ public class IElemeServiceImpl implements IElemeService {
             resp.setReturncode("-1");
             resp.setReturnmsg("门店ID不能为空");
         }else {
-            List<String[]> grouplist = new ArrayList<>(); //最终要查询的货品集合
             //查询哪些货品有库存变化
             if (!StringUtil.isEmpty(lasteventtime)) {
                 String changegoodsids = ""; //有变化的货品ID字符串
@@ -332,27 +331,23 @@ public class IElemeServiceImpl implements IElemeService {
                     if (goodsIdArray.length == 1000) {
                         goodsIdArray[999] = "0"; //越界的话：把第1000个元素改成 0
                     }
-                    grouplist.add(goodsIdArray);
                 } else {
                     resp.setReturncode("-1");
                     resp.setReturnmsg("未查询到时间段内有变化的数据");
                     queryFlag = false;
                 }
             }
-
             if(queryFlag) {
                 Goodsqtylist goodslist = new Goodsqtylist();
                 resp.setGoodsqtylist(goodslist);
                 List<GoodsqtyItem> list = resp.getGoodsqtylist().getGoodsqtyItem();
-                for(int i=0;i<grouplist.size();i++){
-                    List<Map<String, Object>> lists = elemeDao.getGoodsQtyByClasstypeid(entryid, placepointid, classtypeid, grouplist.get(i));
-                    if (lists.size() > 0) {
-                        for (Map<String, Object> map : lists) {
-                            GoodsqtyItem item = new GoodsqtyItem();
-                            item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
-                            item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
-                            list.add(item);
-                        }
+                List<Map<String, Object>> lists = elemeDao.getGoodsQtyByClasstypeid(entryid, placepointid, classtypeid, goodsIdArray);
+                if (lists.size() > 0) {
+                    for (Map<String, Object> map : lists) {
+                        GoodsqtyItem item = new GoodsqtyItem();
+                        item.setGoodsid(StringUtil.doNullStr(map.get("GOODSID")));
+                        item.setGoodsqty(StringUtil.doNullStr(map.get("GOODSQTY")));
+                        list.add(item);
                     }
                 }
                 if (list.size() == 0) {
