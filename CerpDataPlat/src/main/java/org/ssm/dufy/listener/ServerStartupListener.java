@@ -10,7 +10,7 @@ public class ServerStartupListener implements ServletContextListener {
         //将web应用名称保存到application范围中
         ServletContext application = servletContextEvent.getServletContext();
         application.setAttribute("APP_PATH", application.getContextPath());
-        application.setAttribute("PAGE_TITEL", "CERP接口平台");
+        application.setAttribute("PAGE_TITEL", "天士力CERP接口平台");
     }
 
     @Override
