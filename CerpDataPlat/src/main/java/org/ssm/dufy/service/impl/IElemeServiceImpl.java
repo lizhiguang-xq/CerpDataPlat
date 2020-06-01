@@ -945,7 +945,7 @@ public class IElemeServiceImpl implements IElemeService {
 
     /**
      * 小规模不同地区按照货品分类取税率
-     * by xuyh 21070825
+     * by ltq 20200601
      * @param con
      * @param placepointid
      * @param goodsid
