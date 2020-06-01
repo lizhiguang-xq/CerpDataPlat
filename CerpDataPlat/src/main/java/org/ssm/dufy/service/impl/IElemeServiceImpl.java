@@ -628,7 +628,11 @@ public class IElemeServiceImpl implements IElemeService {
                 ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
                 ih.bindParam("resaprice", unitprice);//单价
                 ih.bindParam("unitprice", unitprice);//原单价
-                ih.bindParam("taxrate", getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate"));//税率
+                String zx_taxrate =getgoodstaxrate(con, placepointid, goodsid);
+                if(zx_taxrate.equals("")){
+                    zx_taxrate = getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate");
+                }
+                ih.bindParam("taxrate", zx_taxrate);//税率
                 String accflag = getGoodsInfo(con,goodsid).getItemValue(0, "accflag");
                 String presentflag="5".equals(accflag)?"1":"0";
                 ih.bindParam("presentflag",presentflag);//货品属性.
@@ -708,7 +712,11 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
                         ih.bindParam("resaprice", unitprice);//单价
                         ih.bindParam("unitprice", unitprice);//原单价
-                        ih.bindParam("taxrate", getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate"));//税率
+                        String zx_taxrate =getgoodstaxrate(con, placepointid, goodsid);
+                        if(zx_taxrate.equals("")){
+                            zx_taxrate = getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate");
+                        }
+                        ih.bindParam("taxrate", zx_taxrate);//税率
                         String accflag = getGoodsInfo(con,goodsid).getItemValue(0, "accflag");
                         String presentflag="5".equals(accflag)?"1":"0";
                         ih.bindParam("presentflag",presentflag);//货品属性.
@@ -781,7 +789,11 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
                         ih.bindParam("resaprice", unitprice);//单价
                         ih.bindParam("unitprice", unitprice);//原单价
-                        ih.bindParam("taxrate", getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate"));//税率
+                        String zx_taxrate =getgoodstaxrate(con, placepointid, goodsid);
+                        if(zx_taxrate.equals("")){
+                            zx_taxrate = getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate");
+                        }
+                        ih.bindParam("taxrate", zx_taxrate);//税率
                         String accflag = getGoodsInfo(con,goodsid).getItemValue(0, "accflag");
                         String presentflag="5".equals(accflag)?"1":"0";
                         ih.bindParam("presentflag",presentflag);//货品属性.
@@ -929,5 +941,49 @@ public class IElemeServiceImpl implements IElemeService {
             System.out.println("未查询到货品ID=" + goodsid + "的货品主档信息");
         }
         return goodsInfoModel;
+    }
+
+    /**
+     * 小规模不同地区按照货品分类取税率
+     * by xuyh 21070825
+     * @param con
+     * @param placepointid
+     * @param goodsid
+     * @return
+     * @throws Exception
+     */
+    private String getgoodstaxrate(Connection con, String placepointid,String goodsid) throws Exception {
+        String goodstaxrate ="";
+        String sql="select nvl(c.miniaturetaxpayerflag, 0),c.entryid " +
+                "   from gpcs_placepoint c " +
+                "   where placepointid = ? and nvl(c.miniaturetaxpayerflag, 0)=1 ";
+        SelectHelper sh = new SelectHelper(sql);
+        sh.bindParam(placepointid);
+        DBTableModel checkmodel=sh.executeSelect(con, 0, 1);
+        if(null!=checkmodel&&checkmodel.getRowCount()>0){
+            String entryid = checkmodel.getItemValue(0, "entryid");
+            String classtypeid="";
+            if("2".equals(entryid)||"22".equals(entryid)){//平嘉地区和康利新
+                classtypeid = "27";
+            }else{
+                classtypeid = "19999";
+            }
+            sql="select a.goodsid, b.taxrate " +
+                    "  from pub_goods_class_dtl a, zx_minitaxpayersa_def b " +
+                    " where a.classid = b.classid " +
+                    "   and a.classtypeid = ? " +
+                    "   and a.goodsid = ? " +
+                    "   and b.entryid = ?";
+            sh = new SelectHelper(sql);
+            sh.bindParam(classtypeid);
+            sh.bindParam(goodsid);
+            sh.bindParam(entryid);
+//			sh.bindParam(placepointid);
+            DBTableModel serialModel=sh.executeSelect(con, 0, 1);
+            if(null!=serialModel&&serialModel.getRowCount()>0){
+                goodstaxrate = serialModel.getItemValue(0, "taxrate");
+            }
+        }
+        return goodstaxrate;
     }
 }
