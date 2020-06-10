@@ -200,34 +200,45 @@
 
 
     <select id="getGoodsQtyByClasstypeid" resultType="map" >
-        select t.goodsid,
-        floor(nvl(sum(e.goodsqty-nvl(f.dtlgoodsqty,0)),0)) goodsqty
+        select
+        k.goodsid,
+        floor(nvl(sum(k.goodsqty-nvl(h.dtlgoodsqty,0)),0)) goodsqty
         from
         (
-        select c.goodsid,b.storageid
-        from gpcs_placepoint b,
-        pub_goods_classtype a,
-        pub_goods_class_dtl c
-        where
-        a.classtypeid = c.classtypeid(+)
-        and b.entryid=a.entryid(+)
-        and a.classtypeid = #{classtypeid}
-        and b.placepointid = #{placepointid}
-        <if test="array != null">
-            and c.goodsid in
-            <foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
-        </if>
+        select t.goodsid,e.goodsqty,e.batchid,e.storageid
+        from
+        (
+            select c.goodsid,b.storageid
+            from gpcs_placepoint b,
+            pub_goods_classtype a,
+            pub_goods_class_dtl c
+            where
+            a.classtypeid = c.classtypeid(+)
+            and b.entryid=a.entryid(+)
+            and a.classtypeid = #{classtypeid}
+            and b.placepointid = #{placepointid}
+            <if test="array != null">
+                and c.goodsid in
+                <foreach collection="array" index="index" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
         ) t,
-        bms_st_qty_lst e,
-        bms_st_io_dtl_tmp f
+        bms_st_qty_lst e
         where
         t.goodsid = e.goodsid(+)
         and t.storageid = e.storageid(+)
-        and e.batchid = f.batchid(+)
         and e.goodsstatusid(+) = 1
-        group by t.goodsid
+        ) k,
+        (
+        select f.batchid,g.storageid,f.dtlgoodsqty from
+        bms_st_io_dtl_tmp f,
+        bms_st_io_doc_tmp g
+        where f.inoutid=g.inoutid
+        ) h
+        where k.batchid = h.batchid(+)
+        and k.storageid = h.storageid(+)
+        group by k.goodsid
     </select>
 
     <select id="getGoodsPriceByClasstypeid" resultType="map" >
