@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IMtGresaSaDtlDao" >
+
+    <select id="selectByOrderid" resultType="map" >
+        select
+        t.RSADTLID,
+        t.RSAID,
+        t.ZX_MENTE_ORDERNO,
+        t.ZX_MENTE_PAYSTATE
+        from
+        gresa_sa_dtl t
+        where
+        t.ZX_MENTE_ORDERNO = #{orderid}
+    </select>
+
+    <update id="updateState">
+        update
+        gresa_sa_dtl
+        set
+        ZX_MENTE_PAYSTATE=1
+        where
+        ZX_MENTE_ORDERNO = #{orderid}
+    </update>
+
+
+</mapper>
