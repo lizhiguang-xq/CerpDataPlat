@@ -58,5 +58,7 @@ public class CommonConstant {
 	public final static String OPER_GETUSERINFO_ELM = "getuserinfo_elm";
 
 	public final static String OPER_UPDATE_PAYSTATUS_MT = "updatepaystatus_mt";
+
+	public final static String OPER_ORDER_OMS = "order_oms";
 	
 }

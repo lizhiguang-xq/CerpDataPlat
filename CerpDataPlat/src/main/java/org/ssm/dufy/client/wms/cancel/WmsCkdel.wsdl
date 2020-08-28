@@ -1,0 +1,83 @@
+<?xml version="1.0" ?><wsdl:definitions name="WmsCkdel" targetNamespace="http://wservice.ckdel/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://wservice.ckdel/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xs:schema elementFormDefault="qualified" targetNamespace="http://wservice.ckdel/" version="1.0" xmlns:tns="http://wservice.ckdel/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="I_REQUEST" type="tns:INFDATA"></xs:element>
+<xs:element name="ReceiveCkdel">
+<xs:complexType>
+<xs:sequence>
+<xs:element minOccurs="0" ref="tns:I_REQUEST"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="ReceiveCkdelResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element minOccurs="0" name="ReceiveCkdelResult" type="xs:string"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:complexType name="INFDATA">
+<xs:sequence>
+<xs:element minOccurs="0" name="BASEINFO" type="tns:GERP_BASEINFO"></xs:element>
+<xs:element minOccurs="0" name="MESSAGE" type="tns:GERP_MESSAGE"></xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="GERP_BASEINFO">
+<xs:sequence>
+<xs:element minOccurs="0" name="MSGID" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="PMSGID" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="SENDTIME" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="S_PROVINCE" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="S_SYSYEM" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="SERVICENAME" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="T_PROVINCE" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="T_SYSTEM" type="xs:string"></xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="GERP_MESSAGE">
+<xs:sequence>
+<xs:element minOccurs="0" name="ARRAYSTRING" type="tns:GERP_ARRAYSTRING"></xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="GERP_ARRAYSTRING">
+<xs:sequence>
+<xs:element minOccurs="0" name="infmsg" type="xs:string"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
+
+  </wsdl:types>
+  <wsdl:message name="ReceiveCkdelResponse">
+    <wsdl:part element="tns:ReceiveCkdelResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ReceiveCkdel">
+    <wsdl:part element="tns:ReceiveCkdel" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="WmsCkdelSoap">
+    <wsdl:operation name="ReceiveCkdel">
+      <wsdl:input message="tns:ReceiveCkdel" name="ReceiveCkdel">
+    </wsdl:input>
+      <wsdl:output message="tns:ReceiveCkdelResponse" name="ReceiveCkdelResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WmsCkdelSoapBinding" type="tns:WmsCkdelSoap">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"></soap:binding>
+    <wsdl:operation name="ReceiveCkdel">
+      <soap:operation soapAction="http://wservice.ckdel/ReceiveCkdel" style="document"></soap:operation>
+      <wsdl:input name="ReceiveCkdel">
+        <soap:body use="literal"></soap:body>
+      </wsdl:input>
+      <wsdl:output name="ReceiveCkdelResponse">
+        <soap:body use="literal"></soap:body>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WmsCkdel">
+    <wsdl:port binding="tns:WmsCkdelSoapBinding" name="WmsCkdelSoap">
+      <soap:address location="http://10.6.0.110:8082/taslyedi/services/tianjin/cerp_and_lims/lims/WmsCkdel"></soap:address>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

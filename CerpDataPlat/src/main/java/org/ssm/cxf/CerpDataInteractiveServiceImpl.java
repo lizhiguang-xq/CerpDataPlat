@@ -68,6 +68,9 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 	@Autowired
 	private IMtGresaSaDtlService mtGresaSaDtlService;
 
+	@Autowired
+	private IOmsService omsService;
+
 	@Override
 	public String tslCerpDataInteractive(String userName, String passWord, String oper, String xmlData) {
 
@@ -157,6 +160,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = elemeService.createOrder(entryid, xmlData); //【饿了么】生成10067零售订单
 		} else if(CommonConstant.OPER_UPDATE_PAYSTATUS_MT.equals(oper.toLowerCase())) {
 			retxml = mtGresaSaDtlService.updatePayStatus(entryid, xmlData); //【饿了么】生成10067零售订单
+		} else if(CommonConstant.OPER_ORDER_OMS.equals(oper.toLowerCase())) {
+			retxml = omsService.applyOrder(entryid, xmlData); //【OMS】生成82002零售订单
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

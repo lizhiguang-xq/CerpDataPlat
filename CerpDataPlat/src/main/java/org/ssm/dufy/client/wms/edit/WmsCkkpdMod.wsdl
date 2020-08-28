@@ -1,0 +1,83 @@
+<?xml version="1.0" ?><wsdl:definitions name="WmsCkkpdMod" targetNamespace="http://wservice.ckkpdmod/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://wservice.ckkpdmod/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xs:schema elementFormDefault="qualified" targetNamespace="http://wservice.ckkpdmod/" version="1.0" xmlns:tns="http://wservice.ckkpdmod/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="I_REQUEST" type="tns:INFDATA"></xs:element>
+<xs:element name="ReceiveCkkpdMod">
+<xs:complexType>
+<xs:sequence>
+<xs:element minOccurs="0" ref="tns:I_REQUEST"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="ReceiveCkkpdModResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element minOccurs="0" name="ReceiveCkkpdModResult" type="xs:string"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:complexType name="INFDATA">
+<xs:sequence>
+<xs:element minOccurs="0" name="BASEINFO" type="tns:GERP_BASEINFO"></xs:element>
+<xs:element minOccurs="0" name="MESSAGE" type="tns:GERP_MESSAGE"></xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="GERP_BASEINFO">
+<xs:sequence>
+<xs:element minOccurs="0" name="MSGID" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="PMSGID" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="SENDTIME" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="S_PROVINCE" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="S_SYSYEM" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="SERVICENAME" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="T_PROVINCE" type="xs:string"></xs:element>
+<xs:element minOccurs="0" name="T_SYSTEM" type="xs:string"></xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="GERP_MESSAGE">
+<xs:sequence>
+<xs:element minOccurs="0" name="ARRAYSTRING" type="tns:GERP_ARRAYSTRING"></xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="GERP_ARRAYSTRING">
+<xs:sequence>
+<xs:element minOccurs="0" name="infmsg" type="xs:string"></xs:element>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
+
+  </wsdl:types>
+  <wsdl:message name="ReceiveCkkpdModResponse">
+    <wsdl:part element="tns:ReceiveCkkpdModResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ReceiveCkkpdMod">
+    <wsdl:part element="tns:ReceiveCkkpdMod" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="WmsCkkpdModSoap">
+    <wsdl:operation name="ReceiveCkkpdMod">
+      <wsdl:input message="tns:ReceiveCkkpdMod" name="ReceiveCkkpdMod">
+    </wsdl:input>
+      <wsdl:output message="tns:ReceiveCkkpdModResponse" name="ReceiveCkkpdModResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WmsCkkpdModSoapBinding" type="tns:WmsCkkpdModSoap">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"></soap:binding>
+    <wsdl:operation name="ReceiveCkkpdMod">
+      <soap:operation soapAction="http://wservice.ckkpdmod/ReceiveCkkpdMod" style="document"></soap:operation>
+      <wsdl:input name="ReceiveCkkpdMod">
+        <soap:body use="literal"></soap:body>
+      </wsdl:input>
+      <wsdl:output name="ReceiveCkkpdModResponse">
+        <soap:body use="literal"></soap:body>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WmsCkkpdMod">
+    <wsdl:port binding="tns:WmsCkkpdModSoapBinding" name="WmsCkkpdModSoap">
+      <soap:address location="http://10.6.0.110:8082/taslyedi/services/tianjin/cerp_and_lims/lims/WmsCkkpdMod"></soap:address>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

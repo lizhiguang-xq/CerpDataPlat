@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://impl.service.erp.oms.tasly.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://service.erp.oms.tasly.com/" name="OrderReturnInfoServiceImplService" targetNamespace="http://impl.service.erp.oms.tasly.com/">
+  <wsdl:import location="http://10.9.5.72:8080/tasly-oms/services/orderreturninfo?wsdl=IOrderReturnInfoService.wsdl" namespace="http://service.erp.oms.tasly.com/">
+    </wsdl:import>
+  <wsdl:binding name="OrderReturnInfoServiceImplServiceSoapBinding" type="ns1:IOrderReturnInfoService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="OrderResultReturn">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="OrderResultReturn">
+        <soap:body use="literal"/>
+      </wsdl:input>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="OrderReturnInfoServiceImplService">
+    <wsdl:port binding="tns:OrderReturnInfoServiceImplServiceSoapBinding" name="OrderReturnInfoServiceImplPort">
+      <soap:address location="http://10.9.5.72:8080/tasly-oms/services/orderreturninfo"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
