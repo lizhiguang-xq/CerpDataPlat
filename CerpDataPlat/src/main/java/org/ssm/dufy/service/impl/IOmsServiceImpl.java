@@ -436,7 +436,7 @@ public class IOmsServiceImpl implements IOmsService {
             }
             //调用物流接口，下发修改信息
             URL wsdlURL = null;
-            wsdlURL = new URL("http://10.6.0.110:8082/taslyedi/services/tianjin/cerp_and_lims/lims/WmsCkkpdMod?wsdl");
+            wsdlURL = new URL("http://10.8.3.89:8082/taslyedi/services/tianjin/cerp_and_lims/lims/WmsCkkpdMod?wsdl");
             WmsCkkpdMod wms = new WmsCkkpdMod(wsdlURL);
             WmsCkkpdModSoap soap = wms.getWmsCkkpdModSoap();
             String msg = soap.receiveCkkpdMod(infdate);
@@ -583,7 +583,7 @@ public class IOmsServiceImpl implements IOmsService {
                     e.printStackTrace();
                 }
                 URL wsdlURL = null;
-                wsdlURL = new URL("http://10.6.0.110:8082/taslyedi/services/tianjin/cerp_and_lims/lims/WmsCkdel?wsdl");
+                wsdlURL = new URL("http://10.8.3.89:8082/taslyedi/services/tianjin/cerp_and_lims/lims/WmsCkdel?wsdl");
                 WmsCkdel wms = new WmsCkdel(wsdlURL);
                 WmsCkdelSoap soap = wms.getWmsCkdelSoap();
                 String msg = soap.receiveCkdel(infdate);
