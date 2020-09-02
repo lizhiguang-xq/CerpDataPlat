@@ -212,7 +212,7 @@ public class IOmsServiceImpl implements IOmsService {
             ih.bindParam("VENDORMEMO", req.getVENDORMEMO());
             ih.bindParam("BUYERMEMO", req.getBUYERMEMO());
             ih.bindParam("DTL_LINES", StringUtil.doNullStr(req.getPRODUCTS().getPRODUCT().size()));
-            ih.bindParam("ISMANPLACEQTY", "0");
+            ih.bindParam("ISMANPLACEQTY", req.getMANUALALLOC());
             ih.bindParam("USESTATUS", "1");
             ih.bindParam("PRESCRIPTION_HOSPITAL", req.getPRESCRIPTION_HOSPITAL());
             ih.bindParam("CARRIER_ID", req.getCARRIERID());
@@ -368,7 +368,7 @@ public class IOmsServiceImpl implements IOmsService {
             gerpmessage.setARRAYSTRING(gerparraystring);
             infdate.setMESSAGE(gerpmessage);
             sql = "select a.rsaid DANJ_NO, " +
-                    "a.rsaid, " +
+                    "a.rsaid,c.entryid, " +
                     "b.wmscenterucode WLZX_CODE, " +
                     "b.goodsownerid HUOZ_ID, " +
                     "to_char(a.credate, 'yyyymmdd') RIQI_DATE, " +
@@ -435,8 +435,10 @@ public class IOmsServiceImpl implements IOmsService {
                 e.printStackTrace();
             }
             //调用物流接口，下发修改信息
+            String entryid = tckdocmodel.getItemValue(0, "entryid");
+            String url =  getWebServiceUrlByEntryId(con, entryid, "22");
             URL wsdlURL = null;
-            wsdlURL = new URL("http://10.8.3.89:8082/taslyedi/services/tianjin/cerp_and_lims/lims/WmsCkkpdMod?wsdl");
+            wsdlURL = new URL(url);
             WmsCkkpdMod wms = new WmsCkkpdMod(wsdlURL);
             WmsCkkpdModSoap soap = wms.getWmsCkkpdModSoap();
             String msg = soap.receiveCkkpdMod(infdate);
@@ -582,8 +584,10 @@ public class IOmsServiceImpl implements IOmsService {
                 } catch (JAXBException e) {
                     e.printStackTrace();
                 }
+                String entryid = tckdocmodel.getItemValue(0, "entryid");
+                String url =  getWebServiceUrlByEntryId(con, entryid, "21");
                 URL wsdlURL = null;
-                wsdlURL = new URL("http://10.8.3.89:8082/taslyedi/services/tianjin/cerp_and_lims/lims/WmsCkdel?wsdl");
+                wsdlURL = new URL(url);
                 WmsCkdel wms = new WmsCkdel(wsdlURL);
                 WmsCkdelSoap soap = wms.getWmsCkdelSoap();
                 String msg = soap.receiveCkdel(infdate);
@@ -654,6 +658,14 @@ public class IOmsServiceImpl implements IOmsService {
         Long timestamp = Long.parseLong(timestampString);
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date(timestamp));
         return date;
+    }
+
+    public static String  getWebServiceUrlByEntryId(Connection con,String entryid,String type) throws Exception{
+        String sql="select t.paramvalue from erp2wms_webservice_param t where t.entryid= ? and t.type= ?";
+        SelectHelper sh = new SelectHelper(sql);
+        sh.bindParam(entryid);
+        sh.bindParam(type);
+        return sh.executeSelect(con, 0, 1).getItemValue(0, "paramvalue");
     }
 
 }
