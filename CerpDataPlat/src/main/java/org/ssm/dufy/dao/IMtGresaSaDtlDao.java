@@ -11,4 +11,8 @@ public interface IMtGresaSaDtlDao {
 
     int updateState(@Param("orderid") String orderid);
 
+    List<Map<String, Object>> selectByDanjNoWsdd(@Param("orderid") String orderid);
+
+    int updateStateByDocid(@Param("rsaid") String rsaid);
+
 }

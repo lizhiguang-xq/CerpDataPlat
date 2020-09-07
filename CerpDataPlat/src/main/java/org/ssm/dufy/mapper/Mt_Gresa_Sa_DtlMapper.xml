@@ -24,4 +24,26 @@
     </update>
 
 
+    <select id="selectByDanjNoWsdd" resultType="map" >
+        select
+        distinct b.rsaid,
+        b.zx_mente_paystate
+        from
+        gresa_sa_ds_doc a,
+        gresa_sa_dtl b
+        where
+        a.gresasadocid=b.rsaid
+        and a.iscreate=1
+        and a.danj_no_wsdd = #{orderid}
+    </select>
+
+    <update id="updateStateByDocid">
+        update
+        gresa_sa_dtl
+        set
+        ZX_MENTE_PAYSTATE=1
+        where
+        rsaid = #{rsaid}
+    </update>
+
 </mapper>

@@ -33,13 +33,13 @@ public class IMtGresaSaDtlServiceImpl implements IMtGresaSaDtlService {
                 ORDERINFO_RESP rp = new ORDERINFO_RESP();
                 ORDERINFO_REQ order = lists.get(i);
                 rp.setORDERNO(order.getORDERNO());
-                List<Map<String, Object>> list = iMtGresaSaDtlDao.selectByOrderid(order.getORDERNO());
+                List<Map<String, Object>> list = iMtGresaSaDtlDao.selectByDanjNoWsdd(order.getORDERNO());
                 if(list.size()>0){
                     if(StringUtil.doNullInt(list.get(0).get("ZX_MENTE_PAYSTATE"))==1){
                         rp.setERRCODE("0");
                         rp.setERRMSG("付款状态已更新");
                     }else{
-                        int result = iMtGresaSaDtlDao.updateState(order.getORDERNO());
+                        int result = iMtGresaSaDtlDao.updateStateByDocid(StringUtil.doNullStr(list.get(0).get("RSAID")));
                         if(result>0){
                             rp.setERRCODE("0");
                             rp.setERRMSG("付款状态更新成功");
