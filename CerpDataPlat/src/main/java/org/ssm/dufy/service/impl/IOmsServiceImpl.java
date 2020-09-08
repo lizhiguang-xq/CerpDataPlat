@@ -562,10 +562,8 @@ public class IOmsServiceImpl implements IOmsService {
                 arrayoftckkpddel.setTCKKPDDEL(tckkpddel);
                 List<MINGXI> mxlist = arrayoftckkpddel.getTCKKPDDEL().getDANJMX().getMINGXI();
 
-                sql = " select a.rsadtlid,a.goodsqty  "
-                        + " from "
-                        + " gresa_sa_ds_dtl a "
-                        + " where a.rsaid= "+tckdocmodel.getItemValue(0, "rsaid");
+                sql = " select t.HANGHAO,t.NUM from zx_to_wms_gresa_ds_dtl_v t " +
+                        " where t.docid= " + tckdocmodel.getItemValue(0, "rsaid");
                 sh = new SelectHelper(sql);
                 DBTableModel tckdtlmodel = sh.executeSelect(con, 0, 9999);
                 if(null==tckdtlmodel || tckdtlmodel.getRowCount()<1 ){
@@ -573,8 +571,8 @@ public class IOmsServiceImpl implements IOmsService {
                 }
                 for(int i=0;i<tckdtlmodel.getRowCount();i++){
                     MINGXI mingxi = new MINGXI();
-                    mingxi.setHANGHAOY(tckdtlmodel.getItemValue(i, "rsadtlid"));
-                    mingxi.setNUM(tckdtlmodel.getItemValue(i, "goodsqty"));
+                    mingxi.setHANGHAOY(tckdtlmodel.getItemValue(i, "HANGHAO"));
+                    mingxi.setNUM(tckdtlmodel.getItemValue(i, "NUM"));
                     mxlist.add(mingxi);
                 }
                 String retxml = "";

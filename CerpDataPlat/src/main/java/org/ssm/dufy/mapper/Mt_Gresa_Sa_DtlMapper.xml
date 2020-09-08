@@ -24,7 +24,7 @@
     </update>
 
 
-    <select id="selectByDanjNoWsdd" resultType="map" >
+    <select id="selectById" resultType="map" >
         select
         distinct b.rsaid,
         b.zx_mente_paystate
@@ -34,7 +34,7 @@
         where
         a.gresasadocid=b.rsaid
         and a.iscreate=1
-        and a.danj_no_wsdd = #{orderid}
+        and a.rsaid = #{orderid}
     </select>
 
     <update id="updateStateByDocid">

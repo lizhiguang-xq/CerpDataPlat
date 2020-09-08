@@ -33,7 +33,8 @@ public class IMtGresaSaDtlServiceImpl implements IMtGresaSaDtlService {
                 ORDERINFO_RESP rp = new ORDERINFO_RESP();
                 ORDERINFO_REQ order = lists.get(i);
                 rp.setORDERNO(order.getORDERNO());
-                List<Map<String, Object>> list = iMtGresaSaDtlDao.selectByDanjNoWsdd(order.getORDERNO());
+                String orderid = order.getORDERNO().replace("DS","");
+                List<Map<String, Object>> list = iMtGresaSaDtlDao.selectById(orderid);
                 if(list.size()>0){
                     if(StringUtil.doNullInt(list.get(0).get("ZX_MENTE_PAYSTATE"))==1){
                         rp.setERRCODE("0");
