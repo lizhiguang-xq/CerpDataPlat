@@ -523,7 +523,7 @@ public class IOmsServiceImpl implements IOmsService {
                 gerpmessage.setARRAYSTRING(gerparraystring);
                 infdate.setMESSAGE(gerpmessage);
 
-                sql = "select a.rsaid, " +
+                sql = "select a.rsaid,c.entryid, " +
                         "(select to_char(systimestamp, 'yyyymmddhh24missff') from dual) DANJ_NO, " +
                         "b.wmscenterucode WLZX_CODE, " +
                         "b.goodsownerid HUOZ_ID, " +
