@@ -279,8 +279,9 @@ public class IOmsServiceImpl implements IOmsService {
                         average_yunfei_total = DecimalHelper.add(average_yunfei_total, average_yunfei, 2);
                     }
                 }
-
-                String realmoney = DecimalHelper.add(DecimalHelper.sub(DecimalHelper.sub(pro.getTOTALLINE(), pro.getDISCOUNT_FEE(), 2), average_discount, 2), average_yunfei, 2);
+                String r1 = DecimalHelper.sub(pro.getTOTALLINE(), pro.getDISCOUNT_FEE(), 2);
+                String r2 = DecimalHelper.sub(r1, average_discount, 2);
+                String realmoney = DecimalHelper.add(r2, average_yunfei, 2);
                 ih.bindParam("realmoney", realmoney);//实收金额
                 String useprice = DecimalHelper.divide(realmoney, pro.getGOODSQTY(), 10);
                 ih.bindParam("useprice", useprice);//实际单价
@@ -299,11 +300,13 @@ public class IOmsServiceImpl implements IOmsService {
                             String tline = DecimalHelper.sub(DecimalHelper.sub(dtlsmodel.getItemValue(i, "total_line"), dtlsmodel.getItemValue(i, "discount_fee"), 2), dtlsmodel.getItemValue(i, "average_discount"), 2);
                             if(DecimalHelper.comparaDecimal(tline, yue)==1){
                                 String  average_discount = DecimalHelper.add(dtlsmodel.getItemValue(i, "average_discount"), yue, 2);
-                                String  realmoney = DecimalHelper.add(dtlsmodel.getItemValue(i, "realmoney"), yue, 2);
-                                sql=" update gresa_sa_ds_dtl set average_discount=?,realmoney=? where rsadtlid=? ";
+                                String  realmoney = DecimalHelper.sub(dtlsmodel.getItemValue(i, "realmoney"), yue, 2);
+                                String useprice = DecimalHelper.divide(realmoney, dtlsmodel.getItemValue(i, "goodsqty"), 10);
+                                sql=" update gresa_sa_ds_dtl set average_discount=?,realmoney=?,useprice=? where rsadtlid=? ";
                                 uh = new UpdateHelper(sql);
                                 uh.bindParam(average_discount);
                                 uh.bindParam(realmoney);
+                                uh.bindParam(useprice);
                                 uh.bindParam(dtlsmodel.getItemValue(i, "rsadtlid"));
                                 uh.executeUpdate(con);
                                 break;
@@ -322,10 +325,12 @@ public class IOmsServiceImpl implements IOmsService {
                 if(null!=dtlsmodel&&dtlsmodel.getRowCount()>0){
                     String  average_yunfei = DecimalHelper.add(dtlsmodel.getItemValue(0, "average_yunfei"), yunfei_yue, 2);
                     String  realmoney = DecimalHelper.add(dtlsmodel.getItemValue(0, "realmoney"), yunfei_yue, 2);
-                    sql=" update gresa_sa_ds_dtl set average_yunfei=?,realmoney=? where rsadtlid=? ";
+                    String useprice = DecimalHelper.divide(realmoney, dtlsmodel.getItemValue(0, "goodsqty"), 10);
+                    sql=" update gresa_sa_ds_dtl set average_yunfei=?,realmoney=?,useprice=? where rsadtlid=? ";
                     uh = new UpdateHelper(sql);
                     uh.bindParam(average_yunfei);
                     uh.bindParam(realmoney);
+                    uh.bindParam(useprice);
                     uh.bindParam(dtlsmodel.getItemValue(0, "rsadtlid"));
                     uh.executeUpdate(con);
                 }
@@ -584,8 +589,7 @@ public class IOmsServiceImpl implements IOmsService {
                 }
                 String entryid = tckdocmodel.getItemValue(0, "entryid");
                 String url =  getWebServiceUrlByEntryId(con, entryid, "21");
-                URL wsdlURL = null;
-                wsdlURL = new URL(url);
+                URL wsdlURL = new URL(url);
                 WmsCkdel wms = new WmsCkdel(wsdlURL);
                 WmsCkdelSoap soap = wms.getWmsCkdelSoap();
                 String msg = soap.receiveCkdel(infdate);
