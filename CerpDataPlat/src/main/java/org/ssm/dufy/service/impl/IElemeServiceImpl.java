@@ -423,13 +423,16 @@ public class IElemeServiceImpl implements IElemeService {
             if(docmodel.getRowCount()>0){
                 throw new BopException("-99", "该订单号已生成零售单，请勿重复发送！");
             }
-            String cashierid = "";
+            String cashierid = req.getCashier();
             if(StringUtil.doNullInteger(entryid)==14){
-                cashierid = "14575";//收款员ID 天津生产14575,测试28549
+                if(StringUtil.isEmpty(cashierid)){
+                    cashierid = "14575";//收款员ID 天津生产14575,测试28549
+                }
             }else{
-                cashierid = "0";//收款员ID 暂时定为系统管理员.
+                if(StringUtil.isEmpty(cashierid)){
+                    cashierid = "0";//收款员ID 暂时定为系统管理员.
+                }
             }
-
             String docid = NpbusiDBHelper.getSeqValue(con, "gresa_sa_doc_seq");//零售总单ID
             //生成零售总单.BEGIN.
             InsertHelper ih = new InsertHelper("gresa_sa_doc");
@@ -501,6 +504,8 @@ public class IElemeServiceImpl implements IElemeService {
             payh.bindParam("changemoney", "0");
             payh.executeInsert(con);
 
+
+            
             con.commit();
             resp.setReturncode("0");
             resp.setReturnmsg("零售单生成成功");

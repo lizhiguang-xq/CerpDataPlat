@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}gathertype"/>
  *         &lt;element ref="{}dtl_lines"/>
  *         &lt;element ref="{}zx_orderno"/>
+ *         &lt;element ref="{}cashier"/>
  *         &lt;element ref="{}products"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -57,6 +58,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "gathertype",
     "dtlLines",
     "zxOrderno",
+    "cashier",
     "products"
 })
 @XmlRootElement(name = "ELM_APPLYORDER_REQ")
@@ -98,6 +100,10 @@ public class ELMAPPLYORDERREQ {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String zxOrderno;
+    @XmlElement(name = "cashier", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String cashier;
     @XmlElement(required = true)
     protected Products products;
 
@@ -294,6 +300,30 @@ public class ELMAPPLYORDERREQ {
     }
 
     /**
+     * 设置cashier属性的值。
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setCashier(String value) {
+        this.cashier = value;
+    }
+
+    /**
+     * 获取cashier属性的值。
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getCashier() {
+        return cashier;
+    }
+
+    /**
      * 获取zxOrderno属性的值。
      * 
      * @return
@@ -307,11 +337,11 @@ public class ELMAPPLYORDERREQ {
 
     /**
      * 设置zxOrderno属性的值。
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setZxOrderno(String value) {
         this.zxOrderno = value;

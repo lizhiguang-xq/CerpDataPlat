@@ -79,6 +79,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}CARRIER_NAME"/>
  *         &lt;element ref="{}ZYUNFEI"/>
  *         &lt;element ref="{}DISCOUNT_FEE"/>
+ *         &lt;element ref="{}CODFEE"/>
  *         &lt;element ref="{}PRODUCTS"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -143,6 +144,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "zyunfei",
     "discountfee",
     "eccsalesorg",
+    "codfee",
     "products"
 })
 @XmlRootElement(name = "OMS_APPLYORDER_REQ")
@@ -358,6 +360,10 @@ public class OMSAPPLYORDERREQ {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String discountfee;
+    @XmlElement(name = "CODFEE", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String codfee;
     @XmlElement(name = "PRODUCTS", required = true)
     protected PRODUCTS products;
 
@@ -1630,6 +1636,30 @@ public class OMSAPPLYORDERREQ {
      */
     public void setDISCOUNT_FEE(String value) {
         this.discountfee = value;
+    }
+
+    /**
+     * 获取codfee属性的值。
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getCODFEE() {
+        return codfee;
+    }
+
+    /**
+     * 设置codfee属性的值。
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setCODFEE(String value) {
+        this.codfee = value;
     }
 
     /**

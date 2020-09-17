@@ -221,11 +221,15 @@ public class IOmsServiceImpl implements IOmsService {
             ih.bindParam("ZYUNFEI", yunfei);
             ih.bindParam("ECC_SALES_ORG", req.getECC_SALES_ORG());
             ih.bindParam("DISCOUNT_FEE", req.getDISCOUNT_FEE());
+            String codfee = req.getCODFEE();
+            ih.bindParam("CODFEE", codfee);
+
             String discount_fee_total = req.getDISCOUNT_FEE();//订单总折扣
             String discount_fee = req.getDISCOUNT_FEE();//整单折扣
             String total = "";
             String average_discount_total = "";//已分配折扣金额
             String average_yunfei_total = "";//已分运费金额
+            String average_codfee_total = "";//已分服务费金额
             for(int i=0;i<list.size();i++){
                 PRODUCT pro = list.get(i);
                 discount_fee_total = DecimalHelper.add(discount_fee_total, pro.getDISCOUNT_FEE(),4);
@@ -261,6 +265,7 @@ public class IOmsServiceImpl implements IOmsService {
                 ih.bindParam("USESTATUS", "0");
                 String average_discount = "";
                 String average_yunfei = "";
+                String average_codfee = "";
                 if(DecimalHelper.comparaDecimal(discount_fee, "0")==1){
                     String line_t = DecimalHelper.sub(pro.getTOTALLINE(), pro.getDISCOUNT_FEE(), 4);
                     if(DecimalHelper.comparaDecimal(line_t, "0")==1){
@@ -279,9 +284,20 @@ public class IOmsServiceImpl implements IOmsService {
                         average_yunfei_total = DecimalHelper.add(average_yunfei_total, average_yunfei, 2);
                     }
                 }
-                String r1 = DecimalHelper.sub(pro.getTOTALLINE(), pro.getDISCOUNT_FEE(), 2);
-                String r2 = DecimalHelper.sub(r1, average_discount, 2);
-                String realmoney = DecimalHelper.add(r2, average_yunfei, 2);
+                if(DecimalHelper.comparaDecimal(codfee, "0")==1){
+                    String line_t = DecimalHelper.sub(pro.getTOTALLINE(), pro.getDISCOUNT_FEE(), 4);
+                    if(DecimalHelper.comparaDecimal(line_t, "0")==1){
+                        String rate = DecimalHelper.divide(line_t, total, 6);
+                        average_codfee = DecimalHelper.multi(codfee, rate, 2);
+                        ih.bindParam("average_codfee", average_codfee);
+                        average_codfee_total = DecimalHelper.add(average_codfee_total, average_codfee, 2);
+                    }
+                }
+                String r1 = DecimalHelper.sub(pro.getTOTALLINE(), pro.getDISCOUNT_FEE(), 2);// r1 = 细单总金额 - 细单折扣
+                String r2 = DecimalHelper.sub(r1, average_discount, 2);// r2 = r1 - 细单折扣
+                String r3 = DecimalHelper.add(r2, average_yunfei, 2);// r3 = r2 + 运费平摊金额
+                String realmoney = DecimalHelper.add(r3, average_codfee, 2);// realmoney = r3 + 服务费平摊金额
+
                 ih.bindParam("realmoney", realmoney);//实收金额
                 String useprice = DecimalHelper.divide(realmoney, pro.getGOODSQTY(), 10);
                 ih.bindParam("useprice", useprice);//实际单价
@@ -329,6 +345,26 @@ public class IOmsServiceImpl implements IOmsService {
                     sql=" update gresa_sa_ds_dtl set average_yunfei=?,realmoney=?,useprice=? where rsadtlid=? ";
                     uh = new UpdateHelper(sql);
                     uh.bindParam(average_yunfei);
+                    uh.bindParam(realmoney);
+                    uh.bindParam(useprice);
+                    uh.bindParam(dtlsmodel.getItemValue(0, "rsadtlid"));
+                    uh.executeUpdate(con);
+                }
+            }
+            String codfee_yue = DecimalHelper.sub(codfee, average_codfee_total, 2);
+            int codfee_compara = DecimalHelper.comparaDecimal(codfee_yue, "0");
+            if(codfee_compara!=0){
+                sql = "select * from gresa_sa_ds_dtl where rsaid = ?";
+                sh = new SelectHelper(sql);
+                sh.bindParam(docid);
+                DBTableModel dtlsmodel = sh.executeSelect(con, 0, 9999);
+                if(null!=dtlsmodel&&dtlsmodel.getRowCount()>0){
+                    String  average_codfee = DecimalHelper.add(dtlsmodel.getItemValue(0, "average_yunfei"), codfee_yue, 2);
+                    String  realmoney = DecimalHelper.add(dtlsmodel.getItemValue(0, "realmoney"), codfee_yue, 2);
+                    String useprice = DecimalHelper.divide(realmoney, dtlsmodel.getItemValue(0, "goodsqty"), 10);
+                    sql=" update gresa_sa_ds_dtl set average_codfee=?,realmoney=?,useprice=? where rsadtlid=? ";
+                    uh = new UpdateHelper(sql);
+                    uh.bindParam(average_codfee);
                     uh.bindParam(realmoney);
                     uh.bindParam(useprice);
                     uh.bindParam(dtlsmodel.getItemValue(0, "rsadtlid"));
