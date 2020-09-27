@@ -3,6 +3,8 @@ package org.ssm.dufy.service.impl;
 import com.inca.np.gui.control.DBTableModel;
 import com.inca.np.util.*;
 import com.inca.pubsrv.NpbusiDBHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ssm.common.utility.JAXBUtil;
@@ -39,6 +41,7 @@ public class IOmsServiceImpl implements IOmsService {
 
     @Autowired
     private DataSource cerpzsdataSource;
+    private static Logger log = LoggerFactory.getLogger("loger");
 
 
     @Override
@@ -483,6 +486,7 @@ public class IOmsServiceImpl implements IOmsService {
             WmsCkkpdMod wms = new WmsCkkpdMod(wsdlURL);
             WmsCkkpdModSoap soap = wms.getWmsCkkpdModSoap();
             String msg = soap.receiveCkkpdMod(infdate);
+            log.info("WMS回传结果："+msg);
             DATA rtdata = JAXBUtil.unmarshToObjBinding(DATA.class, msg, "UTF-8");
             RETDATA rd = rtdata.getRETDATA();
             if(null==rd){
@@ -629,6 +633,7 @@ public class IOmsServiceImpl implements IOmsService {
                 WmsCkdel wms = new WmsCkdel(wsdlURL);
                 WmsCkdelSoap soap = wms.getWmsCkdelSoap();
                 String msg = soap.receiveCkdel(infdate);
+                log.info("WMS回传结果："+msg);
                 if(null==msg||msg.equals("")){
                     throw new BopException("-1", "取消失败！");
                 }
@@ -637,15 +642,16 @@ public class IOmsServiceImpl implements IOmsService {
                 if(null==rd){
                     throw new BopException("-1", "取消失败！");
                 }
-                if(rd.getZFLAG().equals("E")){
+                if(rd.getZFLAG().equals("S")){
+                    sql = "update gresa_sa_ds_doc set USESTATUS=3 where zx_orderno =?";
+                    uh = new UpdateHelper(sql);
+                    uh.bindParam(req.getZXORDERNO());
+                    uh.executeUpdate(con);
+                    //删除库存占用
+                    DelSTIOTMP(con, sh, dh, sql, docmodel.getItemValue(0, "rsaid"));
+                }else{
                     throw new BopException("-1", rd.getZMESSAGE());
                 }
-                sql = "update gresa_sa_ds_doc set USESTATUS=3 where zx_orderno =?";
-                uh = new UpdateHelper(sql);
-                uh.bindParam(req.getZXORDERNO());
-                uh.executeUpdate(con);
-                //删除库存占用
-                DelSTIOTMP(con, sh, dh, sql, docmodel.getItemValue(0, "rsaid"));
                 System.out.println(msg);
             }else if(StringUtil.doNullInt(docmodel.getItemValue(0, "SENDSTATE_WMS"))==2){
                 throw new BopException("-1", "物流已回传记账，取消失败！");
