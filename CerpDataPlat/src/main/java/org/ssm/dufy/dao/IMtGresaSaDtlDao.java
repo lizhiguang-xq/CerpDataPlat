@@ -15,4 +15,6 @@ public interface IMtGresaSaDtlDao {
 
     int updateStateByDocid(@Param("rsaid") String rsaid);
 
+    int updateDocByDocid(@Param("rsaid") String rsaid,@Param("zx_delivery_name") String zx_delivery_name,@Param("zx_paytype") String zx_paytype,@Param("zx_receiptdate") String zx_receiptdate);
+
 }

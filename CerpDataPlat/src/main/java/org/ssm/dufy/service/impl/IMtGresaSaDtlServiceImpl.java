@@ -2,6 +2,7 @@ package org.ssm.dufy.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.ssm.common.utility.JAXBUtil;
 import org.ssm.common.utility.StringUtil;
 import org.ssm.cxf.struct.mtds.ORDERINFO_REQ;
@@ -40,13 +41,23 @@ public class IMtGresaSaDtlServiceImpl implements IMtGresaSaDtlService {
                         rp.setERRCODE("0");
                         rp.setERRMSG("付款状态已更新");
                     }else{
-                        int result = iMtGresaSaDtlDao.updateStateByDocid(StringUtil.doNullStr(list.get(0).get("RSAID")));
-                        if(result>0){
-                            rp.setERRCODE("0");
-                            rp.setERRMSG("付款状态更新成功");
+                        String rsaid = StringUtil.doNullStr(list.get(0).get("RSAID"));
+                        String zx_delivery_name = order.getUSERFIELDC2();
+                        String zx_paytype = order.getUSERFIELDC3();
+                        String zx_receiptdate = order.getUSERFIELDC1();
+                        int doc_result = iMtGresaSaDtlDao.updateDocByDocid(rsaid, zx_delivery_name,zx_paytype,zx_receiptdate);
+                        if(doc_result==1){
+                            int result = iMtGresaSaDtlDao.updateStateByDocid(rsaid);
+                            if(result>0){
+                                rp.setERRCODE("0");
+                                rp.setERRMSG("付款状态更新成功");
+                            }else{
+                                rp.setERRCODE("-1");
+                                rp.setERRMSG("付款状态更新失败");
+                            }
                         }else{
                             rp.setERRCODE("-1");
-                            rp.setERRMSG("付款状态更新失败");
+                            rp.setERRMSG("支付方式更新失败");
                         }
                     }
                 }else{

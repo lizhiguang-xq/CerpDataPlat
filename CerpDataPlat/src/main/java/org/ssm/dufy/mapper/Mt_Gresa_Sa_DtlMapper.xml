@@ -46,4 +46,15 @@
         rsaid = #{rsaid}
     </update>
 
+    <update id="updateDocByDocid">
+        update
+        gresa_sa_doc
+        set
+        zx_delivery_name=#{zx_delivery_name},
+        zx_paytype=#{zx_paytype},
+        zx_receiptdate=#{zx_receiptdate}
+        where
+        rsaid = #{rsaid}
+    </update>
+
 </mapper>
