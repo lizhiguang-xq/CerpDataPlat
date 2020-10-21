@@ -631,8 +631,8 @@ public class IElemeServiceImpl implements IElemeService {
                 ih.bindParam("useprice", price);//单价
                 ih.bindParam("placepointid", placepointid);//门店ID
                 ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
-                ih.bindParam("resaprice", unitprice);//单价
-                ih.bindParam("unitprice", unitprice);//原单价
+                ih.bindParam("resaprice", price);//单价
+                ih.bindParam("unitprice", price);//原单价
                 String zx_taxrate =getgoodstaxrate(con, placepointid, goodsid);
                 if(zx_taxrate.equals("")){
                     zx_taxrate = getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate");
@@ -715,8 +715,8 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("useprice", price);//单价
                         ih.bindParam("placepointid", placepointid);//门店ID
                         ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
-                        ih.bindParam("resaprice", unitprice);//单价
-                        ih.bindParam("unitprice", unitprice);//原单价
+                        ih.bindParam("resaprice", price);//单价
+                        ih.bindParam("unitprice", price);//原单价
                         String zx_taxrate =getgoodstaxrate(con, placepointid, goodsid);
                         if(zx_taxrate.equals("")){
                             zx_taxrate = getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate");
@@ -792,8 +792,8 @@ public class IElemeServiceImpl implements IElemeService {
                         ih.bindParam("useprice", price);//单价
                         ih.bindParam("placepointid", placepointid);//门店ID
                         ih.bindParam("priceid", priceid);//价格类型ID 默认为2-公司零售价
-                        ih.bindParam("resaprice", unitprice);//单价
-                        ih.bindParam("unitprice", unitprice);//原单价
+                        ih.bindParam("resaprice", price);//单价
+                        ih.bindParam("unitprice", price);//原单价
                         String zx_taxrate =getgoodstaxrate(con, placepointid, goodsid);
                         if(zx_taxrate.equals("")){
                             zx_taxrate = getGoodsInfo(con,goodsid).getItemValue(0, "salestaxrate");
