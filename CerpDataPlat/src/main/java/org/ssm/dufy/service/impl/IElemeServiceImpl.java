@@ -459,7 +459,7 @@ public class IElemeServiceImpl implements IElemeService {
             String rate2 = DecimalHelper.divide(req.getReceivalmoney(), req.getTotalmoney(),12);
             List<Product> lists = req.getProducts().getProduct();
             for (Product pro : lists) {
-                CreateSaDtl(con, pro, docid, placepointid, rate, rate2, storageid, req.getZxOrderno(), cashierid);
+                CreateSaDtl(con, pro, docid, placepointid, rate, rate2, storageid, req.getZxOrderno(), cashierid, entryid);
             }
             //进行调价
             String sql = "select * from gresa_sa_dtl where rsaid = ?";
@@ -596,7 +596,7 @@ public class IElemeServiceImpl implements IElemeService {
      * @param storageid
      * @throws Exception
      */
-    private void CreateSaDtl(Connection con, Product pro, String docid,String placepointid,String rate, String rate2, String storageid, String orderid, String cashierid) throws Exception {
+    private void CreateSaDtl(Connection con, Product pro, String docid,String placepointid,String rate, String rate2, String storageid, String orderid, String cashierid, String entryid) throws Exception {
         String goodsid = pro.getGoodsid();
         String goodsqty = pro.getGoodsqty();
         String unitprice = pro.getUnitprice();
@@ -606,6 +606,9 @@ public class IElemeServiceImpl implements IElemeService {
         String cansaleqty = "";//可销库存数量
         //查询当前门店该货品的可销库存.//出库时按近效期的批号规则出库.
         String sql = "select * from resa_stqty_sum_v where goodsid = ? and nvl(accflag,0) = 1 and nvl(invaliddays,0) > 0 and nvl(statususeflag,0) = 1 and storageid = ? order by invaliddate";
+        if(entryid.equals("283")){
+            sql = "select * from resa_stqty_sum_v where goodsid = ? and nvl(invaliddays,0) > 0 and nvl(statususeflag,0) = 1 and storageid = ? order by invaliddate";
+        }
         SelectHelper sh = new SelectHelper(sql);
         sh.bindParam(goodsid);
         sh.bindParam(storageid);
