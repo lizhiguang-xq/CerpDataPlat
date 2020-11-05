@@ -34,4 +34,7 @@ public interface ISxhsCerpBmsSaDocDtlDao {
     List<Map<String, Object>> select(@Param("entryid")String entryid, @Param("salesid")String salesid);
 
     String getseqvalue(String seq);
+
+    List<Map<String, Object>> getPickInfo_pjyj(@Param("pickdocid")String pickdocid);
+
 }

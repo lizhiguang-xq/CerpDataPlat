@@ -131,6 +131,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = elemeService.getGoodsQtyByClasstypeid(entryid, xmlData); //【饿了么】根据分类查询库存
 		} else if(CommonConstant.OPER_GETGOODS_PRICE_CLASSTYPEID_ELM.equals(oper.toLowerCase())) {
 			retxml = elemeService.getGoodsPriceByClasstypeid(entryid, xmlData); //【饿了么】根据分类查询价格
+		} else if(CommonConstant.OPER_GETPICKINFO_PJYJ.equals(oper.toLowerCase())) {
+			retxml = pjcerpService.getPickInfo_pjyj(entryid, xmlData); // 平嘉药监设备 根据拣货单ID获取拣货单信息
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}
@@ -162,6 +164,8 @@ public class CerpDataInteractiveServiceImpl implements CerpDataInteractiveServic
 			retxml = mtGresaSaDtlService.updatePayStatus(entryid, xmlData); //【饿了么】生成10067零售订单
 		} else if(CommonConstant.OPER_ORDER_OMS.equals(oper.toLowerCase())) {
 			retxml = omsService.applyOrder(entryid, xmlData); //【OMS】生成82002零售订单
+		} else if(CommonConstant.OPER_UPDATE_RECINFO_PJYJ.equals(oper.toLowerCase())) {
+			retxml = pjcerpService.updateRecInfo_pjyj(entryid, xmlData); //【平嘉药监】更新收货单
 		} else {
 			throw new Fault(new IllegalArgumentException("操作:"+oper+",未开发"));
 		}

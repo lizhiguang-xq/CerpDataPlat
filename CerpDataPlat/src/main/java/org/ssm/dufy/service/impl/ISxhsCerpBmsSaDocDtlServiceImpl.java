@@ -1,30 +1,52 @@
 package org.ssm.dufy.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.inca.np.auth.Userruninfo;
+import com.inca.np.communicate.DBModel2Jdbc;
+import com.inca.np.communicate.RecordTrunk;
+import com.inca.np.communicate.ResultCommand;
+import com.inca.np.gui.control.DBTableModel;
+import com.inca.np.util.SelectHelper;
+import com.inca.npbusi.tr.stin.receive.Receive_dbprocess;
+import com.inca.npbusi.tr.stin.receive.Receive_detail;
+import com.inca.npbusi.tr.stin.receive.Receive_master;
+import com.inca.npbusi.tr.stin.receive.Receive_mde;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.ssm.common.utility.DecimalUtils;
 import org.ssm.common.utility.JAXBUtil;
 import org.ssm.common.utility.StringUtil;
 import org.ssm.cxf.struct.applyorder.APPLYORDERRESP;
 import org.ssm.cxf.struct.applyorder.APPLYORDERSXHSREQ;
 import org.ssm.cxf.struct.applyorder.Orderdetail;
+import org.ssm.cxf.struct.pjyj.pick.PICKNOREQ;
+import org.ssm.cxf.struct.pjyj.pick.PICKNORESP;
+import org.ssm.cxf.struct.pjyj.recv.Goods;
+import org.ssm.cxf.struct.pjyj.recv.RecInfoJsonBean;
+import org.ssm.cxf.struct.pjyj.recv.ReturnMsg;
 import org.ssm.cxf.struct.salesinfo.*;
 import org.ssm.dufy.dao.ISxhsCerpBmsSaDocDtlDao;
 import org.ssm.dufy.entity.cerp.BmsSaConDoc;
 import org.ssm.dufy.entity.cerp.BmsSaConDtl;
+import org.ssm.dufy.exception.BopException;
 import org.ssm.dufy.service.ISxhsCerpBmsSaDocDtlService;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
 
 @Service("pjcerpService")
 public class ISxhsCerpBmsSaDocDtlServiceImpl implements ISxhsCerpBmsSaDocDtlService {
 
     @Autowired
     private ISxhsCerpBmsSaDocDtlDao sxhscerpDao;
+
+    @Autowired
+    private DataSource cerpzsdataSource;
 
     @Override
     @Transactional
@@ -238,5 +260,222 @@ public class ISxhsCerpBmsSaDocDtlServiceImpl implements ISxhsCerpBmsSaDocDtlServ
             e.printStackTrace();
         }
         return retxml;
+    }
+
+    @Override
+    public String getPickInfo_pjyj(String entryid, String xmldata) {
+        PICKNORESP resp = new PICKNORESP();
+        PICKNOREQ req = JAXBUtil.unmarshToObjBinding(PICKNOREQ.class, xmldata, "UTF-8");
+        entryid = req.getENTRYID();
+        String pickdocid = req.getORDERNO();
+        List<Map<String, Object>> lists = sxhscerpDao.getPickInfo_pjyj(pickdocid);
+        if(lists.size()==0){
+            resp.setRETCODE("0");
+            resp.setRETREASON("没有数据");
+        }else{
+            resp.setRETCODE("1");
+            resp.setRETREASON("成功");
+            resp.setCUSTCODE(StringUtil.doNullStr(lists.get(0).get("PLACEPOINTID")));
+            resp.setCUSTOMERNAME(StringUtil.doNullStr(lists.get(0).get("PLACEPOINTNAME")));
+            resp.setTYPEINOUT("2");
+            resp.setUSERNO(StringUtil.doNullStr(lists.get(0).get("PICKMAN")));
+        }
+
+        String retxml= "";
+        try {
+            retxml = JAXBUtil.marshToXmlBinding(PICKNORESP.class, resp, "UTF-8");
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return retxml;
+    }
+
+    @Override
+    public String updateRecInfo_pjyj(String entryid, String jsonData) {
+        Connection con = null;
+        ReturnMsg returnMsg = new ReturnMsg();
+        RecInfoJsonBean recInfoJsonBean = JSON.parseObject(jsonData,RecInfoJsonBean.class);
+        String reid = recInfoJsonBean.getOrderno();
+        Collections.sort(recInfoJsonBean.getGoods());
+        try {
+            con = cerpzsdataSource.getConnection();
+            con.setAutoCommit(false);
+
+            String sql = "select * from bms_st_re_doc_v where reid = ?";
+            SelectHelper sh = new SelectHelper(sql);
+            sh.bindParam(reid);
+            DBTableModel tmpMasterModel = sh.executeSelect(con);
+
+            if(tmpMasterModel==null || tmpMasterModel.getRowCount()<1) {
+                returnMsg.setRet_code("0");
+                returnMsg.setRet_reason("收货总单:"+reid+" 不存在");
+                return JSON.toJSONString(returnMsg);
+            }
+
+            sql = "select * from bms_st_re_dtl_v where reid = ? order by redtlid";
+            sh = new SelectHelper(sql);
+            sh.bindParam(reid);
+            DBTableModel tmpDetailModel = sh.executeSelect(con);
+            tmpDetailModel.createIndex(new String[] {"redtlid"});
+
+            Receive_mde mde = new Receive_mde(null, "");
+            Receive_master master = new Receive_master(null, mde);
+            Receive_detail detail = new Receive_detail(null, mde);
+            DBTableModel mastermodel = master.getDBtableModel();
+            mastermodel.appendRow();
+            mastermodel.bindDbmodel(0, tmpMasterModel, 0);
+            mastermodel.setdbStatus(0, RecordTrunk.DBSTATUS_MODIFIED);
+
+            String tmppkid = mastermodel.getTmppkid(0);
+
+            DBTableModel recDtlmodel = detail.getDBtableModel();
+
+            String tmpredtlid = "0";
+            String redtlid = "";
+            int[] frs = null;
+            String rectotalqty = "";
+            String sutotalqty = "";
+            //循环常青发过来的收货结果list(已按照收货细单号由小到大，数量由大到小排序)
+            for(Goods goods : recInfoJsonBean.getGoods()) {
+                redtlid = goods.getRowid();
+                //取到新的收货细单（和上一条不一样）
+                if(!tmpredtlid.equals(redtlid)) {
+                    tmpredtlid = redtlid;
+                    rectotalqty = goods.getQty();
+                    //在CERP原结果集里找
+                    frs = tmpDetailModel.searchByindex(new String[] {redtlid});
+                    //没找到，不理，继续循环
+                    if (frs == null || frs.length == 0) {
+                        continue;
+                    } else {//找到了
+                        //包装大小
+                        String packsize = tmpDetailModel.getItemValue(frs[0], "packsize");
+                        sutotalqty = tmpDetailModel.getItemValue(frs[0], "SUCONGOODSQTY");
+                        if(DecimalUtils.comparaDecimal(rectotalqty,sutotalqty)>0) {
+                            returnMsg.setRet_code("0");
+                            returnMsg.setRet_reason("货品:"+goods.getGoodscode()+" 收货数量:"+rectotalqty+" 大于采购数量:"+sutotalqty);
+                            return JSON.toJSONString(returnMsg);
+                        }
+                        //保存结果集增加一行
+                        int i = recDtlmodel.getRowCount();
+                        recDtlmodel.appendRow();
+                        //将原记录复制
+                        recDtlmodel.bindDbmodel(i, tmpDetailModel, frs[0]);
+                        //改数量(根据常青回传的数量)
+                        recDtlmodel.setItemValue(i, "scatterqty", goods.getQty());
+                        recDtlmodel.setItemValue(i, "goodsqty", goods.getQty());
+                        recDtlmodel.setItemValue(i, "RECIEVEQTY", goods.getQty());
+                        recDtlmodel.setItemValue(i, "PACKQTY", DecimalUtils.divide(goods.getQty(), packsize, 6));
+                        recDtlmodel.setItemValue(i, "RECIEVEPACKQTY", DecimalUtils.divide(goods.getQty(), packsize, 6));
+                        sql = "select lotid from bms_lot_def where lotno = ? and goodsid = ?";
+                        sh = new SelectHelper(sql);
+                        sh.bindParam(goods.getBatchno());
+                        sh.bindParam(goods.getGoodscode());
+                        DBTableModel lotModel = sh.executeSelect(con);
+                        if(lotModel!=null && lotModel.getRowCount()>0) {
+                            recDtlmodel.setItemValue(i, "lotid", lotModel.getItemValue(0, "lotid"));
+                        } else {
+                            recDtlmodel.setItemValue(i,"lotno",goods.getBatchno());
+                            recDtlmodel.setItemValue(i,"proddate",goods.getProducedate());
+                            recDtlmodel.setItemValue(i,"invaliddate",goods.getValidate());
+                        }
+                        recDtlmodel.setdbStatus(i, RecordTrunk.DBSTATUS_MODIFIED);
+
+                        recDtlmodel.getRecordThunk(i).setRelatevalue(tmppkid);
+                    }
+
+                } else {//取到和上一条一样的收货细单
+
+                    rectotalqty = DecimalUtils.add(rectotalqty,goods.getQty(),0);
+                    if(DecimalUtils.comparaDecimal(rectotalqty,sutotalqty)>0) {
+                        returnMsg.setRet_code("0");
+                        returnMsg.setRet_reason("货品:"+goods.getGoodscode()+" 收货数量:"+rectotalqty+" 大于采购数量:"+sutotalqty);
+                        return JSON.toJSONString(returnMsg);
+                    }
+                    if (frs == null || frs.length == 0) {
+                        continue;
+                    } else {//找到了
+                        //包装大小
+                        String packsize = tmpDetailModel.getItemValue(frs[0], "packsize");
+                        //保存结果集增加一行
+                        int i = recDtlmodel.getRowCount();
+                        recDtlmodel.appendRow();
+                        //将原记录复制
+                        recDtlmodel.bindDbmodel(i, tmpDetailModel, frs[0]);
+                        //改数量(根据常青回传的数量)
+                        String newredtlid = DBModel2Jdbc.getSeqvalue(con, "bms_st_re_dtl_seq");
+                        recDtlmodel.setItemValue(i, "redtlid", newredtlid);
+                        recDtlmodel.setItemValue(i, "scatterqty", goods.getQty());
+                        recDtlmodel.setItemValue(i, "goodsqty", goods.getQty());
+                        recDtlmodel.setItemValue(i, "RECIEVEQTY", goods.getQty());
+                        recDtlmodel.setItemValue(i, "PACKQTY", DecimalUtils.divide(goods.getQty(), packsize, 6));
+                        recDtlmodel.setItemValue(i, "RECIEVEPACKQTY", DecimalUtils.divide(goods.getQty(), packsize, 6));
+                        sql = "select lotid from bms_lot_def where lotno = ? and goodsid = ?";
+                        sh = new SelectHelper(sql);
+                        sh.bindParam(goods.getBatchno());
+                        sh.bindParam(goods.getGoodscode());
+                        DBTableModel lotModel = sh.executeSelect(con);
+                        if(lotModel!=null && lotModel.getRowCount()>0) {
+                            recDtlmodel.setItemValue(i, "lotid", lotModel.getItemValue(0, "lotid"));
+                        } else {
+                            recDtlmodel.setItemValue(i,"lotno",goods.getBatchno());
+                            recDtlmodel.setItemValue(i,"proddate",goods.getProducedate());
+                            recDtlmodel.setItemValue(i,"invaliddate",goods.getValidate());
+                        }
+                        recDtlmodel.setdbStatus(i, RecordTrunk.DBSTATUS_NEW);
+                        recDtlmodel.getRecordThunk(i).setRelatevalue(tmppkid);
+                    }
+                }
+            }
+
+            Receive_dbprocess process = new Receive_dbprocess();
+            Vector<ResultCommand> results = new Vector<ResultCommand>();
+
+            Userruninfo userRunInfo = new Userruninfo();
+            userRunInfo.setUserid("0");
+            userRunInfo.setEntryid("2");
+
+            process.doSave(con, userRunInfo, mastermodel, recDtlmodel, results,
+                    false);
+            ResultCommand mresult = results.elementAt(0);
+            if (mresult.getResult() != 0) {
+                returnMsg.setRet_code("0");
+                returnMsg.setRet_reason("生成总单失败");
+                return JSON.toJSONString(returnMsg);
+            }
+
+            ResultCommand dresult = results.elementAt(1);
+            if (dresult.getResult() != 0) {
+                returnMsg.setRet_code("0");
+                returnMsg.setRet_reason("生成细单失败");
+                return JSON.toJSONString(returnMsg);
+            }
+            con.commit();
+            returnMsg.setRet_code("1");
+            returnMsg.setRet_reason("保存成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            //回传操作结果
+            returnMsg.setRet_code("0");
+            returnMsg.setRet_reason(e.getMessage());
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return JSON.toJSONString(returnMsg);
     }
 }

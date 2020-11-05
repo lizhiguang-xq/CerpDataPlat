@@ -658,71 +658,71 @@ public final class StringUtil {
      * @param manayStr
      * @return String
      */
-    public static String R2C(String manayStr) // 参数规范问题不在这里处理
-    {
-
-        double doubNum = Double.parseDouble(manayStr);
-        BigDecimal bd = new BigDecimal(doubNum);
-        int L = (bd.setScale(0, BigDecimal.ROUND_HALF_UP).longValue() + "").length();
-        boolean Z = false;
-        boolean zL = Long.valueOf(manayStr.substring(0, L)) == 0; // 整数部分是否为零
-        boolean zR = Long.valueOf(manayStr.substring(L + 1, L + 3)) == 0; // 小数部分是否为零
-        if (zL && zR)
-            return "零"; // 零值退出
-        char s0, s1;
-        StringBuffer sL = new StringBuffer(); // 转换后的整数串
-        StringBuffer sR = new StringBuffer(); // 转换后的小数串
-        int n;
-        for (int i = 0; i < L; i++) // 整数部分
-        {
-            s0 = 0;
-            s1 = 0;
-            n = manayStr.charAt(L - i - 1) - '0'; // 数值 数字字符转换成数字数值
-            if (!(n == 0 && (Z || i == 8 || i == 4 || i == 0) || zL)) // Z：前一个字符是否为0
-                s0 = sChi.charAt(n); // 值字符
-            if (!(n == 0 && (i != 8 && i != 4 && i != 0 || Z && i == 1) || zL))
-                s1 = sChi.charAt(i + 13); // 单位字符
-            if (s1 > 0)
-                sL.insert(0, s1);
-            if (s0 > 0)
-                sL.insert(0, s0);
-            Z = n == 0; // 当前处理的字符是否为0
-        }
-        int pos = sL.indexOf("亿万"); // 是否有"亿万"
-        if (pos > 0) {
-            sL.deleteCharAt(pos + 1); // 如有则删除
-        }
-        boolean isInt = false;
-        for (int i = 0; i < 2; i++) // 小数部分
-        {
-            s0 = 0;
-            s1 = 0;
-            n = manayStr.charAt(L + 2 - i) - '0'; // 数值
-            if (n > 0 || (n == 0 && i == 1 && !Z && !zL)) // 大于零、或角位为零而分位大于零
-            {
-                s0 = sChi.charAt(n); // 值
-            }
-
-            if (n > 0) {
-                s1 = sChi.charAt(i + 11); // 单位
-            }
-
-            if (n == 0 && i == 0) // 分位为零
-            {
-                isInt = true;
-            }
-            if (isInt && (n == 0 && i == 1)) {
-                s1 = '整';
-            }
-            if (s1 > 0)
-                sR.insert(0, s1);
-            if (s0 > 0)
-                sR.insert(0, s0);
-            Z = n == 0;
-        }
-        sL.append(sR);
-        return sL.toString();
-    } // R2C
+//    public static String R2C(String manayStr) // 参数规范问题不在这里处理
+//    {
+//
+//        double doubNum = Double.parseDouble(manayStr);
+//        BigDecimal bd = new BigDecimal(doubNum);
+//        int L = (bd.setScale(0, BigDecimal.ROUND_HALF_UP).longValue() + "").length();
+//        boolean Z = false;
+//        boolean zL = Long.valueOf(manayStr.substring(0, L)) == 0; // 整数部分是否为零
+//        boolean zR = Long.valueOf(manayStr.substring(L + 1, L + 3)) == 0; // 小数部分是否为零
+//        if (zL && zR)
+//            return "零"; // 零值退出
+//        char s0, s1;
+//        StringBuffer sL = new StringBuffer(); // 转换后的整数串
+//        StringBuffer sR = new StringBuffer(); // 转换后的小数串
+//        int n;
+//        for (int i = 0; i < L; i++) // 整数部分
+//        {
+//            s0 = 0;
+//            s1 = 0;
+//            n = manayStr.charAt(L - i - 1) - '0'; // 数值 数字字符转换成数字数值
+//            if (!(n == 0 && (Z || i == 8 || i == 4 || i == 0) || zL)) // Z：前一个字符是否为0
+//                s0 = sChi.charAt(n); // 值字符
+//            if (!(n == 0 && (i != 8 && i != 4 && i != 0 || Z && i == 1) || zL))
+//                s1 = sChi.charAt(i + 13); // 单位字符
+//            if (s1 > 0)
+//                sL.insert(0, s1);
+//            if (s0 > 0)
+//                sL.insert(0, s0);
+//            Z = n == 0; // 当前处理的字符是否为0
+//        }
+//        int pos = sL.indexOf("亿万"); // 是否有"亿万"
+//        if (pos > 0) {
+//            sL.deleteCharAt(pos + 1); // 如有则删除
+//        }
+//        boolean isInt = false;
+//        for (int i = 0; i < 2; i++) // 小数部分
+//        {
+//            s0 = 0;
+//            s1 = 0;
+//            n = manayStr.charAt(L + 2 - i) - '0'; // 数值
+//            if (n > 0 || (n == 0 && i == 1 && !Z && !zL)) // 大于零、或角位为零而分位大于零
+//            {
+//                s0 = sChi.charAt(n); // 值
+//            }
+//
+//            if (n > 0) {
+//                s1 = sChi.charAt(i + 11); // 单位
+//            }
+//
+//            if (n == 0 && i == 0) // 分位为零
+//            {
+//                isInt = true;
+//            }
+//            if (isInt && (n == 0 && i == 1)) {
+//                s1 = '整';
+//            }
+//            if (s1 > 0)
+//                sR.insert(0, s1);
+//            if (s0 > 0)
+//                sR.insert(0, s0);
+//            Z = n == 0;
+//        }
+//        sL.append(sR);
+//        return sL.toString();
+//    } // R2C
 
 
 

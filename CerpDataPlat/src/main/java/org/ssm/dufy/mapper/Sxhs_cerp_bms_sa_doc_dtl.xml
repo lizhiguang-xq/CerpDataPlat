@@ -192,4 +192,13 @@
       and a.entryid=#{entryid}
       and a.salesid=#{salesid}
     </select>
+
+    <select id="getPickInfo_pjyj" resultType="map" parameterType="java.lang.String">
+    select c.placepointid, c.placepointname, d.employeename pickman
+      from BMS_TR_PICK_DOC a, bms_tr_doc b, gpcs_placepoint c, pub_employee d
+     where a.trid = b.trid
+       and a.pickdocid = #{pickdocid}
+       and b.tocompanyid = c.placepointid
+       and a.printmanid = d.employeeid
+  </select>
 </mapper>
