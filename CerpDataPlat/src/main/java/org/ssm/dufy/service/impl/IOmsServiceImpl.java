@@ -162,8 +162,8 @@ public class IOmsServiceImpl implements IOmsService {
             ih.bindParam("totalmoney", req.getTOTALMONEY());//订单总金额
             String THREE_PART_FAVOUR = req.getTHREEPARTFAVOUR();
             ih.bindParam("THREE_PART_FAVOUR", THREE_PART_FAVOUR);
-            ih.bindParam("receivemoney", DecimalHelper.add(req.getRECEIVALMONEY(), THREE_PART_FAVOUR, 2));//应收
-            ih.bindParam("realmoney", DecimalHelper.add(req.getREALMONEY(), THREE_PART_FAVOUR, 2));//实收
+            ih.bindParam("receivemoney", req.getRECEIVALMONEY());//应收
+            ih.bindParam("realmoney", req.getREALMONEY());//实收
             ih.bindParam("ZX_ORDERNO", req.getZXORDERNO());
             ih.bindParam("ECC_SHIPTO_REGION", req.getECCSHIPTOREGION());
             ih.bindParam("ECC_SHIPTO_CITY", req.getECCSHIPTOCITY());
