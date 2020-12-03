@@ -423,6 +423,14 @@ public class IElemeServiceImpl implements IElemeService {
             if(docmodel.getRowCount()>0){
                 throw new BopException("-99", "该订单号已生成零售单，请勿重复发送！");
             }
+            if(DecimalHelper.comparaDecimal(req.getReceivalmoney(), "0")<0){
+                System.out.println("订单【"+req.getZxOrderno()+"】错误，应收金额不能为负数！");
+                throw new BopException("-2", "订单【"+req.getZxOrderno()+"】错误，应收金额不能为负数！");
+            }
+            if(DecimalHelper.comparaDecimal(req.getRealmoney(), "0")<0){
+                System.out.println("订单【"+req.getZxOrderno()+"】错误，实收金额不能为负数！");
+                throw new BopException("-2", "订单【"+req.getZxOrderno()+"】错误，实收金额不能为负数！");
+            }
             String cashierid = req.getCashier();
             if(StringUtil.doNullInteger(entryid)==14){
                 if(StringUtil.isEmpty(cashierid)){

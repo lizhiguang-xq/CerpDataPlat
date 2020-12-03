@@ -61,8 +61,14 @@ public class CommonConstant {
 
 	public final static String OPER_ORDER_OMS = "order_oms";
 
+	public final static String OPER_ORDER_CREATE_COMMON = "order_create_common";
+
+	public final static String OPER_ORDER_CANCEL_COMMON = "order_return_common";
+
 	public final static String OPER_GETPICKINFO_PJYJ = "getpickinfo_pjyj";
 
 	public final static String OPER_UPDATE_RECINFO_PJYJ = "update_recinfo_pjyj";
+
+	public final static String OPER_GETGOODS_QTY_COMMON = "getgoodsqty";
 	
 }
