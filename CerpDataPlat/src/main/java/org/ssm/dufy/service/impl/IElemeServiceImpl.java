@@ -316,7 +316,7 @@ public class IElemeServiceImpl implements IElemeService {
         }else {
             //查询哪些货品有库存变化
             if (!StringUtil.isEmpty(lasteventtime)) {
-                String changegoodsids = ""; //有变化的货品ID字符串
+                String changegoodsids = ""; //有变化的货品ID字符串getChangeGoodsIdsByClasstypeid
                 List<Map<String, Object>> changeGoodsList = elemeDao.getChangeGoodsIdsByClasstypeid(entryid, placepointid, classtypeid, lasteventtime);
                 for (Map<String, Object> map : changeGoodsList) {
                     changegoodsids += "," + StringUtil.doNullStr(map.get("GOODSID"));
@@ -406,9 +406,21 @@ public class IElemeServiceImpl implements IElemeService {
 
     @Override
     public String createOrder(String entryid, String xmldata) {
-        ELMAPPLYORDERRESP resp = new ELMAPPLYORDERRESP();
-
         ELMAPPLYORDERREQ req = JAXBUtil.unmarshToObjBinding(ELMAPPLYORDERREQ.class, xmldata, "UTF-8");
+        ELMAPPLYORDERRESP resp = createOrder(entryid, req);
+        String retxml = "";
+        try {
+            retxml = JAXBUtil.marshToXmlBinding(ELMAPPLYORDERRESP.class, resp, "UTF-8");
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return retxml;
+    }
+
+    @Override
+    public ELMAPPLYORDERRESP createOrder(String entryid, ELMAPPLYORDERREQ req) {
+        ELMAPPLYORDERRESP resp = new ELMAPPLYORDERRESP();
+//        ELMAPPLYORDERREQ req = JAXBUtil.unmarshToObjBinding(ELMAPPLYORDERREQ.class, xmldata, "UTF-8");
         String placepointid = req.getPlacepointid();
         Connection con = null;
         try {
@@ -512,8 +524,6 @@ public class IElemeServiceImpl implements IElemeService {
             payh.bindParam("changemoney", "0");
             payh.executeInsert(con);
 
-
-            
             con.commit();
             resp.setReturncode("0");
             resp.setReturnmsg("零售单生成成功");
@@ -538,7 +548,7 @@ public class IElemeServiceImpl implements IElemeService {
                 e1.printStackTrace();
             }
             resp.setReturncode("-1");
-            resp.setReturnmsg("生成零售单失败");
+            resp.setReturnmsg("生成零售单失败:"+e.getMessage());
         }finally {
             if (con != null) {
                 try {
@@ -549,13 +559,14 @@ public class IElemeServiceImpl implements IElemeService {
                 }
             }
         }
-        String retxml = "";
-        try {
-            retxml = JAXBUtil.marshToXmlBinding(ELMAPPLYORDERRESP.class, resp, "UTF-8");
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-        return retxml;
+        return resp;
+//        String retxml = "";
+//        try {
+//            retxml = JAXBUtil.marshToXmlBinding(ELMAPPLYORDERRESP.class, resp, "UTF-8");
+//        } catch (JAXBException e) {
+//            e.printStackTrace();
+//        }
+//        return retxml;
     }
 
     @Override
