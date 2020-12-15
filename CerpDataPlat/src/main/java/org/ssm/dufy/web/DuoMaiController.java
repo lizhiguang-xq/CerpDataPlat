@@ -33,8 +33,9 @@ public class DuoMaiController {
     public DuoMaiRetMsg createOrder(@RequestBody DuoMaiGresaOrder gresaOrder,
                               @RequestHeader(value="x-authorization") String authorization){
 
-        System.out.println(authorization);
         logger.info(JSONObject.toJSONString(gresaOrder));
+        DuoMaiRetMsg retMsg = new DuoMaiRetMsg();
+        String platform = gresaOrder.getPlatform().toLowerCase();
         ELMAPPLYORDERREQ req = new ELMAPPLYORDERREQ();
         req.setPlacepointid(gresaOrder.getStoreId());
         req.setCredate(gresaOrder.getOrderTime());
@@ -42,8 +43,17 @@ public class DuoMaiController {
         req.setReceivalmoney(DecimalUtils.divide(gresaOrder.getTotalAmount(),"100",2));
         req.setRealmoney(DecimalUtils.divide(gresaOrder.getPredictTotal(),"100",2));
         req.setTotalmoney(DecimalUtils.divide(gresaOrder.getTotalAmount(),"100",2));
-        req.setGathertype("144");
-        req.setCashier("3");
+        if("ebai".equals(platform)) {
+            req.setGathertype("144");
+        } else if ("meituan".equals(platform)) {
+            req.setGathertype("102");
+        }else if ("jd".equals(platform)) {
+            req.setGathertype("145");
+        } else {
+            retMsg.setReturnStatus("Error");
+            retMsg.setReturnMessage("平台类型platform不支持");
+        }
+        req.setCashier("0");
         req.setEntryid("2");
         Products products = new Products();
         List<Product> productList = new ArrayList<Product>();
@@ -61,7 +71,7 @@ public class DuoMaiController {
         req.setProducts(products);
 
         ELMAPPLYORDERRESP resp = elemeService.createOrder("2", req);
-        DuoMaiRetMsg retMsg = new DuoMaiRetMsg();
+
         if("0".equals(resp.getReturncode())) {
             retMsg.setReturnStatus("Success");
             retMsg.setReturnMessage("保存成功");

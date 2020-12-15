@@ -64,13 +64,14 @@
 			   e.goodstype     goodsType,
 			   e.goodsunit     goodsUnit,
 			   f.factoryname   factoryName,
-			   a.credate       orderTime,
+			   to_char(a.credate,'YYYY-MM-DD HH24:MI:SS')       orderTime,
 			   a.placepointid  deptId,
 			   c.placepointname deptName,
 			   d.mobile         mobile
 		  from gresa_sa_doc a, gresa_sa_dtl b, gpcs_placepoint c, gpcs_insider d, pub_goods e, pub_factory f
 		 where a.rsaid = b.rsaid
-		   and b.placepointid = c.placepointid
+		   and b.goodsid = 9931
+		   and a.placepointid = c.placepointid
 		   and c.entryid = 2
 		   and a.insiderid = d.insiderid(+)
 		   and b.goodsid = e.goodsid
@@ -82,12 +83,13 @@
 		select c.insidercardno vipNo,
 			   a.couponnum couponNum,
 			   a.rsaid orderId,
-			   a.rsacredate useTime,
+			   to_char(a.rsacredate,'YYYY-MM-DD HH24:MI:SS') useTime,
 			   '1' status
 		  from gresa_coupon_manager a, gresa_sa_doc b, gpcs_insider c
 		 where a.rsacredate between
 			   to_date(#{startDate}, 'YYYY-MM-DD HH24:MI:SS') and
 			   to_date(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+		   and a.apprangeid in (5804,5805,5806,5807)
 		   and a.rsaid = b.rsaid
 		   and a.couponstatus = 3
 		   and b.insiderid = c.insiderid
