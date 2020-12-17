@@ -34,7 +34,7 @@
 			   a.idcard idCard
 		  from gpcs_insider a, gpcs_placepoint b
 		 where a.placepointid = b.placepointid
-		   and b.entryid = 2
+		   and b.entryid in (2,21,22)
 		   and a.mobile = #{mobile}
 	</select>
 
@@ -46,7 +46,7 @@
 			   a.idcard idCard
 		  from gpcs_insider a, gpcs_placepoint b
 		 where a.placepointid = b.placepointid
-		   and b.entryid = 2
+		   and b.entryid in (2,21,22)
 		   and a.insidercardno = #{vipNo}
 	</select>
 
@@ -72,7 +72,7 @@
 		 where a.rsaid = b.rsaid
 		   and b.goodsid = 9931
 		   and a.placepointid = c.placepointid
-		   and c.entryid = 2
+		   and c.entryid in (2,21,22)
 		   and a.insiderid = d.insiderid(+)
 		   and b.goodsid = e.goodsid
 		   and e.factoryid = f.factoryid(+)
