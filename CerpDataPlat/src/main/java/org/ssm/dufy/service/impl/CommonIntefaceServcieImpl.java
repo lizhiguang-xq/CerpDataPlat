@@ -1034,7 +1034,6 @@ public class CommonIntefaceServcieImpl implements ICommonIntefaceServcie {
                                 ih.executeInsert(con);
                                 NptrDBHelper.keepin(con, inoutid, "0");//出库记账
                             }
-
                             accqty = "0";
                         }
                     }
