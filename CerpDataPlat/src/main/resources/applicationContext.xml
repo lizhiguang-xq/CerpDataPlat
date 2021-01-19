@@ -49,7 +49,7 @@
 	<aop:config>
 		<aop:aspect id="cerpdb" ref="cerpDBHandler">
 			<aop:pointcut id="allGetMethod"
-				expression="(execution(* org.ssm.cxf.CerpDataInteractiveServiceImpl.tslCerpDataInteractive(..))) || (execution(* org.ssm.dufy.service.impl.IEmployeeServiceImpl.*(..)))" />
+				expression="(execution(* org.ssm.cxf.CerpDataInteractiveServiceImpl.tslCerpDataInteractive(..))) || (execution(* org.ssm.dufy.service.impl.IEmployeeServiceImpl.*(..))) || (execution(* org.ssm.dufy.service.impl.ICerp*Impl.query*(..)))" />
 			<aop:around pointcut-ref="allGetMethod" method="setCerpDB" />
 		</aop:aspect>
 		<aop:aspect id="cerpzsdb" ref="cerpZsDBHandler">

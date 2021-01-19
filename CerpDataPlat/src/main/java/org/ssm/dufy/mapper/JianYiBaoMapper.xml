@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.ssm.dufy.dao.IJybDao" >
+	<resultMap id="MemberResultMap" type="org.ssm.dufy.bean.jianyibao.Member" >
+		<result column="vipNo" property="vipNo" jdbcType="VARCHAR" />
+		<result column="mobile" property="mobile" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="gender" property="gender" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="SalesDataResultMap" type="org.ssm.dufy.bean.jianyibao.SalesData" >
+		<result column="orderId" property="orderId" jdbcType="VARCHAR" />
+		<result column="detailId" property="detailId" jdbcType="VARCHAR" />
+		<result column="vipNo" property="vipNo" jdbcType="VARCHAR" />
+		<result column="goodsId" property="goodsId" jdbcType="VARCHAR" />
+		<result column="goodsName" property="goodsName" jdbcType="VARCHAR" />
+		<result column="goodsQty" property="goodsQty" jdbcType="VARCHAR" />
+		<result column="orderTime" property="orderTime" jdbcType="VARCHAR" />
+		<result column="deptId" property="deptId" jdbcType="VARCHAR" />
+		<result column="deptName" property="deptName" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="CouponResultMap" type="org.ssm.dufy.bean.jianyibao.Coupon" >
+		<result column="vipNo" property="vipNo" jdbcType="VARCHAR" />
+		<result column="couponNum" property="couponNum" jdbcType="VARCHAR" />
+		<result column="orderId" property="orderId" jdbcType="VARCHAR" />
+		<result column="useTime" property="useTime" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+  
+	<select id="queryMemberByMobile" resultMap="MemberResultMap" >
+		select a.insidercardno vipNo,
+			   a.mobile mobile,
+			   a.insidername name,
+			   decode(a.sex, 1, 'male', 2, 'female', '') gender,
+			   a.idcard idCard
+		  from gpcs_insider a, gpcs_placepoint b
+		 where a.placepointid = b.placepointid
+		   and b.entryid in (2,21,22)
+		   and a.mobile = #{mobile}
+	</select>
+
+	<select id="queryMemberByVipNo" resultMap="MemberResultMap" >
+		select a.insidercardno vipNo,
+			   a.mobile mobile,
+			   a.insidername name,
+			   decode(a.sex, 1, 'male', 2, 'female', '') gender,
+			   a.idcard idCard
+		  from gpcs_insider a, gpcs_placepoint b
+		 where a.placepointid = b.placepointid
+		   and b.entryid in (2,21,22)
+		   and a.insidercardno = #{vipNo}
+	</select>
+
+	<select id="querySalesData" resultMap="SalesDataResultMap" >
+		select a.rsaid         orderId,
+			   b.oldrsaid      sourceId,
+			   b.rsadtlid      detailId,
+			   d.insidercardno vipNo,
+			   a.insiderid     vipId,
+			   b.goodsid       goodsId,
+			   e.goodsname     goodsName,
+			   e.currencyname  goodsName1,
+			   b.goodsqty      goodsQty,
+			   b.realmoney     money,
+			   e.goodstype     goodsType,
+			   e.goodsunit     goodsUnit,
+			   f.factoryname   factoryName,
+			   to_char(a.credate,'YYYY-MM-DD HH24:MI:SS')       orderTime,
+			   a.placepointid  deptId,
+			   c.placepointname deptName,
+			   d.mobile         mobile
+		  from gresa_sa_doc a, gresa_sa_dtl b, gpcs_placepoint c, gpcs_insider d, pub_goods e, pub_factory f
+		 where a.rsaid = b.rsaid
+		   and b.goodsid = 9931
+		   and a.placepointid = c.placepointid
+		   and c.entryid in (2,21,22)
+		   and a.insiderid = d.insiderid(+)
+		   and b.goodsid = e.goodsid
+		   and e.factoryid = f.factoryid(+)
+		   and a.credate between to_date(#{startDate},'YYYY-MM-DD HH24:MI:SS') and to_date(#{endDate},'YYYY-MM-DD HH24:MI:SS')
+	</select>
+
+	<select id="queryCoupon" resultMap="CouponResultMap" >
+		select c.insidercardno vipNo,
+			   a.couponnum couponNum,
+			   a.rsaid orderId,
+			   to_char(a.rsacredate,'YYYY-MM-DD HH24:MI:SS') useTime,
+			   '1' status
+		  from gresa_coupon_manager a, gresa_sa_doc b, gpcs_insider c
+		 where a.rsacredate between
+			   to_date(#{startDate}, 'YYYY-MM-DD HH24:MI:SS') and
+			   to_date(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+		   and a.apprangeid in (5804,5805,5806,5807)
+		   and a.rsaid = b.rsaid
+		   and a.couponstatus = 3
+		   and b.insiderid = c.insiderid
+	</select>
+</mapper>
