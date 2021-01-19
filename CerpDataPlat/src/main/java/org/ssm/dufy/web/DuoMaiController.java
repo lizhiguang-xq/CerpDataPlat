@@ -52,6 +52,7 @@ public class DuoMaiController {
         } else {
             retMsg.setReturnStatus("Error");
             retMsg.setReturnMessage("平台类型platform不支持");
+            return retMsg;
         }
         req.setCashier("0");
         req.setEntryid("2");

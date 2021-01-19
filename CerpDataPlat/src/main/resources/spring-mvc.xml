@@ -28,6 +28,8 @@
             <mvc:mapping path="/**" />
             <mvc:exclude-mapping path="/user/login" />
             <mvc:exclude-mapping path="/user/doAjaxLogin" />
+            <mvc:exclude-mapping path="/DuoMai/**" />
+            <mvc:exclude-mapping path="/JianYiBao/**" />
             <mvc:exclude-mapping path="/bootstrap/**" />
             <mvc:exclude-mapping path="/css/**" />
             <mvc:exclude-mapping path="/fonts/**" />
@@ -42,6 +44,8 @@
             <mvc:mapping path="/**" />
             <mvc:exclude-mapping path="/user/login" />
             <mvc:exclude-mapping path="/user/doAjaxLogin" />
+            <mvc:exclude-mapping path="/DuoMai/**" />
+            <mvc:exclude-mapping path="/JianYiBao/**" />
             <mvc:exclude-mapping path="/bootstrap/**" />
             <mvc:exclude-mapping path="/css/**" />
             <mvc:exclude-mapping path="/fonts/**" />

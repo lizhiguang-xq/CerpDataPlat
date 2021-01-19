@@ -881,14 +881,13 @@ public class CommonIntefaceServcieImpl implements ICommonIntefaceServcie {
         DBTableModel cansalemd = sh.executeSelect(con, 0, 9999);
         if(cansalemd != null && cansalemd.getRowCount() > 0){
             //获取cansalemd中符合出库的记录数.
-            int mdcount = getModelRowCounts(cansalemd,goodsqty);
             String accqty = goodsqty;//剩余退货数量
             for(int i=0;i<cansalemd.getRowCount();i++){
                 if(DecimalHelper.comparaDecimal(accqty, "0")!=0){
                     String oldrsadtlid = cansalemd.getItemValue(i, "rsadtlid");
                     String tmpqty = DecimalHelper.add(cansalemd.getItemValue(i, "goodsqty"), cansalemd.getItemValue(i, "sub_goodsqty"), 2);
                     if(DecimalHelper.comparaDecimal(tmpqty, "0")>0){
-                        if(DecimalHelper.comparaDecimal(DecimalHelper.add(goodsqty, tmpqty, 2), "0") <= 0){
+                        if(DecimalHelper.comparaDecimal(DecimalHelper.add(accqty, tmpqty, 2), "0") <= 0){
                             //本条数据全部退货
                             String rsadtlid = NpbusiDBHelper.getSeqValue(con, "gresa_sa_dtl_seq");
                             InsertHelper ih = new InsertHelper("gresa_sa_dtl");
@@ -961,7 +960,7 @@ public class CommonIntefaceServcieImpl implements ICommonIntefaceServcie {
                                 ih.executeInsert(con);
                                 NptrDBHelper.keepin(con, inoutid, "0");//出库记账
                             }
-                            accqty = DecimalHelper.add(goodsqty, tmpqty, 2);
+                            accqty = DecimalHelper.add(accqty, tmpqty, 2);
                         }else{
 
                             String rsadtlid = NpbusiDBHelper.getSeqValue(con, "gresa_sa_dtl_seq");

@@ -624,10 +624,11 @@ public class IElemeServiceImpl implements IElemeService {
         String priceid = pro.getPriceid();
         String cansaleqty = "";//可销库存数量
         //查询当前门店该货品的可销库存.//出库时按近效期的批号规则出库.
-        String sql = "select * from resa_stqty_sum_v where goodsid = ? and nvl(accflag,0) = 1 and nvl(invaliddays,0) > 0 and nvl(statususeflag,0) = 1 and storageid = ? order by invaliddate";
-        if(entryid.equals("283")){
-            sql = "select * from resa_stqty_sum_v where goodsid = ? and nvl(invaliddays,0) > 0 and nvl(statususeflag,0) = 1 and storageid = ? order by invaliddate";
-        }
+//        String sql = "select * from resa_stqty_sum_v where goodsid = ? and nvl(accflag,0) = 1 and nvl(invaliddays,0) > 0 and nvl(statususeflag,0) = 1 and storageid = ? order by invaliddate";
+//        if(entryid.equals("283")){
+//            sql = "select * from resa_stqty_sum_v where goodsid = ? and nvl(invaliddays,0) > 0 and nvl(statususeflag,0) = 1 and storageid = ? order by invaliddate";
+//        }
+        String sql = "select * from resa_stqty_sum_v where goodsid = ? and nvl(invaliddays,0) > 0 and nvl(statususeflag,0) = 1 and storageid = ? order by invaliddate";
         SelectHelper sh = new SelectHelper(sql);
         sh.bindParam(goodsid);
         sh.bindParam(storageid);
