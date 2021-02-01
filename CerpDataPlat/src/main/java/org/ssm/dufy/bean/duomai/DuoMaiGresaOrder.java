@@ -23,6 +23,16 @@ public class DuoMaiGresaOrder {
     @JsonProperty("order_id")
     private String orderId;
     private String platform;
+    private String erp_user;
+
+    public String getErp_user() {
+        return erp_user;
+    }
+
+    public void setErp_user(String erp_user) {
+        this.erp_user = erp_user;
+    }
+
     public void setStoreId(String storeId) {
          this.storeId = storeId;
      }
