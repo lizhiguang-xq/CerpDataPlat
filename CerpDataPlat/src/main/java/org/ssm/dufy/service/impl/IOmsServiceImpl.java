@@ -623,6 +623,7 @@ public class IOmsServiceImpl implements IOmsService {
                             //删除库存占用
                             DelSTIOTMP(con, sh, dh, sql, docid);
                         }
+
                     }else if(StringUtil.doNullInt(docmodel.getItemValue(k, "SENDSTATE_WMS"))==1){
                         //调用物流接口，下发取消信息
                         org.ssm.dufy.client.wms.cancel.INFDATA infdate = new org.ssm.dufy.client.wms.cancel.INFDATA();
