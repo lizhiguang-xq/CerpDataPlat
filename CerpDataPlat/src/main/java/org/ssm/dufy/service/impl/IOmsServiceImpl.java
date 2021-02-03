@@ -216,7 +216,6 @@ public class IOmsServiceImpl implements IOmsService {
             ih.bindParam("BUYERMEMO", req.getBUYERMEMO());
             ih.bindParam("DTL_LINES", StringUtil.doNullStr(req.getPRODUCTS().getPRODUCT().size()));
             ih.bindParam("ISMANPLACEQTY", req.getMANUALALLOC());
-            ih.bindParam("USESTATUS", "1");
             ih.bindParam("PRESCRIPTION_HOSPITAL", req.getPRESCRIPTION_HOSPITAL());
             ih.bindParam("CARRIER_ID", req.getCARRIERID());
             ih.bindParam("CARRIER_NAME", req.getCARRIERNAME());
@@ -240,7 +239,38 @@ public class IOmsServiceImpl implements IOmsService {
                 total = DecimalHelper.add(total, line_total,4);
             }
             ih.bindParam("DISCOUNT_FEE_TOTAL", discount_fee_total);
-            ih.bindParam("ISSEND_WMS", "1");
+
+            boolean bool = false;
+            if ("10812021".equals(req.getCOMEFORM())) {
+                for(int i = 0; i < list.size(); i++) {
+                    PRODUCT pro = list.get(i);
+                    sql = "select * from gresa_sa_ds_doc_split_rule where goodsid = ? and placepointid=? and comefromid=? ";
+                    sh = new SelectHelper(sql);
+                    sh.bindParam(pro.getGOODSID());
+                    sh.bindParam(req.getPLACEPOINTID());
+                    sh.bindParam(req.getCOMEFORM());
+                    DBTableModel dtlsmodel = sh.executeSelect(con, 0, 1);
+                    if (null != dtlsmodel && dtlsmodel.getRowCount() > 0) {
+                        bool = true;
+                        break;
+                    }
+                }
+            }
+            if ("1".equals(req.getSPLITTYPE())) {
+                bool = true;
+            }
+            if (bool) {
+                ih.bindParam("USESTATUS", "4");
+                ih.bindParam("ISSEND_WMS", "0");
+            } else {
+                ih.bindParam("USESTATUS", "1");
+                if (req.getPLACEPOINTID().equals("95")) {
+                    ih.bindParam("ISSEND_WMS", "0");
+                } else {
+                    ih.bindParam("ISSEND_WMS", "1");
+                }
+            }
+            ih.bindParam("SPLITTYPE", "0");
             ih.bindParam("SENDSTATE_WMS", "0");
             ih.bindParam("PLACEQTYSTATE", "0");
             ih.bindParam("ZX_ISBACK", "0");
@@ -379,130 +409,146 @@ public class IOmsServiceImpl implements IOmsService {
     }
 
     private String EditSaDocDtl(Connection con, SelectHelper sh, UpdateHelper uh, String sql, OMSAPPLYORDERREQ req) throws Exception{
-        String docid = "";
+        String rsaid = "";
         sql = "select * from gresa_sa_ds_doc where zx_orderno = ? for update";
         sh = new SelectHelper(sql);
         sh.bindParam(req.getZXORDERNO());
-        DBTableModel docmodel = sh.executeSelect(con, 0, 1);
+        DBTableModel docmodel = sh.executeSelect(con, 0, 9999);
         if(null==docmodel || docmodel.getRowCount()<1){
             throw new BopException("-98", "未查询到零售订单！");
         }
-        docid = docmodel.getItemValue(0, "rsaid");
-        if(StringUtil.doNullInt(docmodel.getItemValue(0, "USESTATUS"))==3){
-            throw new BopException("-1", "订单已取消，修改失败！");
-        }
-        if(StringUtil.doNullInt(docmodel.getItemValue(0, "ISCREATE"))==1){
-            throw new BopException("-1", "订单信息已生成零售单，修改失败！");
-        }
-        if(StringUtil.doNullInt(docmodel.getItemValue(0, "SENDSTATE_WMS"))==0){
-            updateDoc(con, uh, sql, req);
-        }else if(StringUtil.doNullInt(docmodel.getItemValue(0, "SENDSTATE_WMS"))==1){
-            //调用物流接口，下发取消信息
-            INFDATA infdate = new INFDATA();
-            GERPBASEINFO gerpbaseinfo = new GERPBASEINFO();
-            String msgid = StringUtil.doNullStr(new Date().getTime());
-            gerpbaseinfo.setMSGID(msgid);
-            gerpbaseinfo.setSENDTIME(msgid);
-            gerpbaseinfo.setSERVICENAME("CERP");
-            gerpbaseinfo.setTSYSTEM("WMS_2020");
-            gerpbaseinfo.setSSYSYEM("CERP_WMS");
-            infdate.setBASEINFO(gerpbaseinfo);
-            GERPMESSAGE gerpmessage = new GERPMESSAGE();
-            GERPARRAYSTRING gerparraystring = new GERPARRAYSTRING();
-            gerpmessage.setARRAYSTRING(gerparraystring);
-            infdate.setMESSAGE(gerpmessage);
-            sql = "select a.rsaid DANJ_NO, " +
-                    "a.rsaid,c.entryid, " +
-                    "b.wmscenterucode WLZX_CODE, " +
-                    "b.goodsownerid HUOZ_ID, " +
-                    "to_char(a.credate, 'yyyymmdd') RIQI_DATE, " +
-                    "a.placepointid DANW_ID " +
-                    "from gresa_sa_ds_doc a, pub_storer b, gpcs_placepoint c " +
-                    "where a.placepointid = c.placepointid " +
-                    "and c.placepointid=b.storerid " +
-                    "and a.zx_orderno= ?";
-            sh = new SelectHelper(sql);
-            sh.bindParam(req.getZXORDERNO());
-            DBTableModel tckdocmodel = sh.executeSelect(con, 0, 1);
-            if(null==tckdocmodel || tckdocmodel.getRowCount()<1 ){
-                throw new BopException("-1", "查询物流信息失败！");
-            }
-
-            ARRAYOFTCKKPDMOD arrayoftckkpddel = new ARRAYOFTCKKPDMOD();
-            TCKKPDMOD tckkpddel = new TCKKPDMOD();
-            tckkpddel.setDANJNO("DS"+tckdocmodel.getItemValue(0, "DANJ_NO"));
-            tckkpddel.setZTORDERCHGID("");
-            tckkpddel.setWLZXCODE(tckdocmodel.getItemValue(0, "WLZX_CODE"));
-            String huozhuid = tckdocmodel.getItemValue(0, "HUOZ_ID");
-            tckkpddel.setHUOZID(huozhuid);
-            tckkpddel.setDANWID(tckdocmodel.getItemValue(0, "DANW_ID"));
-            tckkpddel.setRIQIDATE(tckdocmodel.getItemValue(0, "RIQI_DATE"));
-            if(huozhuid.equals("1991")){
-                tckkpddel.setTIHWAY("4");
-            }else if(huozhuid.equals("1990")){
-                tckkpddel.setTIHWAY("11");
-            }else if(huozhuid.equals("4508")){
-                tckkpddel.setTIHWAY("1");
-            }
-            tckkpddel.setNOTE(req.getBUYERMEMO());
-            tckkpddel.setECCSHIPTOREGION(req.getECCSHIPTOREGION());
-            tckkpddel.setECCSHIPTOCITY(req.getECCSHIPTOCITY());
-            tckkpddel.setECCSHIPTODISTRICT(req.getECCSHIPTODISTRICT());
-            tckkpddel.setADDRESS(req.getADDRESS());
-            tckkpddel.setSHOUHPHONE(req.getSHOUHPHONE());
-            tckkpddel.setSHOUHSTAFF(req.getSHOUHSTAFF());
-            tckkpddel.setPOSTCODE(req.getPOSTCODE());
-            tckkpddel.setPEISNOTES(req.getVENDORMEMO());
-            tckkpddel.setCARRIERID(req.getCARRIERID());
-            tckkpddel.setCARRIERNAME(req.getCARRIERNAME());
-            tckkpddel.setPOSTALZONE("");
-            tckkpddel.setDELIVERYDATE(docmodel.getItemValue(0, "delivery_date"));
-            if("".equals("1991")){
-                tckkpddel.setSHADCITY(docmodel.getItemValue(0, "shad_city"));
-                tckkpddel.setSHADCITYDISTRICT(docmodel.getItemValue(0, "shad_city_district"));
-                tckkpddel.setSHADRESIDENTIAL(docmodel.getItemValue(0, "shad_residential"));
-                tckkpddel.setSHADRESIDENTIALNUMBER(docmodel.getItemValue(0, "shad_residential_number"));
-            }else{
-                tckkpddel.setSHADCITY("");
-                tckkpddel.setSHADCITYDISTRICT("");
-                tckkpddel.setSHADRESIDENTIAL("");
-                tckkpddel.setSHADRESIDENTIALNUMBER("");
-            }
-            tckkpddel.setSHUIPTYPE("");
-            tckkpddel.setFAHTYPE("2");
-            arrayoftckkpddel.setTCKKPDMOD(tckkpddel);
-            String retxml = "";
+        String errmsg = "";
+        for(int i = 0; i < docmodel.getRowCount(); ++i) {
+            String docid = docmodel.getItemValue(i, "rsaid");
             try {
-                retxml = JAXBUtil.marshToXmlBinding(ARRAYOFTCKKPDMOD.class, arrayoftckkpddel, "UTF-8");
-                infdate.getMESSAGE().getARRAYSTRING().setInfmsg(retxml);
-            } catch (JAXBException e) {
-                e.printStackTrace();
-            }
-            //调用物流接口，下发修改信息
-            String entryid = tckdocmodel.getItemValue(0, "entryid");
-            String url =  getWebServiceUrlByEntryId(con, entryid, "22");
-            URL wsdlURL = null;
-            wsdlURL = new URL(url);
-            WmsCkkpdMod wms = new WmsCkkpdMod(wsdlURL);
-            WmsCkkpdModSoap soap = wms.getWmsCkkpdModSoap();
-            String msg = soap.receiveCkkpdMod(infdate);
-            log.info("WMS回传结果："+msg);
-            DATA rtdata = JAXBUtil.unmarshToObjBinding(DATA.class, msg, "UTF-8");
-            RETDATA rd = rtdata.getRETDATA();
-            if(null==rd){
-                throw new BopException("-1", "取消失败！");
-            }
-            if(rd.getZFLAG().equals("S")){
-                updateDoc(con, uh, sql, req);
-            }else{
-                throw new BopException("-1", rd.getZMESSAGE());
-            }
-            System.out.println(msg);
-        }else if(StringUtil.doNullInt(docmodel.getItemValue(0, "SENDSTATE_WMS"))==2){
-            throw new BopException("-1", "物流已回传记账，修改失败！");
-        }
+                rsaid = rsaid + "," + docid;
+                if(StringUtil.doNullInt(docmodel.getItemValue(i, "USESTATUS"))==3){
+                    throw new BopException("-1", "订单已取消，修改失败！");
+                }
+                if(StringUtil.doNullInt(docmodel.getItemValue(i, "ISCREATE"))==1){
+                    throw new BopException("-1", "订单信息已生成零售单，修改失败！");
+                }
+                if(StringUtil.doNullInt(docmodel.getItemValue(i, "SENDSTATE_WMS"))==0){
+                    updateDoc2(con, uh, sql, req, docid);
+                }else if(StringUtil.doNullInt(docmodel.getItemValue(i, "SENDSTATE_WMS"))==1){
+                    //调用物流接口，下发取消信息
+                    INFDATA infdate = new INFDATA();
+                    GERPBASEINFO gerpbaseinfo = new GERPBASEINFO();
+                    String msgid = StringUtil.doNullStr(new Date().getTime());
+                    gerpbaseinfo.setMSGID(msgid);
+                    gerpbaseinfo.setSENDTIME(msgid);
+                    gerpbaseinfo.setSERVICENAME("CERP");
+                    gerpbaseinfo.setTSYSTEM("WMS_2020");
+                    gerpbaseinfo.setSSYSYEM("CERP_WMS");
+                    infdate.setBASEINFO(gerpbaseinfo);
+                    GERPMESSAGE gerpmessage = new GERPMESSAGE();
+                    GERPARRAYSTRING gerparraystring = new GERPARRAYSTRING();
+                    gerpmessage.setARRAYSTRING(gerparraystring);
+                    infdate.setMESSAGE(gerpmessage);
+                    sql = "select a.rsaid DANJ_NO, " +
+                            "a.rsaid,c.entryid, " +
+                            "b.wmscenterucode WLZX_CODE, " +
+                            "b.goodsownerid HUOZ_ID, " +
+                            "to_char(a.credate, 'yyyymmdd') RIQI_DATE, " +
+                            "a.placepointid DANW_ID " +
+                            "from gresa_sa_ds_doc a, pub_storer b, gpcs_placepoint c " +
+                            "where a.placepointid = c.placepointid " +
+                            "and c.placepointid=b.storerid " +
+                            "and a.rsaid= ?";
+                    sh = new SelectHelper(sql);
+                    sh.bindParam(docid);
+                    DBTableModel tckdocmodel = sh.executeSelect(con, 0, 1);
+                    if(null==tckdocmodel || tckdocmodel.getRowCount()<1 ){
+                        throw new BopException("-1", "查询物流信息失败！");
+                    }
 
-        return docid;
+                    ARRAYOFTCKKPDMOD arrayoftckkpddel = new ARRAYOFTCKKPDMOD();
+                    TCKKPDMOD tckkpddel = new TCKKPDMOD();
+                    tckkpddel.setDANJNO("DS"+tckdocmodel.getItemValue(0, "DANJ_NO"));
+                    tckkpddel.setZTORDERCHGID("");
+                    tckkpddel.setWLZXCODE(tckdocmodel.getItemValue(0, "WLZX_CODE"));
+                    String huozhuid = tckdocmodel.getItemValue(0, "HUOZ_ID");
+                    tckkpddel.setHUOZID(huozhuid);
+                    tckkpddel.setDANWID(tckdocmodel.getItemValue(0, "DANW_ID"));
+                    tckkpddel.setRIQIDATE(tckdocmodel.getItemValue(0, "RIQI_DATE"));
+                    if(huozhuid.equals("1991")){
+                        tckkpddel.setTIHWAY("4");
+                    }else if(huozhuid.equals("1990")){
+                        tckkpddel.setTIHWAY("11");
+                    }else if(huozhuid.equals("4508")){
+                        tckkpddel.setTIHWAY("1");
+                    }
+                    tckkpddel.setNOTE(req.getBUYERMEMO());
+                    tckkpddel.setECCSHIPTOREGION(req.getECCSHIPTOREGION());
+                    tckkpddel.setECCSHIPTOCITY(req.getECCSHIPTOCITY());
+                    tckkpddel.setECCSHIPTODISTRICT(req.getECCSHIPTODISTRICT());
+                    tckkpddel.setADDRESS(req.getADDRESS());
+                    tckkpddel.setSHOUHPHONE(req.getSHOUHPHONE());
+                    tckkpddel.setSHOUHSTAFF(req.getSHOUHSTAFF());
+                    tckkpddel.setPOSTCODE(req.getPOSTCODE());
+                    tckkpddel.setPEISNOTES(req.getVENDORMEMO());
+                    tckkpddel.setCARRIERID(req.getCARRIERID());
+                    tckkpddel.setCARRIERNAME(req.getCARRIERNAME());
+                    tckkpddel.setPOSTALZONE("");
+                    tckkpddel.setDELIVERYDATE(docmodel.getItemValue(i, "delivery_date"));
+                    if("".equals("1991")){
+                        tckkpddel.setSHADCITY(docmodel.getItemValue(i, "shad_city"));
+                        tckkpddel.setSHADCITYDISTRICT(docmodel.getItemValue(i, "shad_city_district"));
+                        tckkpddel.setSHADRESIDENTIAL(docmodel.getItemValue(i, "shad_residential"));
+                        tckkpddel.setSHADRESIDENTIALNUMBER(docmodel.getItemValue(i, "shad_residential_number"));
+                    }else{
+                        tckkpddel.setSHADCITY("");
+                        tckkpddel.setSHADCITYDISTRICT("");
+                        tckkpddel.setSHADRESIDENTIAL("");
+                        tckkpddel.setSHADRESIDENTIALNUMBER("");
+                    }
+                    tckkpddel.setSHUIPTYPE("");
+                    tckkpddel.setFAHTYPE("2");
+                    arrayoftckkpddel.setTCKKPDMOD(tckkpddel);
+                    String retxml = "";
+                    try {
+                        retxml = JAXBUtil.marshToXmlBinding(ARRAYOFTCKKPDMOD.class, arrayoftckkpddel, "UTF-8");
+                        infdate.getMESSAGE().getARRAYSTRING().setInfmsg(retxml);
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
+                    }
+                    //调用物流接口，下发修改信息
+                    String entryid = tckdocmodel.getItemValue(0, "entryid");
+                    String url =  getWebServiceUrlByEntryId(con, entryid, "22");
+                    URL wsdlURL = null;
+                    wsdlURL = new URL(url);
+                    WmsCkkpdMod wms = new WmsCkkpdMod(wsdlURL);
+                    WmsCkkpdModSoap soap = wms.getWmsCkkpdModSoap();
+                    String msg = soap.receiveCkkpdMod(infdate);
+                    log.info("WMS回传结果："+msg);
+                    DATA rtdata = JAXBUtil.unmarshToObjBinding(DATA.class, msg, "UTF-8");
+                    RETDATA rd = rtdata.getRETDATA();
+                    if(null==rd){
+                        throw new BopException("-1", "取消失败！");
+                    }
+                    if(rd.getZFLAG().equals("S")){
+                        updateDoc2(con, uh, sql, req, docid);
+                    }else{
+                        throw new BopException("-1", rd.getZMESSAGE());
+                    }
+                    System.out.println(msg);
+                }else if(StringUtil.doNullInt(docmodel.getItemValue(i, "SENDSTATE_WMS"))==2){
+                    throw new BopException("-1", "物流已回传记账，修改失败！");
+                }
+            } catch (BopException e) {
+                e.printStackTrace();
+                errmsg = errmsg + "," + "订单：" + e.getErrMsg();
+            } catch (Exception e) {
+                e.printStackTrace();
+                errmsg = errmsg + "," + "订单：" + docid + " 操作失败";
+            }
+        }
+        if (errmsg.length() > 1) {
+            errmsg = errmsg.substring(1, errmsg.length());
+            throw new BopException("-1", errmsg);
+        } else {
+            return rsaid;
+        }
     }
 
     private void updateDoc(Connection con, UpdateHelper uh, String sql, OMSAPPLYORDERREQ req) throws Exception{
@@ -529,135 +575,174 @@ public class IOmsServiceImpl implements IOmsService {
         uh.executeUpdate(con);
     }
 
+    private void updateDoc2(Connection con, UpdateHelper uh, String sql, OMSAPPLYORDERREQ req, String rsaid) throws Exception {
+        sql = "update gresa_sa_ds_doc set  ECC_SHIPTO_REGION=?,ECC_SHIPTO_CITY=?,ECC_SHIPTO_DISTRICT=?, ADDRESS=?,SHOUH_PHONE=?,POSTCODE=?,VENDORMEMO=?,BUYERMEMO=?,SHUIP_TYPE=?, INVOICE_TITLE=?,INVOICE_CONTENT=?,CARRIER_ID=?,CARRIER_NAME=?,SHOUH_STAFF=?  where rsaid =?";
+        uh = new UpdateHelper(sql);
+        uh.bindParam(req.getECCSHIPTOREGION());
+        uh.bindParam(req.getECCSHIPTOCITY());
+        uh.bindParam(req.getECCSHIPTODISTRICT());
+        uh.bindParam(req.getADDRESS());
+        uh.bindParam(req.getSHOUHPHONE());
+        uh.bindParam(req.getPOSTCODE());
+        uh.bindParam(req.getVENDORMEMO());
+        uh.bindParam(req.getBUYERMEMO());
+        uh.bindParam(req.getSHUIPTYPE());
+        uh.bindParam(req.getINVOICETITLE());
+        uh.bindParam(req.getINVOICECONTENT());
+        uh.bindParam(req.getCARRIERID());
+        uh.bindParam(req.getCARRIERNAME());
+        uh.bindParam(req.getSHOUHSTAFF());
+        uh.bindParam(rsaid);
+        uh.executeUpdate(con);
+    }
+
     private String CancelSaDocDtl(Connection con, SelectHelper sh, UpdateHelper uh, DeleteHelper dh, String sql, OMSAPPLYORDERREQ req) throws Exception{
-        String docid = "";
+        String rsaid = "";
         sql = "select * from gresa_sa_ds_doc where zx_orderno = ? for update";
         sh = new SelectHelper(sql);
         sh.bindParam(req.getZXORDERNO());
-        DBTableModel docmodel = sh.executeSelect(con, 0, 1);
+        DBTableModel docmodel = sh.executeSelect(con, 0, 9999);
         if(null==docmodel || docmodel.getRowCount()<1){
             throw new BopException("-98", "未查询到零售订单！");
         }
-        docid = docmodel.getItemValue(0, "rsaid");
-        if(StringUtil.doNullInt(docmodel.getItemValue(0, "ISCREATE"))==1){
-            throw new BopException("-1", "订单信息已生成零售单，取消失败！");
-        }
-        if(StringUtil.doNullInt(docmodel.getItemValue(0, "USESTATUS"))!=3){
-            if(StringUtil.doNullInt(docmodel.getItemValue(0, "SENDSTATE_WMS"))==0){
-                sql = "update gresa_sa_ds_doc set USESTATUS=3 where zx_orderno =?";
-                uh = new UpdateHelper(sql);
-                uh.bindParam(req.getZXORDERNO());
-                uh.executeUpdate(con);
-                if(StringUtil.doNullInt(docmodel.getItemValue(0, "placeqtystate"))==1){
-                    //删除库存占用
-                    DelSTIOTMP(con, sh, dh, sql, docmodel.getItemValue(0, "rsaid"));
+        String errmsg = "";
+        for(int k = 0; k < docmodel.getRowCount(); k++){
+            String docid = docmodel.getItemValue(k, "rsaid");
+            try {
+                rsaid = rsaid + "," + docid;
+                if(StringUtil.doNullInt(docmodel.getItemValue(k, "ISCREATE"))==1){
+                    throw new BopException("-1", "订单信息已生成零售单，取消失败！");
                 }
-            }else if(StringUtil.doNullInt(docmodel.getItemValue(0, "SENDSTATE_WMS"))==1){
-                //调用物流接口，下发取消信息
-                org.ssm.dufy.client.wms.cancel.INFDATA infdate = new org.ssm.dufy.client.wms.cancel.INFDATA();
-                org.ssm.dufy.client.wms.cancel.GERPBASEINFO gerpbaseinfo = new org.ssm.dufy.client.wms.cancel.GERPBASEINFO();
-                String msgid = StringUtil.doNullStr(new Date().getTime());
-                gerpbaseinfo.setMSGID(msgid);
-                gerpbaseinfo.setSENDTIME(msgid);
-                gerpbaseinfo.setSERVICENAME("CERP");
-                gerpbaseinfo.setTSYSTEM("WMS_2020");
-                gerpbaseinfo.setSSYSYEM("CERP_WMS");
-                infdate.setBASEINFO(gerpbaseinfo);
-                org.ssm.dufy.client.wms.cancel.GERPMESSAGE gerpmessage = new org.ssm.dufy.client.wms.cancel.GERPMESSAGE();
-                org.ssm.dufy.client.wms.cancel.GERPARRAYSTRING gerparraystring = new org.ssm.dufy.client.wms.cancel.GERPARRAYSTRING();
-                gerpmessage.setARRAYSTRING(gerparraystring);
-                infdate.setMESSAGE(gerpmessage);
+                if(StringUtil.doNullInt(docmodel.getItemValue(k, "USESTATUS"))!=3){
+                    if(StringUtil.doNullInt(docmodel.getItemValue(k, "SENDSTATE_WMS"))==0){
+                        sql = "update gresa_sa_ds_doc set USESTATUS=3 where rsaid =?";
+                        uh = new UpdateHelper(sql);
+                        uh.bindParam(docid);
+                        uh.executeUpdate(con);
+                        if(StringUtil.doNullInt(docmodel.getItemValue(k, "placeqtystate"))==1){
+                            //删除库存占用
+                            DelSTIOTMP(con, sh, dh, sql, docid);
+                        }
+                    }else if(StringUtil.doNullInt(docmodel.getItemValue(k, "SENDSTATE_WMS"))==1){
+                        //调用物流接口，下发取消信息
+                        org.ssm.dufy.client.wms.cancel.INFDATA infdate = new org.ssm.dufy.client.wms.cancel.INFDATA();
+                        org.ssm.dufy.client.wms.cancel.GERPBASEINFO gerpbaseinfo = new org.ssm.dufy.client.wms.cancel.GERPBASEINFO();
+                        String msgid = StringUtil.doNullStr(new Date().getTime());
+                        gerpbaseinfo.setMSGID(msgid);
+                        gerpbaseinfo.setSENDTIME(msgid);
+                        gerpbaseinfo.setSERVICENAME("CERP");
+                        gerpbaseinfo.setTSYSTEM("WMS_2020");
+                        gerpbaseinfo.setSSYSYEM("CERP_WMS");
+                        infdate.setBASEINFO(gerpbaseinfo);
+                        org.ssm.dufy.client.wms.cancel.GERPMESSAGE gerpmessage = new org.ssm.dufy.client.wms.cancel.GERPMESSAGE();
+                        org.ssm.dufy.client.wms.cancel.GERPARRAYSTRING gerparraystring = new org.ssm.dufy.client.wms.cancel.GERPARRAYSTRING();
+                        gerpmessage.setARRAYSTRING(gerparraystring);
+                        infdate.setMESSAGE(gerpmessage);
 
-                sql = "select a.rsaid,c.entryid, " +
-                        "(select to_char(systimestamp, 'yyyymmddhh24missff') from dual) DANJ_NO, " +
-                        "b.wmscenterucode WLZX_CODE, " +
-                        "b.goodsownerid HUOZ_ID, " +
-                        "to_char(a.credate, 'yyyymmdd') RIQI_DATE, " +
-                        "a.rsaid DANJ_NO_Y, " +
-                        "a.BUYERMEMO YUANYIN, " +
-                        "null NOTE, " +
-                        "a.dtl_lines TIAOM_NUM, " +
-                        "'N' ZT " +
-                        "from gresa_sa_ds_doc a, pub_storer b, gpcs_placepoint c " +
-                        "where a.placepointid = c.placepointid " +
-                        "and c.placepointid=b.storerid " +
-                        "and a.zx_orderno= ?";
-                sh = new SelectHelper(sql);
-                sh.bindParam(req.getZXORDERNO());
-                DBTableModel tckdocmodel = sh.executeSelect(con, 0, 1);
-                if(null==tckdocmodel || tckdocmodel.getRowCount()<1 ){
-                    throw new BopException("-1", "查询物流信息失败！");
-                }
-                ARRAYOFTCKKPDDEL arrayoftckkpddel = new ARRAYOFTCKKPDDEL();
-                TCKKPDDEL tckkpddel = new TCKKPDDEL();
-                tckkpddel.setDANJNO(tckdocmodel.getItemValue(0, "DANJ_NO"));
-                tckkpddel.setWLZXCODE(tckdocmodel.getItemValue(0, "WLZX_CODE"));
-                tckkpddel.setHUOZID(tckdocmodel.getItemValue(0, "HUOZ_ID"));
-                tckkpddel.setRIQIDATE(tckdocmodel.getItemValue(0, "RIQI_DATE"));
-                tckkpddel.setDANJNOY("DS"+tckdocmodel.getItemValue(0, "DANJ_NO_Y"));
-                tckkpddel.setYUANYIN(tckdocmodel.getItemValue(0, "YUANYIN"));
-                tckkpddel.setNOTE(tckdocmodel.getItemValue(0, "NOTE"));
-                tckkpddel.setTIAOMNUM(tckdocmodel.getItemValue(0, "TIAOM_NUM"));
-                tckkpddel.setZT(tckdocmodel.getItemValue(0, "ZT"));
-                tckkpddel.setYEWSTAFF("");
-                tckkpddel.setPEISNOTES("");
-                tckkpddel.setDANJNONC("");
-                DANJMX danjmx = new DANJMX();
-                tckkpddel.setDANJMX(danjmx);
-                arrayoftckkpddel.setTCKKPDDEL(tckkpddel);
-                List<MINGXI> mxlist = arrayoftckkpddel.getTCKKPDDEL().getDANJMX().getMINGXI();
+                        sql = "select a.rsaid,c.entryid, " +
+                                "(select to_char(systimestamp, 'yyyymmddhh24missff') from dual) DANJ_NO, " +
+                                "b.wmscenterucode WLZX_CODE, " +
+                                "b.goodsownerid HUOZ_ID, " +
+                                "to_char(a.credate, 'yyyymmdd') RIQI_DATE, " +
+                                "a.rsaid DANJ_NO_Y, " +
+                                "a.BUYERMEMO YUANYIN, " +
+                                "null NOTE, " +
+                                "a.dtl_lines TIAOM_NUM, " +
+                                "'N' ZT " +
+                                "from gresa_sa_ds_doc a, pub_storer b, gpcs_placepoint c " +
+                                "where a.placepointid = c.placepointid " +
+                                "and c.placepointid=b.storerid " +
+                                "and a.rsaid= ?";
+                        sh = new SelectHelper(sql);
+                        sh.bindParam(docid);
+                        DBTableModel tckdocmodel = sh.executeSelect(con, 0, 1);
+                        if(null==tckdocmodel || tckdocmodel.getRowCount()<1 ){
+                            throw new BopException("-1", "查询物流信息失败！");
+                        }
+                        ARRAYOFTCKKPDDEL arrayoftckkpddel = new ARRAYOFTCKKPDDEL();
+                        TCKKPDDEL tckkpddel = new TCKKPDDEL();
+                        tckkpddel.setDANJNO(tckdocmodel.getItemValue(0, "DANJ_NO"));
+                        tckkpddel.setWLZXCODE(tckdocmodel.getItemValue(0, "WLZX_CODE"));
+                        tckkpddel.setHUOZID(tckdocmodel.getItemValue(0, "HUOZ_ID"));
+                        tckkpddel.setRIQIDATE(tckdocmodel.getItemValue(0, "RIQI_DATE"));
+                        tckkpddel.setDANJNOY("DS"+tckdocmodel.getItemValue(0, "DANJ_NO_Y"));
+                        tckkpddel.setYUANYIN(tckdocmodel.getItemValue(0, "YUANYIN"));
+                        tckkpddel.setNOTE(tckdocmodel.getItemValue(0, "NOTE"));
+                        tckkpddel.setTIAOMNUM(tckdocmodel.getItemValue(0, "TIAOM_NUM"));
+                        tckkpddel.setZT(tckdocmodel.getItemValue(0, "ZT"));
+                        tckkpddel.setYEWSTAFF("");
+                        tckkpddel.setPEISNOTES("");
+                        tckkpddel.setDANJNONC("");
+                        DANJMX danjmx = new DANJMX();
+                        tckkpddel.setDANJMX(danjmx);
+                        arrayoftckkpddel.setTCKKPDDEL(tckkpddel);
+                        List<MINGXI> mxlist = arrayoftckkpddel.getTCKKPDDEL().getDANJMX().getMINGXI();
 
-                sql = " select t.HANGHAO,t.NUM from zx_to_wms_gresa_ds_dtl_v t " +
-                        " where t.docid= " + tckdocmodel.getItemValue(0, "rsaid");
-                sh = new SelectHelper(sql);
-                DBTableModel tckdtlmodel = sh.executeSelect(con, 0, 9999);
-                if(null==tckdtlmodel || tckdtlmodel.getRowCount()<1 ){
-                    throw new BopException("-1", "查询明细失败！");
+                        sql = " select t.HANGHAO,t.NUM from zx_to_wms_gresa_ds_dtl_v t " +
+                                " where t.docid= " + tckdocmodel.getItemValue(0, "rsaid");
+                        sh = new SelectHelper(sql);
+                        DBTableModel tckdtlmodel = sh.executeSelect(con, 0, 9999);
+                        if(null==tckdtlmodel || tckdtlmodel.getRowCount()<1 ){
+                            throw new BopException("-1", "查询明细失败！");
+                        }
+                        for(int i=0;i<tckdtlmodel.getRowCount();i++){
+                            MINGXI mingxi = new MINGXI();
+                            mingxi.setHANGHAOY(tckdtlmodel.getItemValue(i, "HANGHAO"));
+                            mingxi.setNUM(tckdtlmodel.getItemValue(i, "NUM"));
+                            mxlist.add(mingxi);
+                        }
+                        String retxml = "";
+                        try {
+                            retxml = JAXBUtil.marshToXmlBinding(ARRAYOFTCKKPDDEL.class, arrayoftckkpddel, "UTF-8");
+                            infdate.getMESSAGE().getARRAYSTRING().setInfmsg(retxml);
+                        } catch (JAXBException e) {
+                            e.printStackTrace();
+                        }
+                        String entryid = tckdocmodel.getItemValue(0, "entryid");
+                        String url =  getWebServiceUrlByEntryId(con, entryid, "21");
+                        URL wsdlURL = new URL(url);
+                        WmsCkdel wms = new WmsCkdel(wsdlURL);
+                        WmsCkdelSoap soap = wms.getWmsCkdelSoap();
+                        String msg = soap.receiveCkdel(infdate);
+                        log.info("WMS回传结果："+msg);
+                        if(null==msg||msg.equals("")){
+                            throw new BopException("-1", "取消失败！");
+                        }
+                        DATA rtdata = JAXBUtil.unmarshToObjBinding(DATA.class, msg, "UTF-8");
+                        RETDATA rd = rtdata.getRETDATA();
+                        if(null==rd){
+                            throw new BopException("-1", "取消失败！");
+                        }
+                        if(rd.getZFLAG().equals("S")){
+                            sql = "update gresa_sa_ds_doc set USESTATUS=3 where rsaid =?";
+                            uh = new UpdateHelper(sql);
+                            uh.bindParam(docid);
+                            uh.executeUpdate(con);
+                            //删除库存占用
+                            DelSTIOTMP(con, sh, dh, sql, docid);
+                        }else{
+                            throw new BopException("-1", rd.getZMESSAGE());
+                        }
+                        System.out.println(msg);
+                    }else if(StringUtil.doNullInt(docmodel.getItemValue(k, "SENDSTATE_WMS"))==2){
+                        throw new BopException("-1", "物流已回传记账，取消失败！");
+                    }
                 }
-                for(int i=0;i<tckdtlmodel.getRowCount();i++){
-                    MINGXI mingxi = new MINGXI();
-                    mingxi.setHANGHAOY(tckdtlmodel.getItemValue(i, "HANGHAO"));
-                    mingxi.setNUM(tckdtlmodel.getItemValue(i, "NUM"));
-                    mxlist.add(mingxi);
-                }
-                String retxml = "";
-                try {
-                    retxml = JAXBUtil.marshToXmlBinding(ARRAYOFTCKKPDDEL.class, arrayoftckkpddel, "UTF-8");
-                    infdate.getMESSAGE().getARRAYSTRING().setInfmsg(retxml);
-                } catch (JAXBException e) {
-                    e.printStackTrace();
-                }
-                String entryid = tckdocmodel.getItemValue(0, "entryid");
-                String url =  getWebServiceUrlByEntryId(con, entryid, "21");
-                URL wsdlURL = new URL(url);
-                WmsCkdel wms = new WmsCkdel(wsdlURL);
-                WmsCkdelSoap soap = wms.getWmsCkdelSoap();
-                String msg = soap.receiveCkdel(infdate);
-                log.info("WMS回传结果："+msg);
-                if(null==msg||msg.equals("")){
-                    throw new BopException("-1", "取消失败！");
-                }
-                DATA rtdata = JAXBUtil.unmarshToObjBinding(DATA.class, msg, "UTF-8");
-                RETDATA rd = rtdata.getRETDATA();
-                if(null==rd){
-                    throw new BopException("-1", "取消失败！");
-                }
-                if(rd.getZFLAG().equals("S")){
-                    sql = "update gresa_sa_ds_doc set USESTATUS=3 where zx_orderno =?";
-                    uh = new UpdateHelper(sql);
-                    uh.bindParam(req.getZXORDERNO());
-                    uh.executeUpdate(con);
-                    //删除库存占用
-                    DelSTIOTMP(con, sh, dh, sql, docmodel.getItemValue(0, "rsaid"));
-                }else{
-                    throw new BopException("-1", rd.getZMESSAGE());
-                }
-                System.out.println(msg);
-            }else if(StringUtil.doNullInt(docmodel.getItemValue(0, "SENDSTATE_WMS"))==2){
-                throw new BopException("-1", "物流已回传记账，取消失败！");
+            } catch (BopException e) {
+                e.printStackTrace();
+                errmsg = errmsg + "," + "订单：" + e.getErrMsg();
+            } catch (Exception e) {
+                e.printStackTrace();
+                errmsg = errmsg + "," + "订单：" + docid + " 操作失败";
             }
+
         }
-        return docid;
+        if (errmsg.length() > 1) {
+            errmsg = errmsg.substring(1, errmsg.length());
+            throw new BopException("-1", errmsg);
+        } else {
+            return rsaid;
+        }
     }
 
 

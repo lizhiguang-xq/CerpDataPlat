@@ -80,6 +80,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{}ZYUNFEI"/>
  *         &lt;element ref="{}DISCOUNT_FEE"/>
  *         &lt;element ref="{}CODFEE"/>
+ *         &lt;element ref="{}SPLITTYPE"/>
  *         &lt;element ref="{}PRODUCTS"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -145,6 +146,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "discountfee",
     "eccsalesorg",
     "codfee",
+    "splittype",
     "products"
 })
 @XmlRootElement(name = "OMS_APPLYORDER_REQ")
@@ -364,6 +366,10 @@ public class OMSAPPLYORDERREQ {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String codfee;
+    @XmlElement(name = "SPLITTYPE", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String splittype;
     @XmlElement(name = "PRODUCTS", required = true)
     protected PRODUCTS products;
 
@@ -1660,6 +1666,30 @@ public class OMSAPPLYORDERREQ {
      */
     public void setCODFEE(String value) {
         this.codfee = value;
+    }
+
+    /**
+     * 获取splittype属性的值。
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getSPLITTYPE() {
+        return splittype;
+    }
+
+    /**
+     * 设置splittype属性的值。
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setSPLITTYPE(String value) {
+        this.splittype = value;
     }
 
     /**
