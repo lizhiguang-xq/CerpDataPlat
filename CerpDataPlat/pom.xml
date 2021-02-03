@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dufy</groupId>
 	<artifactId>cerpDataPlat</artifactId>
@@ -217,13 +217,13 @@
 			<artifactId>cxf-rt-transports-http</artifactId>
 			<version>3.1.6</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
 			<version>2.10.2</version>
 		</dependency>
-		
+
 		<!-- redis 依赖 -->
 		<dependency>
 			<groupId>redis.clients</groupId>
@@ -256,7 +256,56 @@
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.10.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>npadmin_c</artifactId>
+			<version>6.1.03</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>npadmin_s</artifactId>
+			<version>6.1.03</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>npcommon</artifactId>
+			<version>6.1.03</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>npserver_c</artifactId>
+			<version>6.1.03</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>npserver_s</artifactId>
+			<version>6.1.03</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>sysmgr_s</artifactId>
+			<version>6.1.03</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>sysmgr_s</artifactId>
+			<version>6.1.03</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>pubsrv_c</artifactId>
+			<version>4.3.32</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>npbusi_tr_c</artifactId>
+			<version>4.3.32</version>
+		</dependency>
+		<dependency>
+			<groupId>com.inca</groupId>
+			<artifactId>npbusi_tr_s</artifactId>
+			<version>4.3.32</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -284,7 +333,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.4</version>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -309,7 +358,7 @@
 					</webAppConfig>
 					<connectors>
 						<connector
-							implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+								implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
 							<port>8090</port>
 							<maxIdleTime>60000</maxIdleTime>
 						</connector>

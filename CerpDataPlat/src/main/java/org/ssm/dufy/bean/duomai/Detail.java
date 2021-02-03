@@ -20,6 +20,17 @@ public class Detail {
     private String productName;
     @JsonProperty("product_amount")
     private int productAmount;
+
+    private String product_income;
+
+    public String getProduct_income() {
+        return product_income;
+    }
+
+    public void setProduct_income(String product_income) {
+        this.product_income = product_income;
+    }
+
     public void setUnit(String unit) {
          this.unit = unit;
      }

@@ -36,10 +36,10 @@ public class JianYiBaoController {
         logger.info("---[JianYiBao]---[queryMember]---mobile:"+mobile+"---vipNo:"+vipNo+"---sign:"+sign);
         JianYiBaoRetMsg resp = new JianYiBaoRetMsg();
         if(!StringUtil.isEmpty(mobile)) {
-            if (!this.check("mobile="+mobile, sign)) {
-                resp.setCode("0002");
-                return resp;
-            }
+//            if (!this.check("mobile="+mobile, sign)) {
+//                resp.setCode("0002");
+//                return resp;
+//            }
             List<Member> memberList = jybService.queryMemberByMobile(mobile);
             if(memberList == null || memberList.size() < 1) {
                 resp.setCode("0001");
