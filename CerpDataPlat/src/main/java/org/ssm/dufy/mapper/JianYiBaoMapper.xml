@@ -70,7 +70,7 @@
 			   d.mobile         mobile
 		  from gresa_sa_doc a, gresa_sa_dtl b, gpcs_placepoint c, gpcs_insider d, pub_goods e, pub_factory f
 		 where a.rsaid = b.rsaid
-		   and b.goodsid = 9931
+		   and b.goodsid in (9931,291267)
 		   and a.placepointid = c.placepointid
 		   and c.entryid in (2,21,22)
 		   and a.insiderid = d.insiderid(+)
